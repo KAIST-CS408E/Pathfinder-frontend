@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import { Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -8,6 +9,8 @@ import TableCell, { TableCellProps } from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+
+import Icon from '@material-ui/core/Icon';
 
 import { /* ListItem, */ ClickItemHandler, ILectureListItem } from './ListItem';
 
@@ -107,18 +110,30 @@ const styles = (theme: Theme) => ({
   },
 
   typo: {
+    display: 'flex' as 'flex',
+    justifyContent: 'space-between' as 'space-between',
+
     backgroundColor: '#4481ff',
     color: 'white',
     textAlign: 'left' as 'left',
 
     paddingLeft: theme.spacing.unit * 3,
+    paddingRight: theme.spacing.unit * 3,
     paddingTop: theme.spacing.unit * 3,
+  },
+
+  btn: {
+    height: 24,
+    width: 24,
   },
 });
 
-interface ITableProps extends WithStyles<'root' | 'table' | 'row' | 'typo'> {
+interface ITableProps
+  extends WithStyles<'root' | 'table' | 'row' | 'typo' | 'btn'> {
   course: ICourse;
 }
+
+let x = 0;
 
 function CustomizedTable(props: ITableProps) {
   const { classes, course } = props;
@@ -126,9 +141,14 @@ function CustomizedTable(props: ITableProps) {
 
   return (
     <Paper className={classes.root}>
-      <Typography className={classes.typo} variant="headline" component="h3">
-        {`${course.name} (${course.number})`}
-      </Typography>
+      <div className={classes.typo}>
+        <Typography color="inherit" variant="headline" component="h3">
+          {`${course.name} (${course.number})`}
+        </Typography>
+        <IconButton className={classes.btn} color="inherit">
+          <Icon>{x++ % 2 === 1 ? 'favorite' : 'favorite_border'}</Icon>
+        </IconButton>
+      </div>
       <Table className={classes.table}>
         <TableHead>
           <TableRow>
