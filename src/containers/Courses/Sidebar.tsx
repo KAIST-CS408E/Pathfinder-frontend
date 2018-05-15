@@ -13,7 +13,6 @@ export default class Sidebar extends React.Component {
           value={0}
           indicatorColor="primary"
           textColor="primary"
-          centered
           scrollable
           scrollButtons="off"
         >
