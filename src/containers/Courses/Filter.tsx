@@ -78,6 +78,7 @@ export default class Filter extends React.Component<IProps, IState> {
   public departments: ICustomSelection[] = [
     { key: 'cs', text: 'Computer Science' },
     { key: 'ee', text: 'Electronical Engineering' },
+    { key: 'hss', text: 'Humanities & Social Sciences' },
   ];
 
   public courseLevels: ICustomSelection[] = [

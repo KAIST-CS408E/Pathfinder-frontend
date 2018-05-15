@@ -14,8 +14,9 @@ import Filter, {
   IFilterOptions,
   OnChangeOptionFunc,
 } from './Filter';
-import SearchList, { IQueryResult } from './List';
-import { ClickItemHandler } from './ListItem';
+import SearchList, { ClickEntryHandler, IQueryResult } from './SearchList';
+import Sidebar from './Sidebar';
+
 import styles from './Search.style';
 
 const { classes } = styles;
@@ -185,10 +186,11 @@ export default class Search extends React.Component<IProps, ISearchState> {
     this.gotoSearch(`/${encodeURIComponent(keyword)}${this.getSearchQuery()}`);
   };
 
-  public handleClickItem: ClickItemHandler = (d, i) => {
+  public handleClickEntry: ClickEntryHandler = (course, i) => {
     if (this.state.queryResult) {
       const { year, term } = this.state.queryResult;
-      this.gotoDetail(`/${year}/${term}/${d.number}/${d.professor}`);
+      const lecture = course.lectures[i];
+      this.gotoDetail(`/${year}/${term}/${course.number}/${lecture.professor}`);
     } else {
       alert('you need to fetch in the first');
     }
@@ -233,9 +235,11 @@ export default class Search extends React.Component<IProps, ISearchState> {
       <div className={classes.resultContainer}>
         <SearchList
           data={queryResult ? queryResult.courses : undefined}
-          onClickItem={this.handleClickItem}
+          onClickEntry={this.handleClickEntry}
         />
-        <div className="map">Map</div>
+        <div className="map">
+          <Sidebar />
+        </div>
       </div>
     );
   }

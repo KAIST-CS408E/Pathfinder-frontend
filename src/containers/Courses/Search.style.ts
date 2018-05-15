@@ -50,7 +50,16 @@ export default jss
         },
       },
       '& .map': {
+        marginLeft: 12,
+        marginTop: 24,
+
+        height: '75vh',
         width: 300,
+
+        position: 'sticky',
+        top: '9vh',
+
+        alignSelf: 'flex-start',
       },
     } as Style,
 

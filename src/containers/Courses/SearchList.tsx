@@ -12,11 +12,11 @@ import Typography from '@material-ui/core/Typography';
 
 import Icon from '@material-ui/core/Icon';
 
-import { /* ListItem, */ ClickItemHandler, ILectureListItem } from './ListItem';
+/* import ListItem, { ClickItemHandler, ILectureListItem } from './ListItem'; */
 
 interface IProps {
   data?: IQueryResult['courses'];
-  onClickItem: ClickItemHandler;
+  onClickEntry: ClickEntryHandler;
 }
 
 export interface IQueryResult {
@@ -42,12 +42,19 @@ export interface ILecture {
   grades: number;
 }
 
-export default class SearchList extends React.Component<IProps> {
-  public handleClickItem = (d: ILectureListItem, i: number) => {
-    const { onClickItem } = this.props;
+export type ClickEntryHandler = (course: ICourse, lectureIndex: number) => void;
+type ClickHandlerBuilder = (
+  course: ICourse,
+  lectureIndex: number
+) => ClickHandler;
+type ClickHandler = () => void;
 
-    if (onClickItem) {
-      onClickItem(d, i);
+export default class SearchList extends React.Component<IProps> {
+  public handleClickEntry: ClickHandlerBuilder = (course, index) => () => {
+    const { onClickEntry } = this.props;
+
+    if (onClickEntry) {
+      onClickEntry(course, index);
     }
   };
 
@@ -71,7 +78,11 @@ export default class SearchList extends React.Component<IProps> {
        *   <ListItem key={i} d={d} index={i} onClick={this.handleClickItem} />
        * )); */
       renderData = data.map(course => (
-        <Item key={course.number} course={course} />
+        <Item
+          clickHandlerBuilder={this.handleClickEntry}
+          key={course.number}
+          course={course}
+        />
       ));
     }
 
@@ -82,6 +93,10 @@ export default class SearchList extends React.Component<IProps> {
 const CustomTableCell = withStyles(theme => ({
   body: {
     fontSize: 14,
+
+    '&:nth-child(1)': {
+      color: '#008bff',
+    },
   },
   head: {
     backgroundColor: '#4481ff',
@@ -131,12 +146,13 @@ const styles = (theme: Theme) => ({
 interface ITableProps
   extends WithStyles<'root' | 'table' | 'row' | 'typo' | 'btn'> {
   course: ICourse;
+  clickHandlerBuilder: ClickHandlerBuilder;
 }
 
 let x = 0;
 
 function CustomizedTable(props: ITableProps) {
-  const { classes, course } = props;
+  const { classes, course, clickHandlerBuilder } = props;
   const { lectures } = course;
 
   return (
@@ -146,7 +162,7 @@ function CustomizedTable(props: ITableProps) {
           {`${course.name} (${course.number})`}
         </Typography>
         <IconButton className={classes.btn} color="inherit">
-          <Icon>{x++ % 2 === 1 ? 'favorite' : 'favorite_border'}</Icon>
+          <Icon>{x++ % 2 === 1 ? 'turned_in' : 'turned_in_not'}</Icon>
         </IconButton>
       </div>
       <Table className={classes.table}>
@@ -164,7 +180,11 @@ function CustomizedTable(props: ITableProps) {
             return (
               // Key should be replaced later by uuid such as class ID
               <TableRow className={classes.row} key={i}>
-                <CustomTableCell component="th" scope="row">
+                <CustomTableCell
+                  onClick={clickHandlerBuilder(course, i)}
+                  component="th"
+                  scope="row"
+                >
                   {`Prof. ${n.professor || 'None'}`}
                 </CustomTableCell>
                 <CustomTableCell numeric>
