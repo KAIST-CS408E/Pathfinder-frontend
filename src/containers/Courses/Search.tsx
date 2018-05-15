@@ -40,14 +40,26 @@ export default class Search extends React.Component<IProps, ISearchState> {
     if (props.location && props.location.search) {
       const params = new URLSearchParams(props.location.search);
       for (const [k, v] of params) {
-        filterOptions[k] = v;
+        switch (k) {
+          case 'courseLevel':
+          case 'department':
+            filterOptions[k] = decodeURI(v)
+              .split(',')
+              .reduce(
+                (r: object, key) => Object.assign(r, { [key]: true }),
+                {}
+              );
+            break;
+          default:
+            filterOptions[k] = decodeURI(v);
+        }
       }
     }
 
     let queryKeyword: string = '';
 
     if (props.match && props.match.params && props.match.params.keyword) {
-      queryKeyword = props.match.params.keyword;
+      queryKeyword = decodeURI(props.match.params.keyword);
     }
 
     this.state = {
@@ -85,7 +97,24 @@ export default class Search extends React.Component<IProps, ISearchState> {
       .reduce((r: string[], [k, v]) => (v ? [...r, k] : r), [])
       .join(',');
 
-    return `?year=${year}&semester=${semester}&department=${departmentStr}&courseLevel=${courseLevel}&sortOrder=${sortOrder}`;
+    const courseLevelStr = Object.entries(courseLevel)
+      .reduce((r: string[], [k, v]) => (v ? [...r, k] : r), [])
+      .join(',');
+
+    const urls = new URLSearchParams();
+    const data = {
+      courseLevel: courseLevelStr,
+      department: departmentStr,
+      semester,
+      sortOrder,
+      year,
+    };
+
+    for (const [k, v] of Object.entries(data)) {
+      urls.set(k, encodeURIComponent(v));
+    }
+
+    return `?${urls.toString()}`;
   };
 
   public fetchQueryResult = (query: string) => {
@@ -153,7 +182,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
 
   public handleClickSearch = () => {
     const keyword = this.state.queryKeyword;
-    this.gotoSearch(`/${keyword}${this.getSearchQuery()}`);
+    this.gotoSearch(`/${encodeURIComponent(keyword)}${this.getSearchQuery()}`);
   };
 
   public handleClickItem: ClickItemHandler = (d, i) => {
