@@ -7,12 +7,17 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell, { TableCellProps } from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import TableRow, { TableRowProps } from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 
 import Icon from '@material-ui/core/Icon';
+// import { stackOrderInsideOut } from "d3-shape";
 
 /* import ListItem, { ClickItemHandler, ILectureListItem } from './ListItem'; */
+// const ourKaistBlue = '#4481ff';
+const ourKaistBlue = '#E3F2FD';
+const ourKaistBlueD = "#1A237E";
+
 
 interface IProps {
   data?: IQueryResult['courses'];
@@ -90,28 +95,55 @@ export default class SearchList extends React.Component<IProps> {
   }
 }
 
+const CustomTableRow = withStyles(theme => ({
+  root: {
+    height: 32,
+  },
+}))(TableRow as React.ComponentType<
+  TableRowProps & WithStyles<'root'>
+  >);
+
+
 const CustomTableCell = withStyles(theme => ({
   body: {
+    border: ourKaistBlue,
     fontSize: 14,
 
     '&:nth-child(1)': {
       color: '#008bff',
     },
+    padding: "0px 0px 0px 12px",
   },
   head: {
-    backgroundColor: '#4481ff',
+    backgroundColor: ourKaistBlue,
+    border: ourKaistBlue,
     color: theme.palette.common.white,
   },
+  numeric: {
+    border: ourKaistBlue,
+    paddingRight: 0,
+  },
+
+  root: {
+    border: ourKaistBlue,
+    padding: 0,
+  },
 }))(TableCell as React.ComponentType<
-  TableCellProps & WithStyles<'body' | 'head'>
+  TableCellProps & WithStyles<'body' | 'head' | 'numeric'>
 >);
 
 const styles = (theme: Theme) => ({
   root: {
     width: '100%',
 
-    marginTop: theme.spacing.unit * 3,
+    border: ourKaistBlue,
+    marginBottom: theme.spacing.unit * 2,
     overflowX: 'auto' as 'auto',
+  },
+
+  head: {
+    color: ourKaistBlueD,
+    fontSize: 14,
   },
 
   table: {
@@ -121,6 +153,9 @@ const styles = (theme: Theme) => ({
   row: {
     '&:nth-of-type(odd)': {
       backgroundColor: theme.palette.background.default,
+      border: ourKaistBlue,
+      // padding: theme.spacing.unit.valueOf()[1],
+      height: 32,
     },
   },
 
@@ -128,23 +163,36 @@ const styles = (theme: Theme) => ({
     display: 'flex' as 'flex',
     justifyContent: 'space-between' as 'space-between',
 
-    backgroundColor: '#4481ff',
-    color: 'white',
+    backgroundColor: ourKaistBlue,
+    color: ourKaistBlueD,
     textAlign: 'left' as 'left',
 
-    paddingLeft: theme.spacing.unit * 3,
-    paddingRight: theme.spacing.unit * 3,
-    paddingTop: theme.spacing.unit * 3,
+    paddingLeft: theme.spacing.unit * 2,
+    paddingRight: theme.spacing.unit * 2,
+    paddingTop: theme.spacing.unit * 1.5,
   },
 
   btn: {
     height: 24,
     width: 24,
   },
+
+  /*
+  paddingNone: {
+    backgroundColor: "blue",
+    height: 20,
+  },
+  */
+
+  title: {
+    fontSize: 18,
+  }
 });
 
 interface ITableProps
-  extends WithStyles<'root' | 'table' | 'row' | 'typo' | 'btn'> {
+  extends WithStyles<'root' | 'table' | 'row' | 'typo' | 'btn' |
+    'paddingNone' | 'title' | 'head' >
+{
   course: ICourse;
   clickHandlerBuilder: ClickHandlerBuilder;
 }
@@ -158,7 +206,8 @@ function CustomizedTable(props: ITableProps) {
   return (
     <Paper className={classes.root}>
       <div className={classes.typo}>
-        <Typography color="inherit" variant="headline" component="h3">
+        <Typography color="inherit" variant="headline" component="h3"
+        className={classes.title}>
           {`${course.name} (${course.number})`}
         </Typography>
         <IconButton className={classes.btn} color="inherit">
@@ -167,13 +216,14 @@ function CustomizedTable(props: ITableProps) {
       </div>
       <Table className={classes.table}>
         <TableHead>
-          <TableRow>
-            <CustomTableCell>School of Computing</CustomTableCell>
-            <CustomTableCell numeric>Major Elective</CustomTableCell>
-            <CustomTableCell numeric>Bachelor</CustomTableCell>
-            <CustomTableCell numeric>Credit. 3:0:3</CustomTableCell>
-            <CustomTableCell numeric />
-          </TableRow>
+          <CustomTableRow>
+            <CustomTableCell style={{ paddingLeft: 16 }}
+              className={ classes.head }>School of Computing</CustomTableCell>
+            <CustomTableCell className={ classes.head }>Major Elective</CustomTableCell>
+            <CustomTableCell className={ classes.head }>Bachelor</CustomTableCell>
+            <CustomTableCell className={ classes.head }>Credit. 3:0:3</CustomTableCell>
+            <CustomTableCell/><CustomTableCell />
+          </CustomTableRow>
         </TableHead>
         <TableBody>
           {lectures.map((n, i) => {
@@ -184,15 +234,17 @@ function CustomizedTable(props: ITableProps) {
                   onClick={clickHandlerBuilder(course, i)}
                   component="th"
                   scope="row"
+                  style={{ paddingLeft: 18, color: ourKaistBlueD }}
                 >
                   {`Prof. ${n.professor || 'None'}`}
                 </CustomTableCell>
-                <CustomTableCell numeric>
+                <CustomTableCell>
                   {`Class. ${n.class || 'None'}`}
                 </CustomTableCell>
-                <CustomTableCell numeric>{`0/${n.limit}`}</CustomTableCell>
-                <CustomTableCell numeric>{`Load ${n.load}`}</CustomTableCell>
-                <CustomTableCell numeric>{`Grade ${n.grades}`}</CustomTableCell>
+                <CustomTableCell>{`0/${n.limit}`}</CustomTableCell>
+                <CustomTableCell>{`Load ${n.load}`}</CustomTableCell>
+                <CustomTableCell>{`Grade ${n.grades}`}</CustomTableCell>
+                <CustomTableCell numeric style={{ paddingRight: 4 }}>Recommanded</CustomTableCell>
               </TableRow>
             );
           })}

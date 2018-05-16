@@ -7,7 +7,7 @@ jss.setup(preset());
 const maxContainerWidth = '80%';
 const outerMargin = '10%';
 
-const marginBox = 25; /*
+const marginBox = 36; /*
 const heightB1 = 30;
 const heightL1 = 24; */
 const roundingBig = 4;
@@ -19,7 +19,7 @@ export default jss
   .createStyleSheet({
     search: {
       align: 'center',
-      padding: 12,
+      paddingTop: 12,
       textAlign: 'center',
     } as Style,
 
@@ -75,13 +75,13 @@ export default jss
       },
       '& .map': {
         marginLeft: 12,
-        marginTop: 24,
+        marginTop: 0,
 
         height: '75vh',
         width: 300,
 
         position: 'sticky',
-        top: '9vh',
+        top: '3vh',
 
         alignSelf: 'flex-start',
       },
@@ -119,8 +119,8 @@ export default jss
     },
 
     searchCard: {
-      marginLeft: "auto",
-      marginRight: "auto",
+      marginLeft: outerMargin,
+      marginRight: outerMargin,
 
       borderRadius: roundingBig,
       marginBottom: marginBox,
@@ -131,7 +131,12 @@ export default jss
     },
 
     searchBox: {
+      
       display: 'flex',
+
+      border: 0,
+      margin: 0,
+      padding: 0,
     },
 
     optionContainer: {
