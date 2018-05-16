@@ -159,7 +159,6 @@ export default jss
       backgroundColor: "white",
       border: "grey",
       borderRadius: roundingSmall,
-      borderWidth: "1px",
 
   }
 

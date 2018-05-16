@@ -165,11 +165,12 @@ const styles = (theme: Theme) => ({
 
     backgroundColor: ourKaistBlue,
     color: ourKaistBlueD,
+    height: 20,
     textAlign: 'left' as 'left',
 
     paddingLeft: theme.spacing.unit * 2,
     paddingRight: theme.spacing.unit * 2,
-    paddingTop: theme.spacing.unit * 1.5,
+    paddingTop: theme.spacing.unit * 1,
   },
 
   btn: {
@@ -185,7 +186,7 @@ const styles = (theme: Theme) => ({
   */
 
   title: {
-    fontSize: 18,
+    fontSize: 16,
   }
 });
 
