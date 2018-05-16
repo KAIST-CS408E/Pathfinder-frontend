@@ -228,12 +228,12 @@ export default class Search extends React.Component<IProps, ISearchState> {
     const { filterOptions, queryKeyword } = this.state;
 
     return (
-      <Card>
+      <Card className={classes.searchCard}>
         <CardContent>
           <div className={classes.searchBox}>
             <div className={classes.optionContainer}>
               <TextField
-                className="search"
+                className={classes.searchInput}
                 value={queryKeyword}
                 onChange={this.handleChangeKeyword}
               />

@@ -4,19 +4,81 @@ import { Style } from 'jss/css';
 
 jss.setup(preset());
 
-const maxContainerWidth = '80%';
-const outerMargin = '10%';
+// const maxContainerWidth = '80%';
 
-const marginBox = 25; /*
+/*
+const marginBox = 25;
 const heightB1 = 30;
-const heightL1 = 24; */
+const heightL1 = 24;
 const roundingBig = 4;
 const roundingSmall = 2;
+*/
 
 // const paddingDiv = 12;
 
 export default jss
   .createStyleSheet({
+
+    paperCutting: {
+      // backgroundColor: "purple",
+      borderRadius: 6,
+    } as Style,
+
+    courseDetailCard: {
+      display: "inline",
+      width: "100%",
+    } as Style,
+
+    detailCardTitle: {
+      backgroundColor: "#f5f5f5",
+      borderRadius: "6px 6px 0px 0px",
+      display: "flex",
+      /*
+      '& .MuiCardContent': {
+        padingBottom: 0,
+      }, */
+
+    } as Style,
+
+    detailCardGraphDiv: {
+      backgroundColor: "#f5f5f5",
+      display: "flex",
+      /*
+      '& .MuiCardContent': {
+        padingBottom: 0,
+      }, */
+
+      '& .div': {
+        backgroundColor: "red",
+      },
+
+    } as Style,
+
+    stickLeft: {
+      left: 0,
+      top: 0,
+    } as Style,
+
+    stickRight: {
+      right: 0,
+      top: 0,
+    } as Style,
+
+    typoMiddleAlign: {
+      margin: "auto",
+    } as Style,
+
+    sankyGraphDiv: {
+      border: "red",
+      width: "40%",
+    },
+
+    besideSankyGraph: {
+      width: "30%"
+    },
+
+    // contentWih
+    /*
     search: {
       align: 'center',
       padding: 12,
@@ -74,16 +136,7 @@ export default jss
         },
       },
       '& .map': {
-        marginLeft: 12,
-        marginTop: 24,
-
-        height: '75vh',
         width: 300,
-
-        position: 'sticky',
-        top: '9vh',
-
-        alignSelf: 'flex-start',
       },
     } as Style,
 
@@ -159,6 +212,6 @@ export default jss
   }
 
 
-    
+    */
   })
   .attach();

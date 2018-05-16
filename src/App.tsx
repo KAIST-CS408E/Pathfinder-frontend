@@ -74,22 +74,24 @@ class App extends React.Component<{}, IState> {
       <div className="App">
         <div className="App">
           <AppBar position="sticky" color="default">
-            <Toolbar>
-              <Typography
-                className={classes.typo}
-                variant="title"
-                color="inherit"
-              >
-                KAIST Pathfinder
-              </Typography>
-              <Button>
-                <span className={classes.label}>My Page</span>
-                <AccountBox />
-              </Button>
-              <Button>
-                <span className={classes.label}>Pin List</span> <TurnedIn />
-              </Button>
-            </Toolbar>
+            <div className="icon-container">
+              <Toolbar>
+                <Typography
+                  className={classes.typo}
+                  variant="title"
+                  color="inherit"
+                >
+                  KAIST Pathfinder
+                </Typography>
+                <Button>
+                  <span className={classes.label}>My Page</span>
+                  <AccountBox />
+                </Button>
+                <Button>
+                  <span className={classes.label}>Pin List</span> <TurnedIn />
+                </Button>
+              </Toolbar>
+            </div>
           </AppBar>
           <Router>
             <Switch>
