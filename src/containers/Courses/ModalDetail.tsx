@@ -68,10 +68,14 @@ export default class ModalDetail extends React.Component<IProps> {
     this.props.history.goBack();
   };
 
+  public handleClickPropagation = (e: React.MouseEvent<{}>) => {
+    e.stopPropagation();
+  };
+
   public render() {
     return (
       <div className={classes.blur} onClick={this.handleExit}>
-        <div className={classes.modal}>
+        <div className={classes.modal} onClick={this.handleClickPropagation}>
           <Detail {...this.props} />
         </div>
       </div>

@@ -6,6 +6,7 @@ import {
   Switch,
 } from 'react-router-dom';
 
+// import iassign from 'immutable-assign';
 import jss from 'jss';
 import preset from 'jss-preset-default';
 
@@ -33,7 +34,41 @@ const { classes } = jss
   })
   .attach();
 
-class App extends React.Component {
+interface IState {
+  pinnedList: IPinnedTable;
+}
+
+interface IPinnedTable {
+  [courseNumber: string]: IPinnedCourse;
+}
+
+interface IPinnedCourse {
+  courseName: string;
+  courseNumber: string;
+  class: string;
+  professor: string;
+  semester: string;
+  year: string;
+}
+
+class App extends React.Component<{}, IState> {
+  public state = { pinnedList: {} };
+
+  public pinCourse = (course: IPinnedCourse) => {
+    // if not exists in list
+    if (!this.state.pinnedList[course.courseNumber]) {
+      console.log('123');
+    }
+  };
+
+  public unpinCourse = (courseNumber: IPinnedCourse['courseNumber']) => {
+    console.log('fuckl');
+  };
+
+  public resetPinned = () => {
+    this.setState({ pinnedList: {} });
+  };
+
   public render() {
     return (
       <div className="App">

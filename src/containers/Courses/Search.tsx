@@ -14,8 +14,9 @@ import Filter, {
   IFilterOptions,
   OnChangeOptionFunc,
 } from './Filter';
-import SearchList, { IQueryResult } from './List';
-import { ClickItemHandler } from './ListItem';
+import SearchList, { ClickEntryHandler, IQueryResult } from './SearchList';
+import Sidebar from './Sidebar';
+
 import styles from './Search.style';
 
 const { classes } = styles;
@@ -73,7 +74,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
   }
 
   public componentDidMount() {
-    this.fetchQueryResult(this.getSearchQuery());
+    this.fetchQueryResult(this.getStateQuery());
   }
 
   public componentDidUpdate(prevProps: IProps, prevState: ISearchState) {
@@ -83,7 +84,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
     }
   }
 
-  public getSearchQuery = () => {
+  public getStateQuery = () => {
     const { filterOptions } = this.state;
     const {
       year,
@@ -111,7 +112,34 @@ export default class Search extends React.Component<IProps, ISearchState> {
     };
 
     for (const [k, v] of Object.entries(data)) {
-      urls.set(k, encodeURIComponent(v));
+      urls.set(k, v);
+    }
+
+    return `?${urls.toString()}`;
+  };
+
+  public getSearchQuery = () => {
+    const { filterOptions, queryKeyword } = this.state;
+    const { department, courseLevel, sortOrder } = filterOptions;
+
+    const departmentStr = Object.entries(department)
+      .reduce((r: string[], [k, v]) => (v ? [...r, k] : r), [])
+      .join(',');
+
+    const courseLevelStr = Object.entries(courseLevel)
+      .reduce((r: string[], [k, v]) => (v ? [...r, k] : r), [])
+      .join(',');
+
+    const urls = new URLSearchParams();
+    const data = {
+      courseLevel: courseLevelStr,
+      department: departmentStr,
+      keyword: queryKeyword,
+      sortOrder,
+    };
+
+    for (const [k, v] of Object.entries(data)) {
+      urls.set(k, v);
     }
 
     return `?${urls.toString()}`;
@@ -128,10 +156,11 @@ export default class Search extends React.Component<IProps, ISearchState> {
      * } */
 
     const { year, semester: term } = this.state.filterOptions;
+    const url =
+      'https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api/courses/';
+    // keyword department courseLevel sortOrder
 
-    fetch(
-      `https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api/courses/${year}/${term}/`
-    )
+    fetch(`${url}${year}/${term}/${this.getSearchQuery()}`)
       .then(r => r.json())
       .then(d => {
         this.setState({ queryResult: d });
@@ -182,13 +211,14 @@ export default class Search extends React.Component<IProps, ISearchState> {
 
   public handleClickSearch = () => {
     const keyword = this.state.queryKeyword;
-    this.gotoSearch(`/${encodeURIComponent(keyword)}${this.getSearchQuery()}`);
+    this.gotoSearch(`/${encodeURIComponent(keyword)}${this.getStateQuery()}`);
   };
 
-  public handleClickItem: ClickItemHandler = (d, i) => {
+  public handleClickEntry: ClickEntryHandler = (course, i) => {
     if (this.state.queryResult) {
       const { year, term } = this.state.queryResult;
-      this.gotoDetail(`/${year}/${term}/${d.number}/${d.professor}`);
+      const lecture = course.lectures[i];
+      this.gotoDetail(`/${year}/${term}/${course.number}/${lecture.professor}`);
     } else {
       alert('you need to fetch in the first');
     }
@@ -233,9 +263,11 @@ export default class Search extends React.Component<IProps, ISearchState> {
       <div className={classes.resultContainer}>
         <SearchList
           data={queryResult ? queryResult.courses : undefined}
-          onClickItem={this.handleClickItem}
+          onClickEntry={this.handleClickEntry}
         />
-        <div className="map">Map</div>
+        <div className="map">
+          <Sidebar />
+        </div>
       </div>
     );
   }
