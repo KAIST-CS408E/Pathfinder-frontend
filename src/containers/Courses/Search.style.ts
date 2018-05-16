@@ -3,9 +3,33 @@ import preset from 'jss-preset-default';
 import { Style } from 'jss/css';
 
 jss.setup(preset());
+
+const maxContainerWidth = '80%';
+const outerMargin = '10%';
+
+const marginBox = 25; /*
+const heightB1 = 30;
+const heightL1 = 24; */
+const roundingBig = 4;
+const roundingSmall = 2;
+
+// const paddingDiv = 12;
+
 export default jss
   .createStyleSheet({
+    search: {
+      align: 'center',
+      padding: 12,
+      textAlign: 'center',
+    } as Style,
+
     resultContainer: {
+      position: 'absolute',
+
+      marginLeft: outerMargin,
+      marginRight: outerMargin,
+      width: maxContainerWidth,
+
       display: 'flex',
       justifyContent: 'stretch',
 
@@ -54,34 +78,12 @@ export default jss
       },
     } as Style,
 
-    search: {
-      padding: 12,
-    } as Style,
-
-    searchBox: {
-      display: 'flex',
-    },
-
     searchBtn: {
       // height: 100,
       width: 150,
 
       marginLeft: 6,
     },
-
-    optionContainer: {
-      padding: 6,
-
-      display: 'flex',
-      flexGrow: 1,
-
-      alignContent: 'stretch',
-      flexDirection: 'column',
-
-      '& .search': {
-        marginBottom: 12,
-      },
-    } as Style,
 
     searchFilter: {
       display: 'flex',
@@ -106,5 +108,48 @@ export default jss
 
       // margin: 0,
     },
+
+    searchCard: {
+      marginLeft: "auto",
+      marginRight: "auto",
+
+      borderRadius: roundingBig,
+      marginBottom: marginBox,
+      marginTop: marginBox,
+      width: maxContainerWidth,
+
+      backgroundColor: "#f8f8f8",
+    },
+
+    searchBox: {
+      display: 'flex',
+    },
+
+    optionContainer: {
+      padding: 6,
+
+      fontSize: "2em",
+
+      display: 'flex',
+      flexGrow: 1,
+
+      alignContent: 'stretch',
+      flexDirection: 'column',
+
+      '& .search': {
+        marginBottom: 12,
+      },
+    } as Style,
+
+    searchInput: {
+      backgroundColor: "white",
+      border: "grey",
+      borderRadius: roundingSmall,
+      borderWidth: "1px",
+
+  }
+
+
+    
   })
   .attach();
