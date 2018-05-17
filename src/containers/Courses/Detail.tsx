@@ -26,6 +26,8 @@ const ourKaistBlue = '#E3F2FD';
 const recommendColor = "#FFC107";
 // const defaultBackColor = "white";
 
+const doFirst = " !important";
+
 export interface ICourseQuery {
   year: string;
   term: string;
@@ -70,14 +72,26 @@ const StatusChip = withStyles(theme =>({
 
 
 const themeStyle = () => ({
-  root: {
+  buttonRcm: {
     height: 32,
     marginBottom: 6,
     minHeight: 32,
+    padding: "4px 16px 4px 16px" + doFirst,
+  },
+
+  chipRcm: {
+    backgroundColor: recommendColor + doFirst,
+    color: "white" + doFirst,
+  },
+
+  pinIcon: {
+    marginLeft: 8,
   },
 });
 
-class Detail extends React.Component<IProps & WithStyles<"root">> {
+class Detail extends React.Component<IProps &
+  WithStyles<"buttonRcm" | "chipRcm" | 'pinIcon'
+    >> {
   public render() {
     const query = this.props.match.params;
     const customClass = this.props.classes;
@@ -113,12 +127,11 @@ class Detail extends React.Component<IProps & WithStyles<"root">> {
                 {/* recommandation or student status */}
                 <div style={{ width: "40%", textAlign: "right", verticalAlign: "bottom"}}>
                   <StatusChip label="attended"/>
-                  <StatusChip label="recommanded"
-                              style={{ backgroundColor: recommendColor, color: "white"}}/>
+                  <StatusChip label="recommanded" className={customClass.chipRcm}/>
                   {/* check pinnind or not */}
-                  <Button variant="raised" color="default" className={customClass.root}>
+                  <Button variant="raised" color="default" className={customClass.buttonRcm}>
                     Send
-                    <Icon style={{ margin: "0 0 0 6" }}>send</Icon> </Button>
+                    <Icon className={customClass.pinIcon}>turned_in_not</Icon> </Button>
                 </div>
               </Typography>
             </div>
