@@ -233,6 +233,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
           <div className={classes.searchBox}>
             <div className={classes.optionContainer}>
               <TextField
+                placeholder="search Course name, number or instructor."
                 className={classes.searchInput}
                 value={queryKeyword}
                 onChange={this.handleChangeKeyword}

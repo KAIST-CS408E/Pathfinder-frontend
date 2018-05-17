@@ -16,8 +16,15 @@ const roundingSmall = 2;
 
 // const paddingDiv = 12;
 
+
 export default jss
   .createStyleSheet({
+
+    tableContainer: {
+    },
+
+    subtitleContainer: {
+    },
 
     paperCutting: {
       // backgroundColor: "purple",
@@ -77,6 +84,13 @@ export default jss
       width: "30%"
     },
 
+    recommandSentence: {
+      border: "1px solid grey",
+      borderRadius: 4,
+      paddingLeft: "2px",
+      textAlign: "left",
+      width: "16em",
+    }
     // contentWih
     /*
     search: {
