@@ -6,6 +6,7 @@ jss.setup(preset());
 
 // const maxContainerWidth = '80%';
 
+const lightGrey1 = "#f5f5f5";
 /*
 const marginBox = 25;
 const heightB1 = 30;
@@ -13,12 +14,24 @@ const heightL1 = 24;
 const roundingBig = 4;
 const roundingSmall = 2;
 */
+const ourKaistBlue = '#E3F2FD';
 
 // const paddingDiv = 12;
 
 
 export default jss
   .createStyleSheet({
+
+    testDiv: {
+      backgroundColor: ourKaistBlue,
+      display: "inlineBlock",
+      height: "25vh",
+      width: "200px",
+
+      margin: "0px 6px",
+
+      top: 6,
+    },
 
     tableContainer: {
     },
@@ -37,27 +50,13 @@ export default jss
     } as Style,
 
     detailCardTitle: {
-      backgroundColor: "#f5f5f5",
+      backgroundColor: lightGrey1,
       borderRadius: "6px 6px 0px 0px",
       display: "flex",
       /*
       '& .MuiCardContent': {
         padingBottom: 0,
       }, */
-
-    } as Style,
-
-    detailCardGraphDiv: {
-      backgroundColor: "#f5f5f5",
-      display: "flex",
-      /*
-      '& .MuiCardContent': {
-        padingBottom: 0,
-      }, */
-
-      '& .div': {
-        backgroundColor: "red",
-      },
 
     } as Style,
 
@@ -81,7 +80,13 @@ export default jss
     },
 
     besideSankyGraph: {
-      width: "30%"
+      backgroundColor: "#FAFAFA",
+      maxHeight: "30vh",
+      padding: 12,
+      width: "30%",
+
+
+      overflow: "auto",
     },
 
     recommandSentence: {
