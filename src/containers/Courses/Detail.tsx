@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from "react-router-dom";
 
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import CardContent, {CardContentProps} from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -40,8 +40,13 @@ const courseRA = "Discrete Mathmatics";
 const courseRA2 = "Human Centered Interface Design with ---(long long long class name)";
 
 const doFirst = " !important";
+/* 로드, 그레이드 난수 함수! 실제 구현시에는 반드시 지울것 */
+function gradeGen() {
+  const factor = Math.pow(10, 2);
+  return Math.round(Math.random() * 4 * factor) / factor;
+}
+let year=2018;
 
-const testPosX = 210;
 
 export interface ICourseQuery {
   year: string;
@@ -55,7 +60,7 @@ export interface IProps extends RouteComponentProps<ICourseQuery> {}
 
 const CustomTableCellD = withStyles(theme =>({
   root:{
-    borderBottom: "0px",
+    borderBottom: "0px" + doFirst,
     borderRight: "1px solid " + ourKaistBlue,
     padding: '4px 0px 4px 12px !important',
   },
@@ -109,6 +114,13 @@ const RcmSubHeader = withStyles(theme =>({
 }))(ListSubheader as React.ComponentType<
   ListSubheaderProps & WithStyles<'root'>>);
 
+const ProfCardContent = withStyles(theme =>({
+  root:{
+    padding: "16px" + doFirst,
+  },
+}))(CardContent as React.ComponentType<
+  CardContentProps & WithStyles<'root'>>);
+
 
 const themeStyle = () => ({
   buttonPin: {
@@ -142,12 +154,24 @@ const themeStyle = () => ({
   iconOfList: {
     fontSize: 20,
     marginRight: 0,
-  }
+  },
+
+  card: {
+    marginLeft: "1rem",
+    marginTop: "1rem",
+    maxWidth: 345,
+  },
+  media: {
+    border: "1px solid " + ourKaistBlue,
+    height: 0,
+    paddingTop: '56.25%', // 16:9
+  },
 
 });
 
 class Detail extends React.Component<IProps &
   WithStyles<"buttonPin" | "chipRcm" | 'pinIcon' | 'graphCard' | 'listItems' | 'iconOfList'
+    | 'card' | 'media' | 'typo'
     >> {
   public render() {
     const query = this.props.match.params;
@@ -196,7 +220,7 @@ class Detail extends React.Component<IProps &
             </Typography>
           </div>
           {/* give detail information with table */}
-          <div className={"tableContainer"}>
+          <div className={classes.tableContainer}>
             <Table style={{ marginRight: 100 }}>
               <TableBody>
                 <CustomTableRow>
@@ -288,21 +312,134 @@ class Detail extends React.Component<IProps &
               </List>
             </div>
           </CardContent>
-          {/* information for each semester with professor */}
 
-          <CardContent>
-            <div style={{ height: "25vh", overflow: "auto", whiteSpace: "nowrap" }}>
-              <div className={classes.testDiv} style={{ left: testPosX * 0 }}>:</div>
-              <div className={classes.testDiv} style={{ left: testPosX * 1 }}>:</div>
-              <div className={classes.testDiv} style={{ left: testPosX * 2 }}>:</div>
-              <div className={classes.testDiv} style={{ left: testPosX * 3 }}>:</div>
-              <div className={classes.testDiv} style={{ left: testPosX * 4 }}>:</div>
-              <div className={classes.testDiv} style={{ left: testPosX * 5 }}>:</div>
-              <div className={classes.testDiv} style={{ left: testPosX * 6 }}>:</div>
-              <div className={classes.testDiv} style={{ left: testPosX * 7 }}>:</div>
-              <div className={classes.testDiv} style={{ left: testPosX * 8 }}>:</div>
-              <div className={classes.testDiv} style={{ left: testPosX * 9 }}>:</div>
-              <div className={classes.testDiv} style={{ left: testPosX * 10 }}>:</div>
+          {/* information for each semester with professor */}
+          <CardContent className={classes.profContainer}>
+            <div className={classes.testDiv}>
+              <Typography gutterBottom variant="subheading" component="h3" align="left" className={classes.semesterTypo}>
+                {year} spring
+              </Typography>
+              <Card className={customClass.card}>
+                <ProfCardContent>
+                  <Typography variant="subheading" component="h3" align="left">
+                    Insik shin(A)
+                  </Typography>
+                  <Typography component="p" align="left">
+                    Load: {gradeGen()}/ Grade: {gradeGen()}
+                  </Typography>
+                </ProfCardContent>
+                <CardMedia className={customClass.media}
+                  image="https://www.mathsisfun.com/data/images/histogram.gif"/>
+              </Card>
+              <Card className={customClass.card}>
+                <ProfCardContent>
+                  <Typography variant="subheading" component="h3" align="left">
+                    Junehwa Song(B)
+                  </Typography>
+                  <Typography component="p" align="left">
+                    Load: {gradeGen()}/ Grade: {gradeGen()}
+                  </Typography>
+                </ProfCardContent>
+                <CardMedia className={customClass.media}
+                           image="https://www.mathsisfun.com/data/images/histogram.gif"/>
+              </Card>
+            </div>
+            <div className={classes.testDiv}>
+              <Typography gutterBottom variant="subheading" component="h3" align="left" className={classes.semesterTypo}>
+                {year --} fall
+              </Typography>
+              <Card className={customClass.card}>
+                <ProfCardContent>
+                  <Typography variant="subheading" component="h3" align="left">
+                    Insik shin(A)
+                  </Typography>
+                  <Typography component="p" align="left">
+                    Load: {gradeGen()}/ Grade: {gradeGen()}
+                  </Typography>
+                </ProfCardContent>
+                <CardMedia className={customClass.media}
+                           image="https://www.mathsisfun.com/data/images/histogram.gif"/>
+              </Card>
+            </div>
+            <div className={classes.testDiv}>
+              <Typography gutterBottom variant="subheading" component="h3" align="left" className={classes.semesterTypo}>
+                {year} spring
+              </Typography>
+              <Card className={customClass.card}>
+                <ProfCardContent>
+                  <Typography variant="subheading" component="h3" align="left">
+                    Insik shin(A)
+                  </Typography>
+                  <Typography component="p" align="left">
+                    Load: {gradeGen()}/ Grade: {gradeGen()}
+                  </Typography>
+                </ProfCardContent>
+                <CardMedia className={customClass.media}
+                           image="https://www.mathsisfun.com/data/images/histogram.gif"/>
+              </Card>
+              <Card className={customClass.card}>
+                <ProfCardContent>
+                  <Typography variant="subheading" component="h3" align="left">
+                    Insik shin(A)
+                  </Typography>
+                  <Typography component="p" align="left">
+                    Load: {gradeGen()}/ Grade: {gradeGen()}
+                  </Typography>
+                </ProfCardContent>
+                <CardMedia className={customClass.media}
+                           image="https://www.mathsisfun.com/data/images/histogram.gif"/>
+              </Card>
+            </div>
+            <div className={classes.testDiv}>
+              <Typography gutterBottom variant="subheading" component="h3" align="left" className={classes.semesterTypo}>
+                {year--} fall
+              </Typography>
+              <Card className={customClass.card}>
+                <ProfCardContent>
+                  <Typography variant="subheading" component="h3" align="left">
+                    Insik shin(A)
+                  </Typography>
+                  <Typography component="p" align="left">
+                    Load: {gradeGen()}/ Grade: {gradeGen()}
+                  </Typography>
+                </ProfCardContent>
+                <CardMedia className={customClass.media}
+                           image="https://www.mathsisfun.com/data/images/histogram.gif"/>
+              </Card>
+            </div>
+            <div className={classes.testDiv}>
+              <Typography gutterBottom variant="subheading" component="h3" align="left" className={classes.semesterTypo}>
+                {year} spring
+              </Typography>
+              <Card className={customClass.card}>
+                <ProfCardContent>
+                  <Typography variant="subheading" component="h3" align="left">
+                    Insik shin(A)
+                  </Typography>
+                  <Typography component="p" align="left">
+                    Load: {gradeGen()}/ Grade: {gradeGen()}
+                  </Typography>
+                </ProfCardContent>
+                <CardMedia className={customClass.media}
+                           image="https://www.mathsisfun.com/data/images/histogram.gif"/>
+              </Card>
+            </div>
+            <div className={classes.testDiv}>
+              <Typography gutterBottom variant="subheading" component="h3" align="left" className={classes.semesterTypo}>
+                {year--} fall
+              </Typography>
+              <Card className={customClass.card}>
+                <ProfCardContent>
+                  <Typography variant="subheading" component="h3" align="left">
+                    Insik shin(A)
+                  </Typography>
+                  <Typography component="p" align="left">
+                    Load: {gradeGen()}/ Grade: {gradeGen()}
+                  </Typography>
+                </ProfCardContent>
+                <CardMedia className={customClass.media}
+                           image="https://www.mathsisfun.com/data/images/histogram.gif"/>
+              </Card>
             </div>
           </CardContent>
         </Card>

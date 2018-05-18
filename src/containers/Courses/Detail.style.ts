@@ -1,6 +1,8 @@
 import jss from 'jss';
 import preset from 'jss-preset-default';
 import { Style } from 'jss/css';
+// import { Simulate } from "react-dom/test-utils";
+// import abort = Simulate.abort;
 
 jss.setup(preset());
 
@@ -14,7 +16,7 @@ const heightL1 = 24;
 const roundingBig = 4;
 const roundingSmall = 2;
 */
-const ourKaistBlue = '#E3F2FD';
+// const ourKaistBlue = '#E3F2FD';
 
 // const paddingDiv = 12;
 
@@ -22,18 +24,41 @@ const ourKaistBlue = '#E3F2FD';
 export default jss
   .createStyleSheet({
 
+    profContainer: {
+      backgroundColor: 'white',
+      display: 'flex',
+
+      flexWrap: "nowrap",
+
+      minHeight: "20vh",
+      overflow: "auto",
+
+      borderRadius: "0px 0px 6px 6px",
+    },
+
     testDiv: {
-      backgroundColor: ourKaistBlue,
-      display: "inlineBlock",
-      height: "25vh",
-      width: "200px",
+      backgroundColor: "white",
+      display: "flex",
+      flex: "0 0 auto",
+      minHeight: "19vh",
+      minWidth: "10vw",
 
-      margin: "0px 6px",
+      borderLeft: "5px solid " + lightGrey1,
+      margin: "2px 6px",
+      padding: "16px 12px 4px 0px",
 
-      top: 6,
+      position: "relative",
+    },
+
+    semesterTypo: {
+      left: 4,
+      top: 0,
+
+      position: "absolute",
     },
 
     tableContainer: {
+      margin: "1rem 0rem",
     },
 
     subtitleContainer: {
