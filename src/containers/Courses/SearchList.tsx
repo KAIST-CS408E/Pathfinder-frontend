@@ -108,6 +108,7 @@ const CustomTableCell = withStyles(theme => ({
   body: {
     border: ourKaistBlue,
     fontSize: 14,
+    height: 32,
 
     '&:nth-child(1)': {
       color: '#008bff',
@@ -155,7 +156,7 @@ const styles = (theme: Theme) => ({
       backgroundColor: theme.palette.background.default,
       border: ourKaistBlue,
       // padding: theme.spacing.unit.valueOf()[1],
-      height: 32,
+      height: 36,
     },
   },
 
@@ -230,12 +231,12 @@ function CustomizedTable(props: ITableProps) {
           {lectures.map((n, i) => {
             return (
               // Key should be replaced later by uuid such as class ID
-              <TableRow className={classes.row} key={i}>
+              <CustomTableRow className={classes.row} key={i}>
                 <CustomTableCell
                   onClick={clickHandlerBuilder(course, i)}
                   component="th"
                   scope="row"
-                  style={{ paddingLeft: 18, color: ourKaistBlueD }}
+                  style={{ paddingLeft: 18, color: ourKaistBlueD, width: 217, overflow: "hidden" }}
                 >
                   {`Prof. ${n.professor || 'None'}`}
                 </CustomTableCell>
@@ -246,7 +247,7 @@ function CustomizedTable(props: ITableProps) {
                 <CustomTableCell>{`Load ${n.load}`}</CustomTableCell>
                 <CustomTableCell>{`Grade ${n.grades}`}</CustomTableCell>
                 <CustomTableCell numeric style={{ paddingRight: 4 }}>Recommanded</CustomTableCell>
-              </TableRow>
+              </CustomTableRow>
             );
           })}
         </TableBody>

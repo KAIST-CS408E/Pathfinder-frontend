@@ -1,11 +1,14 @@
 import jss from 'jss';
 import preset from 'jss-preset-default';
 import { Style } from 'jss/css';
+// import { Simulate } from "react-dom/test-utils";
+// import abort = Simulate.abort;
 
 jss.setup(preset());
 
 // const maxContainerWidth = '80%';
 
+const lightGrey1 = "#f5f5f5";
 /*
 const marginBox = 25;
 const heightB1 = 30;
@@ -13,6 +16,7 @@ const heightL1 = 24;
 const roundingBig = 4;
 const roundingSmall = 2;
 */
+// const ourKaistBlue = '#E3F2FD';
 
 // const paddingDiv = 12;
 
@@ -20,7 +24,41 @@ const roundingSmall = 2;
 export default jss
   .createStyleSheet({
 
+    profContainer: {
+      backgroundColor: 'white',
+      display: 'flex',
+
+      flexWrap: "nowrap",
+
+      minHeight: "20vh",
+      overflow: "auto",
+
+      borderRadius: "0px 0px 6px 6px",
+    },
+
+    testDiv: {
+      backgroundColor: "white",
+      display: "flex",
+      flex: "0 0 auto",
+      minHeight: "19vh",
+      minWidth: "10vw",
+
+      borderLeft: "5px solid " + lightGrey1,
+      margin: "2px 6px",
+      padding: "16px 12px 4px 0px",
+
+      position: "relative",
+    },
+
+    semesterTypo: {
+      left: 4,
+      top: 0,
+
+      position: "absolute",
+    },
+
     tableContainer: {
+      margin: "1rem 0rem",
     },
 
     subtitleContainer: {
@@ -37,27 +75,13 @@ export default jss
     } as Style,
 
     detailCardTitle: {
-      backgroundColor: "#f5f5f5",
+      backgroundColor: lightGrey1,
       borderRadius: "6px 6px 0px 0px",
       display: "flex",
       /*
       '& .MuiCardContent': {
         padingBottom: 0,
       }, */
-
-    } as Style,
-
-    detailCardGraphDiv: {
-      backgroundColor: "#f5f5f5",
-      display: "flex",
-      /*
-      '& .MuiCardContent': {
-        padingBottom: 0,
-      }, */
-
-      '& .div': {
-        backgroundColor: "red",
-      },
 
     } as Style,
 
@@ -81,7 +105,13 @@ export default jss
     },
 
     besideSankyGraph: {
-      width: "30%"
+      backgroundColor: "#FAFAFA",
+      maxHeight: "30vh",
+      padding: 12,
+      width: "30%",
+
+
+      overflow: "auto",
     },
 
     recommandSentence: {

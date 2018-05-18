@@ -30,15 +30,14 @@ const sheet = jss
         backgroundColor: 'rgba(0, 0, 0, 0.15)',
       } as Style,
       modal: {
-        backgroundColor: 'white',
+        backgroundColor: 'rgba(255, 255, 255, 0)',
 
         position: 'absolute',
 
-        height: '80vh',
         width: '70vw',
 
         left: '15vw',
-        top: '10vh',
+        top: '12vh',
       },
     },
     { link: true }
