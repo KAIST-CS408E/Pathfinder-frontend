@@ -71,7 +71,7 @@ class App extends React.Component<{}, IState> {
 
   public render() {
     return (
-      <div className="App">
+      <Router>
         <div className="App">
           <AppBar position="sticky" color="default">
             <div className="icon-container">
@@ -93,17 +93,15 @@ class App extends React.Component<{}, IState> {
               </Toolbar>
             </div>
           </AppBar>
-          <Router>
-            <Switch>
-              <Redirect exact from="/" to="/dashboard" />
-              <Route path="/dashboard">
-                <div>This is dashboard</div>
-              </Route>
-              <Route path="/courses" component={Courses} />
-            </Switch>
-          </Router>
+          <Switch>
+            <Redirect exact from="/" to="/dashboard" />
+            <Route path="/dashboard">
+              <div>This is dashboard</div>
+            </Route>
+            <Route path="/courses" component={Courses} />
+          </Switch>
         </div>
-      </div>
+      </Router>
     );
   }
 }
