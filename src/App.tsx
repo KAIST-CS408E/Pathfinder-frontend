@@ -19,6 +19,7 @@ import AccountBox from '@material-ui/icons/AccountBox';
 import TurnedIn from '@material-ui/icons/TurnedIn';
 
 import Courses from './containers/Courses';
+import Curriculum from './containers/Curriculum';
 
 import './App.css';
 
@@ -99,6 +100,7 @@ class App extends React.Component<{}, IState> {
               <div>This is dashboard</div>
             </Route>
             <Route path="/courses" component={Courses} />
+            <Route path="/curriculum" component={Curriculum} />
           </Switch>
         </div>
       </Router>
