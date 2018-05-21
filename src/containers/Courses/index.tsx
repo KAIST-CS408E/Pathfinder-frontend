@@ -35,13 +35,13 @@ export default class Courses extends React.Component<IProps> {
         <Switch location={isModal ? this.previousLocation : location}>
           <Route path={`${match.url}/s/:keyword?`} component={Search} />
           <Route
-            path={`${match.url}/d/:year/:term/:number/:class`}
+            path={`${match.url}/d/:year/:term/:courseNumber/:division?`}
             component={Detail}
           />
         </Switch>
         {isModal ? (
           <Route
-            path={`${match.url}/d/:year/:term/:number/:class`}
+            path={`${match.url}/d/:year/:term/:courseNumber/:division?`}
             component={ModalDetail}
           />
         ) : null}

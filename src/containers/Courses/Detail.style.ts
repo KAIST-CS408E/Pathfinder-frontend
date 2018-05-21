@@ -1,68 +1,51 @@
 import jss from 'jss';
 import preset from 'jss-preset-default';
 import { Style } from 'jss/css';
-// import { Simulate } from "react-dom/test-utils";
-// import abort = Simulate.abort;
 
 jss.setup(preset());
 
-// const maxContainerWidth = '80%';
-
-const lightGrey1 = "#f5f5f5";
-/*
-const marginBox = 25;
-const heightB1 = 30;
-const heightL1 = 24;
-const roundingBig = 4;
-const roundingSmall = 2;
-*/
-// const ourKaistBlue = '#E3F2FD';
-
-// const paddingDiv = 12;
-
+const lightGrey1 = '#f5f5f5';
 
 export default jss
   .createStyleSheet({
-
     profContainer: {
       backgroundColor: 'white',
       display: 'flex',
 
-      flexWrap: "nowrap",
+      flexWrap: 'nowrap',
 
-      minHeight: "20vh",
-      overflow: "auto",
+      minHeight: '20vh',
+      overflow: 'auto',
 
-      borderRadius: "0px 0px 6px 6px",
+      borderRadius: '0px 0px 6px 6px',
     },
 
     testDiv: {
-      backgroundColor: "white",
-      display: "flex",
-      flex: "0 0 auto",
-      minHeight: "19vh",
-      minWidth: "10vw",
+      backgroundColor: 'white',
+      display: 'flex',
+      flex: '0 0 auto',
+      minHeight: '19vh',
+      minWidth: '10vw',
 
-      borderLeft: "5px solid " + lightGrey1,
-      margin: "2px 6px",
-      padding: "16px 12px 4px 0px",
+      borderLeft: '5px solid ' + lightGrey1,
+      margin: '2px 6px',
+      padding: '16px 12px 4px 0px',
 
-      position: "relative",
+      position: 'relative',
     },
 
     semesterTypo: {
       left: 4,
       top: 0,
 
-      position: "absolute",
+      position: 'absolute',
     },
 
     tableContainer: {
-      margin: "1rem 0rem",
+      margin: '1rem 0rem',
     },
 
-    subtitleContainer: {
-    },
+    subtitleContainer: {},
 
     paperCutting: {
       // backgroundColor: "purple",
@@ -70,19 +53,18 @@ export default jss
     } as Style,
 
     courseDetailCard: {
-      display: "inline",
-      width: "100%",
+      display: 'inline',
+      width: '100%',
     } as Style,
 
     detailCardTitle: {
       backgroundColor: lightGrey1,
-      borderRadius: "6px 6px 0px 0px",
-      display: "flex",
+      borderRadius: '6px 6px 0px 0px',
+      display: 'flex',
       /*
       '& .MuiCardContent': {
         padingBottom: 0,
       }, */
-
     } as Style,
 
     stickLeft: {
@@ -96,166 +78,29 @@ export default jss
     } as Style,
 
     typoMiddleAlign: {
-      margin: "auto",
+      margin: 'auto',
     } as Style,
 
     sankyGraphDiv: {
-      border: "red",
-      width: "40%",
+      border: 'red',
+      width: '40%',
     },
 
     besideSankyGraph: {
-      backgroundColor: "#FAFAFA",
-      maxHeight: "30vh",
+      backgroundColor: '#FAFAFA',
+      maxHeight: '30vh',
       padding: 12,
-      width: "30%",
+      width: '30%',
 
-
-      overflow: "auto",
+      overflow: 'auto',
     },
 
     recommandSentence: {
-      border: "1px solid grey",
+      border: '1px solid grey',
       borderRadius: 4,
-      paddingLeft: "2px",
-      textAlign: "left",
-      width: "16em",
-    }
-    // contentWih
-    /*
-    search: {
-      align: 'center',
-      padding: 12,
-      textAlign: 'center',
-    } as Style,
-
-    resultContainer: {
-      position: 'absolute',
-
-      marginLeft: outerMargin,
-      marginRight: outerMargin,
-      width: maxContainerWidth,
-
-      display: 'flex',
-      justifyContent: 'stretch',
-
-      '& .list': {
-        flexGrow: 1,
-
-        '& .item': {
-          border: {
-            color: 'black',
-            style: 'solid',
-            width: 1,
-          },
-
-          '& > header': {
-            display: 'flex',
-            height: 36,
-            paddingLeft: 6,
-            paddingRight: 6,
-            position: 'relative',
-
-            '& .pin': {
-              position: 'absolute',
-              right: 0,
-              top: 0,
-            },
-          },
-
-          '& .detail': {
-            display: 'flex',
-            justifyContent: 'space-between',
-
-            '& .date': {
-              display: 'flex',
-              flexDirection: 'column',
-            },
-
-            '& .feature': {
-              display: 'flex',
-              flexDirection: 'column',
-            },
-          },
-        },
-      },
-      '& .map': {
-        width: 300,
-      },
-    } as Style,
-
-    searchBtn: {
-      // height: 100,
-      width: 150,
-
-      marginLeft: 6,
+      paddingLeft: '2px',
+      textAlign: 'left',
+      width: '16em',
     },
-
-    searchFilter: {
-      display: 'flex',
-      flexWrap: 'wrap',
-
-      alignItems: 'center',
-
-      flexGrow: 1,
-
-      '& .filterItem': {
-        marginRight: 12,
-      },
-
-      '& .department .chip': {
-        marginRight: 6,
-      },
-    } as Style,
-
-    addDepartmentBtn: {
-      height: 24,
-      width: 24,
-
-      // margin: 0,
-    },
-
-    searchCard: {
-      marginLeft: "auto",
-      marginRight: "auto",
-
-      borderRadius: roundingBig,
-      marginBottom: marginBox,
-      marginTop: marginBox,
-      width: maxContainerWidth,
-
-      backgroundColor: "#f8f8f8",
-    },
-
-    searchBox: {
-      display: 'flex',
-    },
-
-    optionContainer: {
-      padding: 6,
-
-      fontSize: "2em",
-
-      display: 'flex',
-      flexGrow: 1,
-
-      alignContent: 'stretch',
-      flexDirection: 'column',
-
-      '& .search': {
-        marginBottom: 12,
-      },
-    } as Style,
-
-    searchInput: {
-      backgroundColor: "white",
-      border: "grey",
-      borderRadius: roundingSmall,
-      borderWidth: "1px",
-
-  }
-
-
-    */
   })
   .attach();

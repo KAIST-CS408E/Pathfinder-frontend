@@ -11,13 +11,9 @@ import TableRow, { TableRowProps } from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 
 import Icon from '@material-ui/core/Icon';
-// import { stackOrderInsideOut } from "d3-shape";
 
-/* import ListItem, { ClickItemHandler, ILectureListItem } from './ListItem'; */
-// const ourKaistBlue = '#4481ff';
 const ourKaistBlue = '#E3F2FD';
-const ourKaistBlueD = "#1A237E";
-
+const ourKaistBlueD = '#1A237E';
 
 interface IProps {
   data?: IQueryResult['courses'];
@@ -39,9 +35,9 @@ export interface ICourse {
 export interface ILecture {
   professor: string;
 
-  class: string;
-  time: string;
-  limit: number;
+  division: string | '';
+  classTime: string[];
+  limit: number | null;
 
   load: number;
   grades: number;
@@ -71,22 +67,11 @@ export default class SearchList extends React.Component<IProps> {
     );
 
     if (data) {
-      /* const flattenData = data
-       *   .map(c => {
-       *     const { name, number: courseNumber, lectures } = c;
-       *     return lectures.map(l =>
-       *       Object.assign({}, l, { name, number: courseNumber })
-       *     );
-       *   })
-       *   .reduce((r, v) => r.concat(v));
-       * renderData = flattenData.map((d, i) => (
-       *   <ListItem key={i} d={d} index={i} onClick={this.handleClickItem} />
-       * )); */
       renderData = data.map(course => (
-        <Item
+        <ListItem
           clickHandlerBuilder={this.handleClickEntry}
-          key={course.number}
           course={course}
+          key={course.number + course.lectures[0].division}
         />
       ));
     }
@@ -99,10 +84,7 @@ const CustomTableRow = withStyles(theme => ({
   root: {
     height: 32,
   },
-}))(TableRow as React.ComponentType<
-  TableRowProps & WithStyles<'root'>
-  >);
-
+}))(TableRow as React.ComponentType<TableRowProps & WithStyles<'root'>>);
 
 const CustomTableCell = withStyles(theme => ({
   body: {
@@ -113,7 +95,7 @@ const CustomTableCell = withStyles(theme => ({
     '&:nth-child(1)': {
       color: '#008bff',
     },
-    padding: "0px 0px 0px 12px",
+    padding: '0px 0px 0px 12px',
   },
   head: {
     backgroundColor: ourKaistBlue,
@@ -171,7 +153,7 @@ const styles = (theme: Theme) => ({
 
     paddingLeft: theme.spacing.unit * 2,
     paddingRight: theme.spacing.unit * 2,
-    paddingTop: theme.spacing.unit * 1,
+    paddingTop: theme.spacing.unit,
   },
 
   btn: {
@@ -179,22 +161,22 @@ const styles = (theme: Theme) => ({
     width: 24,
   },
 
-  /*
-  paddingNone: {
-    backgroundColor: "blue",
-    height: 20,
-  },
-  */
-
   title: {
     fontSize: 16,
-  }
+  },
 });
 
 interface ITableProps
-  extends WithStyles<'root' | 'table' | 'row' | 'typo' | 'btn' |
-    'paddingNone' | 'title' | 'head' >
-{
+  extends WithStyles<
+      | 'root'
+      | 'table'
+      | 'row'
+      | 'typo'
+      | 'btn'
+      | 'paddingNone'
+      | 'title'
+      | 'head'
+    > {
   course: ICourse;
   clickHandlerBuilder: ClickHandlerBuilder;
 }
@@ -208,8 +190,12 @@ function CustomizedTable(props: ITableProps) {
   return (
     <Paper className={classes.root}>
       <div className={classes.typo}>
-        <Typography color="inherit" variant="headline" component="h3"
-        className={classes.title}>
+        <Typography
+          color="inherit"
+          variant="headline"
+          component="h3"
+          className={classes.title}
+        >
           {`${course.name} (${course.number})`}
         </Typography>
         <IconButton className={classes.btn} color="inherit">
@@ -219,12 +205,21 @@ function CustomizedTable(props: ITableProps) {
       <Table className={classes.table}>
         <TableHead>
           <CustomTableRow>
-            <CustomTableCell style={{ paddingLeft: 16 }}
-              className={ classes.head }>School of Computing</CustomTableCell>
-            <CustomTableCell className={ classes.head }>Major Elective</CustomTableCell>
-            <CustomTableCell className={ classes.head }>Bachelor</CustomTableCell>
-            <CustomTableCell className={ classes.head }>Credit. 3:0:3</CustomTableCell>
-            <CustomTableCell/><CustomTableCell />
+            <CustomTableCell
+              style={{ paddingLeft: 16 }}
+              className={classes.head}
+            >
+              School of Computing
+            </CustomTableCell>
+            <CustomTableCell className={classes.head}>
+              Major Elective
+            </CustomTableCell>
+            <CustomTableCell className={classes.head}>Bachelor</CustomTableCell>
+            <CustomTableCell className={classes.head}>
+              Credit. 3:0:3
+            </CustomTableCell>
+            <CustomTableCell />
+            <CustomTableCell />
           </CustomTableRow>
         </TableHead>
         <TableBody>
@@ -236,17 +231,26 @@ function CustomizedTable(props: ITableProps) {
                   onClick={clickHandlerBuilder(course, i)}
                   component="th"
                   scope="row"
-                  style={{ paddingLeft: 18, color: ourKaistBlueD, width: 217, overflow: "hidden" }}
+                  style={{
+                    color: ourKaistBlueD,
+                    overflow: 'hidden',
+                    paddingLeft: 18,
+                    width: 217,
+                  }}
                 >
                   {`Prof. ${n.professor || 'None'}`}
                 </CustomTableCell>
                 <CustomTableCell>
-                  {`Class. ${n.class || 'None'}`}
+                  {n.division !== '' ? `Class. ${n.division}` : n.division}
                 </CustomTableCell>
-                <CustomTableCell>{`0/${n.limit}`}</CustomTableCell>
+                <CustomTableCell>
+                  {n.limit ? `0/${n.limit}` : '∞'}
+                </CustomTableCell>
                 <CustomTableCell>{`Load ${n.load}`}</CustomTableCell>
                 <CustomTableCell>{`Grade ${n.grades}`}</CustomTableCell>
-                <CustomTableCell numeric style={{ paddingRight: 4 }}>Recommanded</CustomTableCell>
+                <CustomTableCell numeric style={{ paddingRight: 4 }}>
+                  Recommended
+                </CustomTableCell>
               </CustomTableRow>
             );
           })}
@@ -256,4 +260,4 @@ function CustomizedTable(props: ITableProps) {
   );
 }
 
-const Item = withStyles(styles)(CustomizedTable);
+const ListItem = withStyles(styles)(CustomizedTable);

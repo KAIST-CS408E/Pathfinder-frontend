@@ -12,6 +12,10 @@ import preset from 'jss-preset-default';
 
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Popover from '@material-ui/core/Popover';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
@@ -29,6 +33,13 @@ const { classes } = jss
     label: {
       marginRight: 6,
     },
+    pinnedListAnchor: {
+      height: '100%',
+      position: 'relative' as 'relative',
+
+      left: '-5em',
+      top: '2em'
+    },
     typo: {
       marginRight: 'auto',
     },
@@ -37,6 +48,7 @@ const { classes } = jss
 
 interface IState {
   pinnedList: IPinnedTable;
+  showPinned: boolean;
 }
 
 interface IPinnedTable {
@@ -53,7 +65,14 @@ interface IPinnedCourse {
 }
 
 class App extends React.Component<{}, IState> {
-  public state = { pinnedList: {} };
+  public state = { pinnedList: {}, showPinned: false };
+
+  public pinnedListAnchor: React.RefObject<any>;
+
+  constructor(props: any) {
+    super(props);
+    this.pinnedListAnchor = React.createRef();
+  }
 
   public pinCourse = (course: IPinnedCourse) => {
     // if not exists in list
@@ -70,7 +89,16 @@ class App extends React.Component<{}, IState> {
     this.setState({ pinnedList: {} });
   };
 
+  public handleOpenPinnedList = () => {
+    this.setState({ showPinned: true });
+  };
+
+  public handleClosePinnedList = () => {
+    this.setState({ showPinned: false });
+  };
+
   public render() {
+    const { showPinned } = this.state;
     return (
       <Router>
         <div className="App">
@@ -88,9 +116,44 @@ class App extends React.Component<{}, IState> {
                   <span className={classes.label}>My Page</span>
                   <AccountBox />
                 </Button>
-                <Button>
-                  <span className={classes.label}>Pin List</span> <TurnedIn />
+                <Button onClick={this.handleOpenPinnedList}>
+                  <span className={classes.label}>Pin List</span>
+                  <TurnedIn />
                 </Button>
+                <div
+                  className={classes.pinnedListAnchor}
+                  ref={this.pinnedListAnchor}
+                />
+                <Popover
+                  open={showPinned}
+                  anchorEl={
+                    this.pinnedListAnchor.current
+                      ? this.pinnedListAnchor.current
+                      : undefined
+                  }
+                  onClose={this.handleClosePinnedList}
+                  anchorOrigin={{
+                    horizontal: 'center',
+                    vertical: 'bottom',
+                  }}
+                  transformOrigin={{
+                    horizontal: 'left',
+                    vertical: 'top',
+                  }}
+                >
+                  <List>
+                    <ListItem button>
+                      <ListItemText>
+                        CS408 - Computer Science Project
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem button>
+                      <ListItemText>
+                        {"CS492 - Special Topics in Computer Science<Digital Watermarking>"}
+                      </ListItemText>
+                    </ListItem>
+                  </List>
+                </Popover>
               </Toolbar>
             </div>
           </AppBar>

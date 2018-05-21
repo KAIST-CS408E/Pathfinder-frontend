@@ -150,15 +150,9 @@ export default class Search extends React.Component<IProps, ISearchState> {
     console.group('courseQuery');
     console.log('Send course query');
 
-    /* for (let [k, v] of params) {
-     *   console.log(k, v);
-     *   // do whatever..
-     * } */
-
     const { year, semester: term } = this.state.filterOptions;
     const url =
       'https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api/courses/';
-    // keyword department courseLevel sortOrder
 
     fetch(`${url}${year}/${term}/${this.getSearchQuery()}`)
       .then(r => r.json())
@@ -183,14 +177,6 @@ export default class Search extends React.Component<IProps, ISearchState> {
       this.props.history.push(`/courses/d${path}`, { modalDetail: true });
     }
   };
-
-  /* public handleFilterClick = (filterKey: FilterKey) => {
-   *   if (this.state.filterSelection === filterKey) {
-   *     this.setState({ showFilterMenu: !this.state.showFilterMenu });
-   *   } else {
-   *     this.setState({ filterSelection: filterKey, showFilterMenu: true });
-   *   }
-   * }; */
 
   public handleChangeKeyword = (e: React.FormEvent<{ value: string }>) => {
     this.setState({ queryKeyword: e.currentTarget.value });
@@ -218,7 +204,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
     if (this.state.queryResult) {
       const { year, term } = this.state.queryResult;
       const lecture = course.lectures[i];
-      this.gotoDetail(`/${year}/${term}/${course.number}/${lecture.professor}`);
+      this.gotoDetail(`/${year}/${term}/${course.number}/${lecture.division}`);
     } else {
       alert('you need to fetch in the first');
     }
@@ -233,7 +219,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
           <div className={classes.searchBox}>
             <div className={classes.optionContainer}>
               <TextField
-                placeholder="search Course name, number or instructor."
+                placeholder="search for course name, number or instructor."
                 className={classes.searchInput}
                 value={queryKeyword}
                 onChange={this.handleChangeKeyword}
