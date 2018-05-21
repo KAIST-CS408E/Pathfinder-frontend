@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
-import Board, { BoardData } from 'react-trello';
+import Board, { IBoardData } from 'react-trello';
 
-const dummyData: BoardData = {
+const dummyData: IBoardData = {
   lanes: [
     {
       id: 'lane1',

@@ -1,7 +1,7 @@
 declare module 'jss-preset-default' {
   import { JSSOptions } from 'jss';
 
-  export type JSSPresetOptions = {
+  export interface IJSSPresetOptions {
     template: any;
     global: any;
     extend: any;
@@ -12,8 +12,8 @@ declare module 'jss-preset-default' {
     expand: any;
     vendorPrefixer: any;
     propsSort: any;
-  };
+  }
 
-  function preset(opts?: Partial<JSSPresetOptions>): JSSOptions;
+  function preset(opts?: Partial<IJSSPresetOptions>): JSSOptions;
   export default preset;
 }

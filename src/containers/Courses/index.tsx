@@ -3,9 +3,11 @@ import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import Detail from './Detail';
 import ModalDetail from './ModalDetail';
-import Search from './Search';
+import Search, { RouteProps as SearchRouteProps } from './Search';
 
-interface IProps extends RouteComponentProps<{}> {}
+import { IPinComponentProps } from 'pathfinder';
+
+interface IProps extends RouteComponentProps<{}>, IPinComponentProps {}
 
 export default class Courses extends React.Component<IProps> {
   public previousLocation?: IProps['location'] = undefined;
@@ -21,6 +23,17 @@ export default class Courses extends React.Component<IProps> {
     }
   }
 
+  public renderSearch = (props: SearchRouteProps) => {
+    return (
+      <Search
+        {...props}
+        pinnedList={this.props.pinnedList}
+        onPinnedCourse={this.props.onPinnedCourse}
+        onUnpinCourse={this.props.onUnpinCourse}
+      />
+    );
+  };
+
   public render() {
     const { match, location } = this.props;
 
@@ -33,15 +46,15 @@ export default class Courses extends React.Component<IProps> {
     return (
       <div>
         <Switch location={isModal ? this.previousLocation : location}>
-          <Route path={`${match.url}/s/:keyword?`} component={Search} />
+          <Route path={`${match.url}/s/:keyword?`} render={this.renderSearch} />
           <Route
-            path={`${match.url}/d/:year/:term/:number/:class`}
+            path={`${match.url}/d/:year/:term/:courseNumber/:division?`}
             component={Detail}
           />
         </Switch>
         {isModal ? (
           <Route
-            path={`${match.url}/d/:year/:term/:number/:class`}
+            path={`${match.url}/d/:year/:term/:courseNumber/:division?`}
             component={ModalDetail}
           />
         ) : null}

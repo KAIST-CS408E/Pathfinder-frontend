@@ -8,20 +8,25 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import TextField from '@material-ui/core/TextField';
 
+import { IPinComponentProps, IQueryResult } from 'pathfinder';
+
 import Filter, {
   defaultValues,
   FilterKey,
   IFilterOptions,
   OnChangeOptionFunc,
 } from './Filter';
-import SearchList, { ClickEntryHandler, IQueryResult } from './SearchList';
+import SearchList, { ClickEntryHandler, ClickPinHandler } from './SearchList';
 import Sidebar from './Sidebar';
 
+import { buildCourseKey } from '../../utils';
 import styles from './Search.style';
 
 const { classes } = styles;
 
-interface IProps extends RouteComponentProps<{ keyword: string }> {}
+export type RouteProps = RouteComponentProps<{ keyword: string }>;
+
+export interface IProps extends RouteProps, IPinComponentProps {}
 
 interface ISearchState {
   showFilterMenu: boolean;
@@ -29,10 +34,29 @@ interface ISearchState {
   filterOptions: IFilterOptions;
   queryKeyword: string;
   queryResult?: IQueryResult;
+  // pinnedList: IPinnedTable;
   nothing: string;
 }
 
 export default class Search extends React.Component<IProps, ISearchState> {
+  // public static getDerivedStateFromProps(
+  //   nextProps: IProps,
+  //   prevState: ISearchState
+  // ) {
+  //   return iassign(
+  //     prevState,
+  //     state => state.pinnedList || {},
+  //     list => {
+  //       if (nextProps.pinnedList) {
+  //         Object.values(nextProps.pinnedList).forEach(pinEntry => {
+  //           list[buildCourseKey(pinEntry)] = pinEntry;
+  //         });
+  //       }
+  //       return list;
+  //     }
+  //   );
+  // }
+
   constructor(props: IProps) {
     super(props);
 
@@ -67,6 +91,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
       filterOptions,
       filterSelection: 'year',
       nothing: '123',
+      // pinnedList: {},
       queryKeyword,
       queryResult: undefined,
       showFilterMenu: false,
@@ -150,19 +175,28 @@ export default class Search extends React.Component<IProps, ISearchState> {
     console.group('courseQuery');
     console.log('Send course query');
 
-    /* for (let [k, v] of params) {
-     *   console.log(k, v);
-     *   // do whatever..
-     * } */
-
     const { year, semester: term } = this.state.filterOptions;
     const url =
       'https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api/courses/';
-    // keyword department courseLevel sortOrder
 
     fetch(`${url}${year}/${term}/${this.getSearchQuery()}`)
       .then(r => r.json())
       .then(d => {
+        // const newPinnedList = iassign(
+        //   this.state.pinnedList || {},
+        //   pinnedList => {
+        //     d.pinned.map((pinEntry: [string, string]) => {
+        //       const datum = {
+        //         courseName: '',
+        //         courseNumber: pinEntry[0],
+        //         subtitle: pinEntry[1],
+        //       };
+        //       pinnedList[buildCourseKey(datum)] = datum;
+        //     });
+        //     return pinnedList;
+        //   }
+        // );
+
         this.setState({ queryResult: d });
       })
       .catch(e => {
@@ -183,14 +217,6 @@ export default class Search extends React.Component<IProps, ISearchState> {
       this.props.history.push(`/courses/d${path}`, { modalDetail: true });
     }
   };
-
-  /* public handleFilterClick = (filterKey: FilterKey) => {
-   *   if (this.state.filterSelection === filterKey) {
-   *     this.setState({ showFilterMenu: !this.state.showFilterMenu });
-   *   } else {
-   *     this.setState({ filterSelection: filterKey, showFilterMenu: true });
-   *   }
-   * }; */
 
   public handleChangeKeyword = (e: React.FormEvent<{ value: string }>) => {
     this.setState({ queryKeyword: e.currentTarget.value });
@@ -218,9 +244,28 @@ export default class Search extends React.Component<IProps, ISearchState> {
     if (this.state.queryResult) {
       const { year, term } = this.state.queryResult;
       const lecture = course.lectures[i];
-      this.gotoDetail(`/${year}/${term}/${course.number}/${lecture.professor}`);
+      this.gotoDetail(
+        `/${year}/${term}/${course.number}/${lecture.division}?subtitle=${
+          course.subtitle
+        }`
+      );
     } else {
       alert('you need to fetch in the first');
+    }
+  };
+
+  public handleClickPin: ClickPinHandler = course => {
+    // TODO:: DO API POST
+    console.log(course);
+    const datum = {
+      courseName: course.name,
+      courseNumber: course.number,
+      subtitle: course.subtitle,
+    };
+    if (!this.props.pinnedList[buildCourseKey(datum)]) {
+      this.props.onPinnedCourse(datum);
+    } else {
+      this.props.onUnpinCourse(datum);
     }
   };
 
@@ -233,7 +278,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
           <div className={classes.searchBox}>
             <div className={classes.optionContainer}>
               <TextField
-                placeholder="search Course name, number or instructor."
+                placeholder="search for course name, number or instructor."
                 className={classes.searchInput}
                 value={queryKeyword}
                 onChange={this.handleChangeKeyword}
@@ -259,12 +304,15 @@ export default class Search extends React.Component<IProps, ISearchState> {
 
   public renderResult() {
     const { queryResult } = this.state;
+    const { pinnedList } = this.props;
 
     return (
       <div className={classes.resultContainer}>
         <SearchList
           data={queryResult ? queryResult.courses : undefined}
+          pinnedList={pinnedList || {}}
           onClickEntry={this.handleClickEntry}
+          onClickPin={this.handleClickPin}
         />
         <div className="map">
           <Sidebar />
