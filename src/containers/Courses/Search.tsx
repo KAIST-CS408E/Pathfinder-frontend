@@ -204,7 +204,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
     if (this.state.queryResult) {
       const { year, term } = this.state.queryResult;
       const lecture = course.lectures[i];
-      this.gotoDetail(`/${year}/${term}/${course.number}/${lecture.division}`);
+      this.gotoDetail(`/${year}/${term}/${course.number}/${lecture.division}?subtitle=${course.subtitle}`);
     } else {
       alert('you need to fetch in the first');
     }

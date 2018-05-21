@@ -28,6 +28,7 @@ export interface IQueryResult {
 
 export interface ICourse {
   name: string;
+  subtitle: string;
   number: string;
   lectures: ILecture[];
 }

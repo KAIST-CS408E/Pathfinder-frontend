@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { Redirect, RouteComponentProps } from 'react-router-dom';
 
+import * as d3Array from 'd3-array';
+import * as d3Coll from 'd3-collection';
+
 import Card from '@material-ui/core/Card';
 import CardContent, { CardContentProps } from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -26,7 +29,6 @@ import ListSubheader, {
   ListSubheaderProps,
 } from 'material-ui/List/ListSubheader';
 
-// import { Theme } from "@material-ui/core/styles";
 import withStyles, { WithStyles } from 'material-ui/es/styles/withStyles';
 import styles from './Detail.style';
 
@@ -35,13 +37,6 @@ const { classes } = styles;
 const ourKaistBlue = '#E3F2FD';
 const recommendColor = '#FFC107';
 const lightGrey1 = '#f5f5f5';
-
-// const defaultBackColor = "white";
-const courseR = 'System Programming';
-const courseR2 = 'Network Programming';
-const courseRA = 'Discrete Mathmatics';
-const courseRA2 =
-  'Human Centered Interface Design with ---(long long long class name)';
 
 const doFirst = ' !important';
 /* 로드, 그레이드 난수 함수! 실제 구현시에는 반드시 지울것 */
@@ -197,6 +192,7 @@ export interface IState {
   term: string;
   division: string;
   courseNumber: string;
+  subtitle: string;
 
   data: ICourseDetail | null;
   fetching: boolean;
@@ -226,6 +222,8 @@ class Detail extends React.Component<
 
       courseNumber,
       division: division ? division : '',
+      subtitle:
+        new URLSearchParams(nextProps.location.search).get('subtitle') || '',
     };
   }
 
@@ -239,6 +237,7 @@ class Detail extends React.Component<
       courseNumber: '',
       division: '',
 
+      subtitle: '',
       term: '',
       year: '',
 
@@ -262,10 +261,9 @@ class Detail extends React.Component<
     this.lastFetchId += 1;
     const oldFetchId = this.lastFetchId;
     // TODO:: Need to bring subtitle from somewhere!
+    const { courseNumber, subtitle } = this.state;
     fetch(
-      `https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api/course/${
-        this.state.courseNumber
-      }?subtitle=`
+      `https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api/course/${courseNumber}?subtitle=${subtitle}`
     )
       .then(r => r.json())
       .then(json => {
@@ -442,54 +440,16 @@ class Detail extends React.Component<
                     </ListSubheader>
                   }
                 >
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>
-                        star_rate
-                      </Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseR} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>
-                        equalizer
-                      </Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseRA} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>
-                        equalizer
-                      </Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseRA2} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>done</Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseR} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>done</Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseR2} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>done</Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseR} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>done</Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseR2} />
-                  </ListItem>
+                  {/* TODO:: Prerequisite by college -> star_rate */}
+                  {data.before.map(([courseNumber, courseName]) => (
+                    <PeerCourseItem
+                      key={courseNumber}
+                      className={customClass.listItems}
+                      courseName={courseName}
+                      icon="equalizer"
+                    />
+                  ))}
+                  {/* TODO:: Prerequisite done -> done */}
                 </List>
               </div>
               <CardMedia className={classes.sankyGraphDiv}>
@@ -516,270 +476,75 @@ class Detail extends React.Component<
                     </RcmSubHeader>
                   }
                 >
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>
-                        star_rate
-                      </Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseR} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>
-                        equalizer
-                      </Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseRA} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>
-                        equalizer
-                      </Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseRA2} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>done</Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseR} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>done</Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseR2} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>done</Icon>
-                    </ListItemIcon>
-                    <RcmListItemText inset primary={courseR} />
-                  </ListItem>
-                  <ListItem button className={customClass.listItems}>
-                    <ListItemIcon>
-                      <Icon style={{ fontSize: 18, marginRight: 0 }}>done</Icon>
-                    </ListItemIcon>
-                    <ListItemText inset primary={courseR2} />
-                  </ListItem>
+                  {data.with.map(([courseNumber, courseName]) => (
+                    <PeerCourseItem
+                      key={courseName}
+                      className={customClass.listItems}
+                      courseName={courseName}
+                      icon="equalizer"
+                    />
+                  ))}
+                  {/* TODO:: Taken with done -> done */}
                 </List>
               </div>
             </CardContent>
 
             {/* information for each semester with professor */}
             <CardContent className={classes.profContainer}>
-              <div className={classes.testDiv}>
-                <Typography
-                  gutterBottom
-                  variant="subheading"
-                  component="h3"
-                  align="left"
-                  className={classes.semesterTypo}
-                >
-                  2018 spring
-                </Typography>
-                <Card className={customClass.card}>
-                  <ProfCardContent>
-                    <Typography
-                      variant="subheading"
-                      component="h3"
-                      align="left"
-                    >
-                      Insik shin(A)
-                    </Typography>
-                    <Typography component="p" align="left">
-                      Load: {gradeGen()}/ Grade: {gradeGen()}
-                    </Typography>
-                  </ProfCardContent>
-                  <CardMedia
-                    className={customClass.media}
-                    image="https://www.mathsisfun.com/data/images/histogram.gif"
-                  />
-                </Card>
-                <Card className={customClass.card}>
-                  <ProfCardContent>
-                    <Typography
-                      variant="subheading"
-                      component="h3"
-                      align="left"
-                    >
-                      Junehwa Song(B)
-                    </Typography>
-                    <Typography component="p" align="left">
-                      Load: {gradeGen()}/ Grade: {gradeGen()}
-                    </Typography>
-                  </ProfCardContent>
-                  <CardMedia
-                    className={customClass.media}
-                    image="https://www.mathsisfun.com/data/images/histogram.gif"
-                  />
-                </Card>
-              </div>
-              <div className={classes.testDiv}>
-                <Typography
-                  gutterBottom
-                  variant="subheading"
-                  component="h3"
-                  align="left"
-                  className={classes.semesterTypo}
-                >
-                  2018 fall
-                </Typography>
-                <Card className={customClass.card}>
-                  <ProfCardContent>
-                    <Typography
-                      variant="subheading"
-                      component="h3"
-                      align="left"
-                    >
-                      Insik shin(A)
-                    </Typography>
-                    <Typography component="p" align="left">
-                      Load: {gradeGen()}/ Grade: {gradeGen()}
-                    </Typography>
-                  </ProfCardContent>
-                  <CardMedia
-                    className={customClass.media}
-                    image="https://www.mathsisfun.com/data/images/histogram.gif"
-                  />
-                </Card>
-              </div>
-              <div className={classes.testDiv}>
-                <Typography
-                  gutterBottom
-                  variant="subheading"
-                  component="h3"
-                  align="left"
-                  className={classes.semesterTypo}
-                >
-                  2018 spring
-                </Typography>
-                <Card className={customClass.card}>
-                  <ProfCardContent>
-                    <Typography
-                      variant="subheading"
-                      component="h3"
-                      align="left"
-                    >
-                      Insik shin(A)
-                    </Typography>
-                    <Typography component="p" align="left">
-                      Load: {gradeGen()}/ Grade: {gradeGen()}
-                    </Typography>
-                  </ProfCardContent>
-                  <CardMedia
-                    className={customClass.media}
-                    image="https://www.mathsisfun.com/data/images/histogram.gif"
-                  />
-                </Card>
-                <Card className={customClass.card}>
-                  <ProfCardContent>
-                    <Typography
-                      variant="subheading"
-                      component="h3"
-                      align="left"
-                    >
-                      Insik shin(A)
-                    </Typography>
-                    <Typography component="p" align="left">
-                      Load: {gradeGen()}/ Grade: {gradeGen()}
-                    </Typography>
-                  </ProfCardContent>
-                  <CardMedia
-                    className={customClass.media}
-                    image="https://www.mathsisfun.com/data/images/histogram.gif"
-                  />
-                </Card>
-              </div>
-              <div className={classes.testDiv}>
-                <Typography
-                  gutterBottom
-                  variant="subheading"
-                  component="h3"
-                  align="left"
-                  className={classes.semesterTypo}
-                >
-                  2018 fall
-                </Typography>
-                <Card className={customClass.card}>
-                  <ProfCardContent>
-                    <Typography
-                      variant="subheading"
-                      component="h3"
-                      align="left"
-                    >
-                      Insik shin(A)
-                    </Typography>
-                    <Typography component="p" align="left">
-                      Load: {gradeGen()}/ Grade: {gradeGen()}
-                    </Typography>
-                  </ProfCardContent>
-                  <CardMedia
-                    className={customClass.media}
-                    image="https://www.mathsisfun.com/data/images/histogram.gif"
-                  />
-                </Card>
-              </div>
-              <div className={classes.testDiv}>
-                <Typography
-                  gutterBottom
-                  variant="subheading"
-                  component="h3"
-                  align="left"
-                  className={classes.semesterTypo}
-                >
-                  2018 spring
-                </Typography>
-                <Card className={customClass.card}>
-                  <ProfCardContent>
-                    <Typography
-                      variant="subheading"
-                      component="h3"
-                      align="left"
-                    >
-                      Insik shin(A)
-                    </Typography>
-                    <Typography component="p" align="left">
-                      Load: {gradeGen()}/ Grade: {gradeGen()}
-                    </Typography>
-                  </ProfCardContent>
-                  <CardMedia
-                    className={customClass.media}
-                    image="https://www.mathsisfun.com/data/images/histogram.gif"
-                  />
-                </Card>
-              </div>
-              <div className={classes.testDiv}>
-                <Typography
-                  gutterBottom
-                  variant="subheading"
-                  component="h3"
-                  align="left"
-                  className={classes.semesterTypo}
-                >
-                  {2018} fall
-                </Typography>
-                <Card className={customClass.card}>
-                  <ProfCardContent>
-                    <Typography
-                      variant="subheading"
-                      component="h3"
-                      align="left"
-                    >
-                      Insik shin(A)
-                    </Typography>
-                    <Typography component="p" align="left">
-                      Load: {gradeGen()}/ Grade: {gradeGen()}
-                    </Typography>
-                  </ProfCardContent>
-                  <CardMedia
-                    className={customClass.media}
-                    image="https://www.mathsisfun.com/data/images/histogram.gif"
-                  />
-                </Card>
-              </div>
+              {d3Coll
+                .nest()
+                .key((d: ILectureDetail) => d.year)
+                .sortKeys(d3Array.descending)
+                .key((d: ILectureDetail) => d.term)
+                .sortKeys(d3Array.ascending)
+                .entries(data.lectures)
+                .map(lecturesInYear =>
+                  lecturesInYear.values.map((lecturesInTerm: { key: string, values: ILectureDetail[]}) => (
+                    <div key={lecturesInYear.key} className={classes.testDiv}>
+                      <Typography
+                        gutterBottom
+                        variant="subheading"
+                        component="h3"
+                        align="left"
+                        className={classes.semesterTypo}
+                      >
+                        {lecturesInYear.key} {lecturesInTerm.key}
+                      </Typography>
+                      {lecturesInTerm.values
+                        .concat()
+                        .sort((a: ILectureDetail, b: ILectureDetail) =>
+                          d3Array.ascending(a.division, b.division)
+                        )
+                        .map((lecture: ILectureDetail) => (
+                          <Card
+                            key={lecture.division}
+                            className={customClass.card}
+                          >
+                            <ProfCardContent>
+                              <Typography
+                                variant="subheading"
+                                component="h3"
+                                align="left"
+                              >
+                                {`${lecture.professor} ${
+                                  lecture.division !== ''
+                                    ? `(${lecture.division})`
+                                    : ''
+                                }`}
+                              </Typography>
+                              <Typography component="p" align="left">
+                                Load: {gradeGen()}/ Grade: {gradeGen()}
+                              </Typography>
+                            </ProfCardContent>
+                            <CardMedia
+                              className={customClass.media}
+                              image="https://www.mathsisfun.com/data/images/histogram.gif"
+                            />
+                          </Card>
+                        ))}
+                    </div>
+                  ))
+                )}
             </CardContent>
           </Card>
         </Paper>
@@ -789,3 +554,22 @@ class Detail extends React.Component<
 }
 
 export default withStyles(themeStyle)(Detail);
+
+interface IPeerCourseItemProps {
+  className: string;
+  courseName: string;
+  icon: string;
+}
+
+const PeerCourseItem = ({
+  className,
+  courseName,
+  icon,
+}: IPeerCourseItemProps) => (
+  <ListItem button className={className}>
+    <ListItemIcon>
+      <Icon style={{ fontSize: 18, marginRight: 0 }}>{icon}</Icon>
+    </ListItemIcon>
+    <RcmListItemText inset>{courseName}</RcmListItemText>
+  </ListItem>
+);
