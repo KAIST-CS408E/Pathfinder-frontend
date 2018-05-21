@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Redirect, RouteComponentProps } from 'react-router-dom';
 
+import * as classNames from 'classnames';
 import * as d3Array from 'd3-array';
 import * as d3Coll from 'd3-collection';
 
@@ -141,6 +142,11 @@ const themeStyle = () => ({
     height: 0,
     paddingTop: '56.25%', // 16:9
   },
+
+  selectedCard: {
+    border: '1px solid black',
+    borderRadius: 4,
+  },
 });
 
 interface ICourseDetail {
@@ -159,18 +165,28 @@ interface ICourseBasic {
   type: string;
 }
 
-interface ILectureDetail {
+interface ILectureKeys {
+  year: string;
+  term: string;
   division: string;
+}
+
+interface ILectureDetail extends ILectureKeys {
+  // division: string;
   competitionRatio: '-';
   sizeChange: string[];
   professor: string;
-  year: string;
-  name: string;
-  term: string;
+  // year: string;
+  // name: string;
+  // term: string;
   grade: string[];
   dropChange: string[];
   classTime: string[];
   isEnglish: string;
+}
+
+function isSameLecture(a: ILectureKeys, b: ILectureKeys) {
+  return a.year === b.year && a.term === b.term && a.division === b.division;
 }
 
 /* CourseNumber CourseName NumOfTaken */
@@ -210,6 +226,7 @@ class Detail extends React.Component<
       | 'card'
       | 'media'
       | 'typo'
+      | 'selectedCard'
     >,
   IState
 > {
@@ -279,6 +296,15 @@ class Detail extends React.Component<
     }
   }
 
+  public handleLectureCardClick = (lecture: ILectureDetail) => () => {
+    const { courseNumber, subtitle } = this.state;
+    const [basePath] = this.props.match.url.split('/courses/d/');
+    const paramPath = `${lecture.year}/${lecture.term}/${courseNumber}/${
+      lecture.division
+    }?subtitle=${subtitle}`;
+    this.props.history.replace(`${basePath}/courses/d/${paramPath}`, { modalDetail: true });
+  };
+
   public render() {
     const customClass = this.props.classes;
 
@@ -289,11 +315,8 @@ class Detail extends React.Component<
     }
 
     const course = data.course;
-    const thisLecture = data.lectures.find(
-      lecture =>
-        lecture.year === year &&
-        lecture.term === term &&
-        lecture.division === division
+    const thisLecture = data.lectures.find(lecture =>
+      isSameLecture(lecture, { division, term, year })
     );
 
     /* Redirect if no division is chosen even if there is lecture data */
@@ -499,51 +522,63 @@ class Detail extends React.Component<
                 .sortKeys(d3Array.ascending)
                 .entries(data.lectures)
                 .map(lecturesInYear =>
-                  lecturesInYear.values.map((lecturesInTerm: { key: string, values: ILectureDetail[]}) => (
-                    <div key={lecturesInYear.key} className={classes.testDiv}>
-                      <Typography
-                        gutterBottom
-                        variant="subheading"
-                        component="h3"
-                        align="left"
-                        className={classes.semesterTypo}
-                      >
-                        {lecturesInYear.key} {lecturesInTerm.key}
-                      </Typography>
-                      {lecturesInTerm.values
-                        .concat()
-                        .sort((a: ILectureDetail, b: ILectureDetail) =>
-                          d3Array.ascending(a.division, b.division)
-                        )
-                        .map((lecture: ILectureDetail) => (
-                          <Card
-                            key={lecture.division}
-                            className={customClass.card}
-                          >
-                            <ProfCardContent>
-                              <Typography
-                                variant="subheading"
-                                component="h3"
-                                align="left"
-                              >
-                                {`${lecture.professor} ${
-                                  lecture.division !== ''
-                                    ? `(${lecture.division})`
-                                    : ''
-                                }`}
-                              </Typography>
-                              <Typography component="p" align="left">
-                                Load: {gradeGen()}/ Grade: {gradeGen()}
-                              </Typography>
-                            </ProfCardContent>
-                            <CardMedia
-                              className={customClass.media}
-                              image="https://www.mathsisfun.com/data/images/histogram.gif"
-                            />
-                          </Card>
-                        ))}
-                    </div>
-                  ))
+                  lecturesInYear.values.map(
+                    (lecturesInTerm: {
+                      key: string;
+                      values: ILectureDetail[];
+                    }) => (
+                      <div key={lecturesInYear.key} className={classes.testDiv}>
+                        <Typography
+                          gutterBottom
+                          variant="subheading"
+                          component="h3"
+                          align="left"
+                          className={classes.semesterTypo}
+                        >
+                          {lecturesInYear.key} {lecturesInTerm.key}
+                        </Typography>
+                        {lecturesInTerm.values
+                          .concat()
+                          .sort((a: ILectureDetail, b: ILectureDetail) =>
+                            d3Array.ascending(a.division, b.division)
+                          )
+                          .map((lecture: ILectureDetail) => (
+                            <Card
+                              key={lecture.division}
+                              className={classNames({
+                                [customClass.card]: true,
+                                [customClass.selectedCard]: isSameLecture(
+                                  lecture,
+                                  thisLecture
+                                ),
+                              })}
+                              onClick={this.handleLectureCardClick(lecture)}
+                            >
+                              <ProfCardContent>
+                                <Typography
+                                  variant="subheading"
+                                  component="h3"
+                                  align="left"
+                                >
+                                  {`${lecture.professor} ${
+                                    lecture.division !== ''
+                                      ? `(${lecture.division})`
+                                      : ''
+                                  }`}
+                                </Typography>
+                                <Typography component="p" align="left">
+                                  Load: {gradeGen()}/ Grade: {gradeGen()}
+                                </Typography>
+                              </ProfCardContent>
+                              <CardMedia
+                                className={customClass.media}
+                                image="https://www.mathsisfun.com/data/images/histogram.gif"
+                              />
+                            </Card>
+                          ))}
+                      </div>
+                    )
+                  )
                 )}
             </CardContent>
           </Card>

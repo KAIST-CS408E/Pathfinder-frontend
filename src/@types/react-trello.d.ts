@@ -1,5 +1,5 @@
 declare module 'react-trello' {
-  export interface BoardData {
+  export interface IBoardData {
     lanes: ILaneData[];
   }
 
@@ -19,7 +19,7 @@ declare module 'react-trello' {
   }
 
   export interface IBoardProps {
-    data?: BoardData;
+    data?: IBoardData;
     actions?: object,
     reducerData?: object,
     onDataChange?: Function,
@@ -31,15 +31,15 @@ declare module 'react-trello' {
     addCardLink?: any,
     onLaneClick?: Function,
     laneSortFunction?: Function,
-    draggable?: Boolean,
-    collapsibleLanes?: Boolean,
-    editable?: Boolean,
-    hideCardDeleteIcon?: Boolean,
+    draggable?: boolean,
+    collapsibleLanes?: boolean,
+    editable?: boolean,
+    hideCardDeleteIcon?: boolean,
     handleDragStart?: Function,
     handleDragEnd?: Function,
     handleLaneDragStart?: Function,
     handleLaneDragEnd?: Function,
-    customCardLayout?: Boolean,
+    customCardLayout?: boolean,
     newCardTemplate?: any,
     customLaneHeader?: any,
     style?: object,

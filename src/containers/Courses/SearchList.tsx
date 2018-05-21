@@ -12,36 +12,17 @@ import Typography from '@material-ui/core/Typography';
 
 import Icon from '@material-ui/core/Icon';
 
+import { ICourse, IPinnedTable, IQueryResult } from 'pathfinder';
+import { buildCourseKey } from '../../utils';
+
 const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueD = '#1A237E';
 
 interface IProps {
   data?: IQueryResult['courses'];
+  pinnedList: IPinnedTable;
   onClickEntry: ClickEntryHandler;
-}
-
-export interface IQueryResult {
-  year: string;
-  term: string;
-  courses: ICourse[];
-}
-
-export interface ICourse {
-  name: string;
-  subtitle: string;
-  number: string;
-  lectures: ILecture[];
-}
-
-export interface ILecture {
-  professor: string;
-
-  division: string | '';
-  classTime: string[];
-  limit: number | null;
-
-  load: number;
-  grades: number;
+  onClickPin: ClickPinHandler;
 }
 
 export type ClickEntryHandler = (course: ICourse, lectureIndex: number) => void;
@@ -50,6 +31,9 @@ type ClickHandlerBuilder = (
   lectureIndex: number
 ) => ClickHandler;
 type ClickHandler = () => void;
+
+export type ClickPinHandler = (course: ICourse) => void;
+type ClickPinHandlerBuilder = (course: ICourse) => ClickHandler;
 
 export default class SearchList extends React.Component<IProps> {
   public handleClickEntry: ClickHandlerBuilder = (course, index) => () => {
@@ -60,8 +44,15 @@ export default class SearchList extends React.Component<IProps> {
     }
   };
 
+  public handleClickPin: ClickPinHandlerBuilder = course => () => {
+    const { onClickPin } = this.props;
+    if (onClickPin) {
+      onClickPin(course);
+    }
+  };
+
   public render() {
-    const { data } = this.props;
+    const { data, pinnedList } = this.props;
 
     let renderData: JSX.Element | JSX.Element[] = (
       <span>{'Sorry! nothing to show... perhaps broken API again?'}</span>
@@ -71,8 +62,17 @@ export default class SearchList extends React.Component<IProps> {
       renderData = data.map(course => (
         <ListItem
           clickHandlerBuilder={this.handleClickEntry}
+          clickPinHandlerBuilder={this.handleClickPin}
           course={course}
           key={course.number + course.lectures[0].division}
+          pinned={Boolean(
+            pinnedList[
+              buildCourseKey({
+                courseNumber: course.number,
+                subtitle: course.subtitle,
+              })
+            ]
+          )}
         />
       ));
     }
@@ -180,12 +180,18 @@ interface ITableProps
     > {
   course: ICourse;
   clickHandlerBuilder: ClickHandlerBuilder;
+  clickPinHandlerBuilder: ClickPinHandlerBuilder;
+  pinned: boolean;
 }
 
-let x = 0;
-
 function CustomizedTable(props: ITableProps) {
-  const { classes, course, clickHandlerBuilder } = props;
+  const {
+    classes,
+    course,
+    clickHandlerBuilder,
+    clickPinHandlerBuilder,
+    pinned,
+  } = props;
   const { lectures } = course;
 
   return (
@@ -199,8 +205,12 @@ function CustomizedTable(props: ITableProps) {
         >
           {`${course.name} (${course.number})`}
         </Typography>
-        <IconButton className={classes.btn} color="inherit">
-          <Icon>{x++ % 2 === 1 ? 'turned_in' : 'turned_in_not'}</Icon>
+        <IconButton
+          className={classes.btn}
+          color="inherit"
+          onClick={clickPinHandlerBuilder(course)}
+        >
+          <Icon>{pinned ? 'turned_in' : 'turned_in_not'}</Icon>
         </IconButton>
       </div>
       <Table className={classes.table}>

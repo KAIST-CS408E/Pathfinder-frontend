@@ -3,10 +3,11 @@ import {
   BrowserRouter as Router,
   Redirect,
   Route,
+  RouteComponentProps,
   Switch,
 } from 'react-router-dom';
 
-// import iassign from 'immutable-assign';
+import iassign from 'immutable-assign';
 import jss from 'jss';
 import preset from 'jss-preset-default';
 
@@ -27,6 +28,11 @@ import Curriculum from './containers/Curriculum';
 
 import './App.css';
 
+import { IPinnedCourse, IPinnedTable } from 'pathfinder';
+import { buildCourseKey } from './utils';
+
+const API_URL = 'https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api';
+
 jss.setup(preset());
 const { classes } = jss
   .createStyleSheet({
@@ -38,7 +44,7 @@ const { classes } = jss
       position: 'relative' as 'relative',
 
       left: '-5em',
-      top: '2em'
+      top: '2em',
     },
     typo: {
       marginRight: 'auto',
@@ -51,19 +57,6 @@ interface IState {
   showPinned: boolean;
 }
 
-interface IPinnedTable {
-  [courseNumber: string]: IPinnedCourse;
-}
-
-interface IPinnedCourse {
-  courseName: string;
-  courseNumber: string;
-  class: string;
-  professor: string;
-  semester: string;
-  year: string;
-}
-
 class App extends React.Component<{}, IState> {
   public state = { pinnedList: {}, showPinned: false };
 
@@ -72,17 +65,68 @@ class App extends React.Component<{}, IState> {
   constructor(props: any) {
     super(props);
     this.pinnedListAnchor = React.createRef();
+    this.state = {
+      pinnedList: {},
+      showPinned: false,
+    };
+  }
+
+  public componentDidMount() {
+    fetch(API_URL + '/pin')
+      .then(r => r.json())
+      .then(d => {
+        const newPinnedList = iassign(this.state.pinnedList, pinnedList => {
+          d.map((pinEntry: [string, string]) => {
+            const datum = {
+              courseName: pinEntry[1],
+              courseNumber: pinEntry[0],
+              subtitle: pinEntry[2],
+            };
+            pinnedList[buildCourseKey(datum)] = datum;
+          });
+          return pinnedList;
+        });
+        this.setState({ pinnedList: newPinnedList });
+      });
   }
 
   public pinCourse = (course: IPinnedCourse) => {
-    // if not exists in list
-    if (!this.state.pinnedList[course.courseNumber]) {
-      console.log('123');
+    // only if it does not exist in list
+    if (!this.state.pinnedList[buildCourseKey(course)]) {
+      fetch(`${API_URL}/pin/${course.courseNumber}?subtitle=${course.subtitle}`, { method: 'POST'})
+        .then(() => console.log('success'))
+        .catch(e => console.error(e));
+
+      this.setState(
+        iassign(
+          this.state,
+          state => state.pinnedList || {},
+          pinnedList => {
+            pinnedList[buildCourseKey(course)] = course;
+            return pinnedList;
+          }
+        )
+      );
     }
   };
 
-  public unpinCourse = (courseNumber: IPinnedCourse['courseNumber']) => {
-    console.log('fuckl');
+  public unpinCourse = (course: IPinnedCourse) => {
+    if (this.state.pinnedList[buildCourseKey(course)]) {
+      fetch(`${API_URL}/pin/${course.courseNumber}?subtitle=${course.subtitle}`, { method: 'DELETE'})
+        .then(() => console.log('success'))
+        .catch(e => console.error(e));
+
+      this.setState(
+        iassign(
+          this.state,
+          state => state.pinnedList,
+          pinnedList => {
+            delete pinnedList[buildCourseKey(course)];
+            return pinnedList;
+          }
+        )
+      );
+    }
   };
 
   public resetPinned = () => {
@@ -97,8 +141,23 @@ class App extends React.Component<{}, IState> {
     this.setState({ showPinned: false });
   };
 
+  public renderCourses = (props: RouteComponentProps<{}>) => {
+    return (
+      <Courses
+        {...props}
+        pinnedList={this.state.pinnedList}
+        onPinnedCourse={this.pinCourse}
+        onUnpinCourse={this.unpinCourse}
+      />
+    );
+  };
+
+  public renderCurriculum = (props: RouteComponentProps<{}>) => {
+    return <Curriculum {...props} />;
+  };
+
   public render() {
-    const { showPinned } = this.state;
+    const { showPinned, pinnedList } = this.state;
     return (
       <Router>
         <div className="App">
@@ -142,16 +201,18 @@ class App extends React.Component<{}, IState> {
                   }}
                 >
                   <List>
-                    <ListItem button>
-                      <ListItemText>
-                        CS408 - Computer Science Project
-                      </ListItemText>
-                    </ListItem>
-                    <ListItem button>
-                      <ListItemText>
-                        {"CS492 - Special Topics in Computer Science<Digital Watermarking>"}
-                      </ListItemText>
-                    </ListItem>
+                    {Object.values<IPinnedCourse>(pinnedList).map(pinEntry => (
+                      <ListItem key={buildCourseKey(pinEntry)} button>
+                        <ListItemText>
+                          {pinEntry.courseNumber}
+                          {' - '}
+                          {pinEntry.courseName}
+                          {pinEntry.subtitle !== ''
+                            ? `<${pinEntry.subtitle}>`
+                            : ''}
+                        </ListItemText>
+                      </ListItem>
+                    ))}
                   </List>
                 </Popover>
               </Toolbar>
@@ -162,8 +223,8 @@ class App extends React.Component<{}, IState> {
             <Route path="/dashboard">
               <div>This is dashboard</div>
             </Route>
-            <Route path="/courses" component={Courses} />
-            <Route path="/curriculum" component={Curriculum} />
+            <Route path="/courses" render={this.renderCourses} />
+            <Route path="/curriculum" render={this.renderCurriculum} />
           </Switch>
         </div>
       </Router>
