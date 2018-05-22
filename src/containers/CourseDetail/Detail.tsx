@@ -274,7 +274,8 @@ class Detail extends React.Component<
   };
 
   public handlePeerCourseClick = (courseNumber: string, subtitle: string) => {
-    this.gotoAnotherDetail(
+    // TODO:: goBack 핸들링을 아직 구현 안해서 그냥 redirect로 대체
+    this.redirectTo(
       this.getAnotherLectureURL(courseNumber, subtitle, {
         division: '',
         term: 'term',
