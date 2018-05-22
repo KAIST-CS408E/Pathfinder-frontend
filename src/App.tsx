@@ -1,13 +1,11 @@
 import * as React from 'react';
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  RouteComponentProps,
-  Switch,
-} from 'react-router-dom';
+import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
-import iassign from 'immutable-assign';
+import { connect, Dispatch } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import { Location } from 'history';
+
 import jss from 'jss';
 import preset from 'jss-preset-default';
 
@@ -28,10 +26,13 @@ import Curriculum from './containers/Curriculum';
 
 import './App.css';
 
-import { IPinnedCourse, IPinnedTable } from 'pathfinder';
-import { buildCourseKey } from './utils';
+import { IPinnedCourse, IPinnedTable, PinEntryAPI } from 'pathfinder';
 
-const API_URL = 'https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api';
+import { API_URL } from '@src/constants/api';
+import { RootState } from '@src/redux';
+import { actions as pinActions } from '@src/redux/pinnedList';
+import { buildCourseKey } from '@src/utils';
+
 
 jss.setup(preset());
 const { classes } = jss
@@ -52,13 +53,21 @@ const { classes } = jss
   })
   .attach();
 
-interface IState {
+interface IProps {
+  location: Location;
   pinnedList: IPinnedTable;
+
+  onPinMultipleCourses: (entries: PinEntryAPI[]) => any;
+
+  onPinCourse: (course: IPinnedCourse) => any;
+  onUnpinCourse: (course: IPinnedCourse) => any;
+}
+
+interface IState {
   showPinned: boolean;
 }
 
-class App extends React.Component<{}, IState> {
-  public state = { pinnedList: {}, showPinned: false };
+class App extends React.Component<IProps, IState> {
 
   public pinnedListAnchor: React.RefObject<any>;
 
@@ -66,7 +75,6 @@ class App extends React.Component<{}, IState> {
     super(props);
     this.pinnedListAnchor = React.createRef();
     this.state = {
-      pinnedList: {},
       showPinned: false,
     };
   }
@@ -75,62 +83,45 @@ class App extends React.Component<{}, IState> {
     fetch(API_URL + '/pin')
       .then(r => r.json())
       .then(d => {
-        const newPinnedList = iassign(this.state.pinnedList, pinnedList => {
-          d.map((pinEntry: [string, string]) => {
-            const datum = {
-              courseName: pinEntry[1],
-              courseNumber: pinEntry[0],
-              subtitle: pinEntry[2],
-            };
-            pinnedList[buildCourseKey(datum)] = datum;
-          });
-          return pinnedList;
-        });
-        this.setState({ pinnedList: newPinnedList });
+        this.props.onPinMultipleCourses(d);
       });
   }
 
   public pinCourse = (course: IPinnedCourse) => {
     // only if it does not exist in list
-    if (!this.state.pinnedList[buildCourseKey(course)]) {
-      fetch(`${API_URL}/pin/${course.courseNumber}?subtitle=${course.subtitle}`, { method: 'POST'})
-        .then(() => console.log('success'))
-        .catch(e => console.error(e));
-
-      this.setState(
-        iassign(
-          this.state,
-          state => state.pinnedList || {},
-          pinnedList => {
-            pinnedList[buildCourseKey(course)] = course;
-            return pinnedList;
+    if (!this.props.pinnedList[buildCourseKey(course)]) {
+      fetch(
+        `${API_URL}/pin/${course.courseNumber}?subtitle=${course.subtitle}`,
+        { method: 'POST' }
+      )
+        .then(r => r.json())
+        .then((response: any) => {
+          if (response.success) {
+            this.props.onPinCourse(course);
+          } else {
+            console.error('FAILED to PIN');
           }
-        )
-      );
+        })
+        .catch(e => console.error(e));
     }
   };
 
   public unpinCourse = (course: IPinnedCourse) => {
-    if (this.state.pinnedList[buildCourseKey(course)]) {
-      fetch(`${API_URL}/pin/${course.courseNumber}?subtitle=${course.subtitle}`, { method: 'DELETE'})
-        .then(() => console.log('success'))
-        .catch(e => console.error(e));
-
-      this.setState(
-        iassign(
-          this.state,
-          state => state.pinnedList,
-          pinnedList => {
-            delete pinnedList[buildCourseKey(course)];
-            return pinnedList;
+    if (this.props.pinnedList[buildCourseKey(course)]) {
+      fetch(
+        `${API_URL}/pin/${course.courseNumber}?subtitle=${course.subtitle}`,
+        { method: 'DELETE' }
+      )
+        .then(r => r.json())
+        .then((response: any) => {
+          if (response.success) {
+            this.props.onUnpinCourse(course);
+          } else {
+            console.error('FAILED to UNPIN');
           }
-        )
-      );
+        })
+        .catch(e => console.error(e));
     }
-  };
-
-  public resetPinned = () => {
-    this.setState({ pinnedList: {} });
   };
 
   public handleOpenPinnedList = () => {
@@ -145,7 +136,7 @@ class App extends React.Component<{}, IState> {
     return (
       <Courses
         {...props}
-        pinnedList={this.state.pinnedList}
+        pinnedList={this.props.pinnedList}
         onPinnedCourse={this.pinCourse}
         onUnpinCourse={this.unpinCourse}
       />
@@ -157,79 +148,95 @@ class App extends React.Component<{}, IState> {
   };
 
   public render() {
-    const { showPinned, pinnedList } = this.state;
+    const { showPinned } = this.state;
+    const { pinnedList, location } = this.props;
+
     return (
-      <Router>
-        <div className="App">
-          <AppBar position="sticky" color="default">
-            <div className="icon-container">
-              <Toolbar>
-                <Typography
-                  className={classes.typo}
-                  variant="title"
-                  color="inherit"
-                >
-                  KAIST Pathfinder
-                </Typography>
-                <Button>
-                  <span className={classes.label}>My Page</span>
-                  <AccountBox />
-                </Button>
-                <Button onClick={this.handleOpenPinnedList}>
-                  <span className={classes.label}>Pin List</span>
-                  <TurnedIn />
-                </Button>
-                <div
-                  className={classes.pinnedListAnchor}
-                  ref={this.pinnedListAnchor}
-                />
-                <Popover
-                  open={showPinned}
-                  anchorEl={
-                    this.pinnedListAnchor.current
-                      ? this.pinnedListAnchor.current
-                      : undefined
-                  }
-                  onClose={this.handleClosePinnedList}
-                  anchorOrigin={{
-                    horizontal: 'center',
-                    vertical: 'bottom',
-                  }}
-                  transformOrigin={{
-                    horizontal: 'left',
-                    vertical: 'top',
-                  }}
-                >
-                  <List>
-                    {Object.values<IPinnedCourse>(pinnedList).map(pinEntry => (
-                      <ListItem key={buildCourseKey(pinEntry)} button>
-                        <ListItemText>
-                          {pinEntry.courseNumber}
-                          {' - '}
-                          {pinEntry.courseName}
-                          {pinEntry.subtitle !== ''
-                            ? `<${pinEntry.subtitle}>`
-                            : ''}
-                        </ListItemText>
-                      </ListItem>
-                    ))}
-                  </List>
-                </Popover>
-              </Toolbar>
-            </div>
-          </AppBar>
-          <Switch>
-            <Redirect exact from="/" to="/dashboard" />
-            <Route path="/dashboard">
-              <div>This is dashboard</div>
-            </Route>
-            <Route path="/courses" render={this.renderCourses} />
-            <Route path="/curriculum" render={this.renderCurriculum} />
-          </Switch>
-        </div>
-      </Router>
+      <div className="App">
+        <AppBar position="sticky" color="default">
+          <div className="icon-container">
+            <Toolbar>
+              <Typography
+                className={classes.typo}
+                variant="title"
+                color="inherit"
+              >
+                KAIST Pathfinder
+              </Typography>
+              <Button>
+                <span className={classes.label}>My Page</span>
+                <AccountBox />
+              </Button>
+              <Button onClick={this.handleOpenPinnedList}>
+                <span className={classes.label}>Pin List</span>
+                <TurnedIn />
+              </Button>
+              <div
+                className={classes.pinnedListAnchor}
+                ref={this.pinnedListAnchor}
+              />
+              <Popover
+                open={showPinned}
+                anchorEl={
+                  this.pinnedListAnchor.current
+                    ? this.pinnedListAnchor.current
+                    : undefined
+                }
+                onClose={this.handleClosePinnedList}
+                anchorOrigin={{
+                  horizontal: 'center',
+                  vertical: 'bottom',
+                }}
+                transformOrigin={{
+                  horizontal: 'left',
+                  vertical: 'top',
+                }}
+              >
+                <List>
+                  {Object.values<IPinnedCourse>(pinnedList).map(pinEntry => (
+                    <ListItem key={buildCourseKey(pinEntry)} button>
+                      <ListItemText>
+                        {pinEntry.courseNumber}
+                        {' - '}
+                        {pinEntry.courseName}
+                        {pinEntry.subtitle !== ''
+                          ? `<${pinEntry.subtitle}>`
+                          : ''}
+                      </ListItemText>
+                    </ListItem>
+                  ))}
+                </List>
+              </Popover>
+            </Toolbar>
+          </div>
+        </AppBar>
+        <Switch location={location}>
+          <Redirect exact from="/" to="/dashboard" />
+          <Route path="/dashboard">
+            <div>This is dashboard</div>
+          </Route>
+          <Route path="/courses" render={this.renderCourses} />
+          <Route path="/curriculum" render={this.renderCurriculum} />
+        </Switch>
+      </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = (state: RootState) => ({
+  location: state.router.location,
+  pinnedList: state.pinnedList,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(
+    {
+      onPinMultipleCourses: pinActions.pinMultipleCourses,
+
+      onPinCourse: pinActions.pinCourse,
+      onUnpinCourse: pinActions.unpinCourse,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

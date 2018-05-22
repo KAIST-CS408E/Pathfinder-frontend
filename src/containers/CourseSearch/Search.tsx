@@ -1,52 +1,61 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
 
-import * as iassign from 'immutable-assign';
+import { connect, Dispatch } from 'react-redux';
+import { RouteComponentProps } from 'react-router-dom';
+import { push } from 'react-router-redux';
+
+import { bindActionCreators } from 'redux';
 
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import TextField from '@material-ui/core/TextField';
 
-import { IPinComponentProps, IQueryResult } from 'pathfinder';
+import { IFilterOptions, IPinComponentProps, IQueryResult } from 'pathfinder';
 
-import Filter, {
-  defaultValues,
-  FilterKey,
-  IFilterOptions,
-  OnChangeOptionFunc,
-} from './Filter';
+import { API_URL } from '@src/constants/api';
+import { RootState } from '@src/redux';
+import { rootActions as actions } from '@src/redux';
+import { buildCourseKey } from '@src/utils';
+
+import Filter, { defaultValues, OnChangeOptionFunc } from './Filter';
 import SearchList, { ClickEntryHandler, ClickPinHandler } from './SearchList';
 import Sidebar from './Sidebar';
 
-import { buildCourseKey } from '../../utils/index';
 import styles from './Search.style';
 
 const { classes } = styles;
 
 export type RouteProps = RouteComponentProps<{ keyword: string }>;
 
-export interface IProps extends RouteProps, IPinComponentProps {}
-
-interface ISearchState {
-  showFilterMenu: boolean;
-  filterSelection: FilterKey;
+export interface IProps extends RouteProps, IPinComponentProps {
   filterOptions: IFilterOptions;
   queryKeyword: string;
   queryResult?: IQueryResult;
-  // pinnedList: IPinnedTable;
-  nothing: string;
+
+  onChangeFilter: typeof actions.changeFilter;
+  onChangeFilterOption: typeof actions.changeFilterOption;
+  onChangeQueryKeyword: typeof actions.changeQueryKeyword;
+  onChangeQueryResult: typeof actions.changeQueryResult;
+
+  onPinnedCourse: typeof actions.pinCourse;
+  onUnpinCourse: typeof actions.unpinCourse;
+
+  push: typeof push;
 }
 
-export default class Search extends React.Component<IProps, ISearchState> {
-
-  constructor(props: IProps) {
-    super(props);
-
+class Search extends React.Component<IProps> {
+  public componentDidMount() {
+    const {
+      location,
+      match,
+      onChangeFilter,
+      onChangeQueryKeyword,
+    } = this.props;
     const filterOptions: IFilterOptions = defaultValues;
 
-    if (props.location && props.location.search) {
-      const params = new URLSearchParams(props.location.search);
+    if (location && location.search) {
+      const params = new URLSearchParams(location.search);
       for (const [k, v] of params) {
         switch (k) {
           case 'courseLevel':
@@ -66,89 +75,65 @@ export default class Search extends React.Component<IProps, ISearchState> {
 
     let queryKeyword: string = '';
 
-    if (props.match && props.match.params && props.match.params.keyword) {
-      queryKeyword = decodeURI(props.match.params.keyword);
+    if (match && match.params && match.params.keyword) {
+      queryKeyword = decodeURI(match.params.keyword);
     }
 
-    this.state = {
-      filterOptions,
-      filterSelection: 'year',
-      nothing: '123',
-      // pinnedList: {},
-      queryKeyword,
-      queryResult: undefined,
-      showFilterMenu: false,
-    };
+    onChangeFilter(filterOptions);
+    onChangeQueryKeyword(queryKeyword);
+    this.fetchQueryResult(this.getSearchQuery());
   }
 
-  public componentDidMount() {
-    this.fetchQueryResult(this.getStateQuery());
-  }
+  public commaSeperated = (obj: object) =>
+    Object.entries(obj)
+      .reduce((r: string[], [k, v]) => (v ? [...r, k] : r), [])
+      .join(',');
 
-  public componentDidUpdate(prevProps: IProps, prevState: ISearchState) {
-    const query = this.props.location.search;
-    if (this.props.match !== prevProps.match) {
-      this.fetchQueryResult(query);
+  public getURLSearchParams = (data: object) => {
+    const urls = new URLSearchParams();
+    for (const [k, v] of Object.entries(data)) {
+      urls.set(k, v);
     }
-  }
+    return urls;
+  };
 
+  /* Get a query string that save the state of the filter */
   public getStateQuery = () => {
-    const { filterOptions } = this.state;
     const {
       year,
       semester,
       department,
       courseLevel,
       sortOrder,
-    } = filterOptions;
+    } = this.props.filterOptions;
 
-    const departmentStr = Object.entries(department)
-      .reduce((r: string[], [k, v]) => (v ? [...r, k] : r), [])
-      .join(',');
+    const departmentStr = this.commaSeperated(department);
+    const courseLevelStr = this.commaSeperated(courseLevel);
 
-    const courseLevelStr = Object.entries(courseLevel)
-      .reduce((r: string[], [k, v]) => (v ? [...r, k] : r), [])
-      .join(',');
-
-    const urls = new URLSearchParams();
-    const data = {
+    const urls = this.getURLSearchParams({
       courseLevel: courseLevelStr,
       department: departmentStr,
       semester,
       sortOrder,
       year,
-    };
-
-    for (const [k, v] of Object.entries(data)) {
-      urls.set(k, v);
-    }
+    });
 
     return `?${urls.toString()}`;
   };
 
   public getSearchQuery = () => {
-    const { filterOptions, queryKeyword } = this.state;
+    const { filterOptions, queryKeyword } = this.props;
     const { department, courseLevel, sortOrder } = filterOptions;
 
-    const departmentStr = Object.entries(department)
-      .reduce((r: string[], [k, v]) => (v ? [...r, k] : r), [])
-      .join(',');
+    const courseLevelStr = this.commaSeperated(courseLevel);
+    const departmentStr = this.commaSeperated(department);
 
-    const courseLevelStr = Object.entries(courseLevel)
-      .reduce((r: string[], [k, v]) => (v ? [...r, k] : r), [])
-      .join(',');
-
-    const urls = new URLSearchParams();
-    const data = {
+    const urls = this.getURLSearchParams({
       courseLevel: courseLevelStr,
       department: departmentStr,
       keyword: queryKeyword,
       sortOrder,
-    };
-
-    for (const [k, v] of Object.entries(data)) {
-      urls.set(k, v);
-    }
+    });
 
     return `?${urls.toString()}`;
   };
@@ -157,15 +142,13 @@ export default class Search extends React.Component<IProps, ISearchState> {
     console.group('courseQuery');
     console.log('Send course query');
 
-    const { year, semester: term } = this.state.filterOptions;
-    const url =
-      'https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api/courses/';
+    const { year, semester: term } = this.props.filterOptions;
+    const url = API_URL + '/courses/';
 
     fetch(`${url}${year}/${term}/${this.getSearchQuery()}`)
       .then(r => r.json())
       .then(d => {
-
-        this.setState({ queryResult: d });
+        this.props.onChangeQueryResult(d);
       })
       .catch(e => {
         console.log(e);
@@ -175,42 +158,30 @@ export default class Search extends React.Component<IProps, ISearchState> {
   };
 
   public gotoSearch = (query: string) => {
-    if (this.props.history) {
-      this.props.history.push(`/courses/s${query}`);
-    }
+    this.props.push(`/courses/s${query}`);
   };
 
   public gotoDetail = (path: string) => {
-    if (this.props.history) {
-      this.props.history.push(`/courses/d${path}`, { modalDetail: true });
-    }
+    this.props.push(`/courses/d${path}`, { modalDetail: true });
   };
 
   public handleChangeKeyword = (e: React.FormEvent<{ value: string }>) => {
-    this.setState({ queryKeyword: e.currentTarget.value });
+    this.props.onChangeQueryKeyword(e.currentTarget.value);
   };
 
   public handleChangeOption: OnChangeOptionFunc = (filterKey, payload) => {
-    this.setState(
-      iassign(
-        this.state,
-        s => s.filterOptions,
-        (filterOptions: IFilterOptions) => {
-          filterOptions[filterKey] = payload[filterKey];
-          return filterOptions;
-        }
-      )
-    );
+    this.props.onChangeFilterOption(filterKey, payload);
   };
 
   public handleClickSearch = () => {
-    const keyword = this.state.queryKeyword;
+    const keyword = this.props.queryKeyword;
     this.gotoSearch(`/${encodeURIComponent(keyword)}${this.getStateQuery()}`);
+    this.fetchQueryResult(this.getSearchQuery());
   };
 
   public handleClickEntry: ClickEntryHandler = (course, i) => {
-    if (this.state.queryResult) {
-      const { year, term } = this.state.queryResult;
+    if (this.props.queryResult) {
+      const { year, term } = this.props.queryResult;
       const lecture = course.lectures[i];
       this.gotoDetail(
         `/${year}/${term}/${course.number}/${lecture.division}?subtitle=${
@@ -238,7 +209,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
   };
 
   public renderHeader() {
-    const { filterOptions, queryKeyword } = this.state;
+    const { filterOptions, queryKeyword } = this.props;
 
     return (
       <Card className={classes.searchCard}>
@@ -271,8 +242,7 @@ export default class Search extends React.Component<IProps, ISearchState> {
   }
 
   public renderResult() {
-    const { queryResult } = this.state;
-    const { pinnedList } = this.props;
+    const { pinnedList, queryResult } = this.props;
 
     return (
       <div className={classes.resultContainer}>
@@ -298,3 +268,25 @@ export default class Search extends React.Component<IProps, ISearchState> {
     );
   }
 }
+
+function mapStateToProps(state: RootState) {
+  return { ...state.courseSearch, pinnedList: state.pinnedList };
+}
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(
+    {
+      onChangeFilter: actions.changeFilter,
+      onChangeFilterOption: actions.changeFilterOption,
+      onChangeQueryKeyword: actions.changeQueryKeyword,
+      onChangeQueryResult: actions.changeQueryResult,
+
+      onPinnedCourse: actions.pinCourse,
+      onUnpinCourse: actions.unpinCourse,
+
+      push,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchToProps)(Search);

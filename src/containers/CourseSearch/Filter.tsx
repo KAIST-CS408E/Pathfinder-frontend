@@ -86,7 +86,7 @@ export default class Filter extends React.Component<IProps, IState> {
     { key: '200', text: '200' },
     { key: '300', text: '300' },
     { key: '400', text: '400' },
-    { key: '500', text: '500' },
+    { key: '500', text: '500+' },
   ];
 
   public sortItems: ICustomSelection[] = [

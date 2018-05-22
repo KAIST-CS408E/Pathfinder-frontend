@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
+import { connect, Dispatch } from 'react-redux';
+import { push, replace } from 'react-router-redux';
+import { bindActionCreators } from 'redux';
+
 import * as classNames from 'classnames';
 import * as d3Array from 'd3-array';
 import * as d3Coll from 'd3-collection';
@@ -29,7 +33,11 @@ import withStyles, { WithStyles } from 'material-ui/es/styles/withStyles';
 import styles from './Detail.style';
 import PeerCourseListItem from './PeerCourseListItem';
 
-import { buildCourseKey } from '../../utils';
+import { API_URL } from '@src/constants/api';
+import { RootState } from '@src/redux';
+import { actions as detailActions } from '@src/redux/courseDetail';
+
+import { ICourseDetail, ILectureDetail, ILectureKeys } from 'pathfinder';
 
 const { classes } = styles;
 
@@ -139,44 +147,9 @@ const themeStyle = () => ({
   },
 });
 
-interface ICourseDetail {
-  course: ICourseBasic;
-  lectures: ILectureDetail[];
-  before: PeerCourse[];
-  with: PeerCourse[];
-  after: PeerCourse[];
-}
-
-interface ICourseBasic {
-  number: string;
-  code: string;
-  subtitle: string;
-  name: string;
-  type: string;
-}
-
-interface ILectureKeys {
-  year: string;
-  term: string;
-  division: string;
-}
-
-interface ILectureDetail extends ILectureKeys {
-  competitionRatio: '-';
-  sizeChange: string[];
-  professor: string;
-  grade: string[];
-  dropChange: string[];
-  classTime: string[];
-  isEnglish: string;
-}
-
 function isSameLecture(a: ILectureKeys, b: ILectureKeys) {
   return a.year === b.year && a.term === b.term && a.division === b.division;
 }
-
-/* CourseNumber CourseName NumOfTaken */
-type PeerCourse = [string, string, number];
 
 export interface ICourseQuery {
   year: string;
@@ -185,11 +158,7 @@ export interface ICourseQuery {
   courseNumber: string;
 }
 
-export interface IProps extends RouteComponentProps<ICourseQuery> {}
-
-export interface IState {
-  /* number / division을 data 필요 여부에 대한 key로 사용함 
-  *  year / term은 param에서 가져옴*/
+export interface IProps extends RouteComponentProps<ICourseQuery> {
   year: string;
   term: string;
   division: string;
@@ -198,6 +167,17 @@ export interface IState {
 
   data: ICourseDetail | null;
   fetching: boolean;
+
+  onFetchDetailRequest: typeof detailActions.fetchDetailRequest;
+  onFetchDetailSuccess: typeof detailActions.fetchDetailSuccess;
+  onFetchDetailFailure: typeof detailActions.fetchDetailFailure;
+
+  onInitDetail: typeof detailActions.initDetail;
+  onChangeLecture: typeof detailActions.changeLecture;
+  onChangeCourse: typeof detailActions.changeCourse;
+
+  push: typeof push;
+  replace: typeof replace;
 }
 
 class Detail extends React.Component<
@@ -213,85 +193,56 @@ class Detail extends React.Component<
       | 'media'
       | 'typo'
       | 'selectedCard'
-    >,
-  IState
+    >
 > {
-  public static getDerivedStateFromProps(nextProps: IProps, prevState: IState) {
-    const { year, term, courseNumber, division } = nextProps.match.params;
-    const subtitle =
-      new URLSearchParams(nextProps.location.search).get('subtitle') || '';
-
-    const prevKey = buildCourseKey({
-      courseNumber: prevState.courseNumber,
-      subtitle: prevState.subtitle,
-    });
-    const nextKey = buildCourseKey({ courseNumber, subtitle });
-
-    return {
-      term,
-      year,
-
-      courseNumber,
-      division: division ? division : '',
-      subtitle,
-
-      // Invalidate current course data when need fetch
-      data: prevKey !== nextKey ? null : prevState.data,
-    };
-  }
-
-  public lastFetchId = 0;
-  public division = '';
-  public number = '';
-
   constructor(props: any) {
     super(props);
-    this.state = {
-      courseNumber: '',
-      division: '',
-
-      subtitle: '',
-      term: '',
-      year: '',
-
-      data: null,
-      fetching: false,
-    };
   }
 
   public componentDidMount() {
+    const { location, match, onInitDetail } = this.props;
+    const { year, term, courseNumber, division } = match.params;
+    const subtitle = new URLSearchParams(location.search).get('subtitle') || '';
+
+    onInitDetail({ year, term, division, subtitle, number: courseNumber });
     this.fetchDetailedData();
   }
 
-  public componentDidUpdate(prevProps: IProps, prevState: IState) {
-    const { courseNumber } = prevState;
-    if (courseNumber !== this.state.courseNumber && !this.state.fetching) {
-      console.log('Updating %s to %s', courseNumber, this.state.courseNumber);
+  public componentDidUpdate(prevProps: IProps) {
+    if (!this.props.data) {
+      return;
+    }
+    const { number: courseNumber, subtitle } = this.props.data.course;
+    if (
+      !this.props.fetching &&
+      (courseNumber !== this.props.courseNumber ||
+      subtitle !== this.props.subtitle)
+    ) {
+      console.log('Updating %s to %s', courseNumber, this.props.courseNumber);
       this.fetchDetailedData();
     }
   }
 
   public fetchDetailedData() {
-    const { courseNumber, subtitle } = this.state;
+    const {
+      courseNumber,
+      subtitle,
+      onFetchDetailRequest,
+      onFetchDetailSuccess,
+      onFetchDetailFailure,
+    } = this.props;
 
-    this.lastFetchId += 1;
-    const oldFetchId = this.lastFetchId;
-
-    fetch(
-      `https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api/course/${courseNumber}?subtitle=${subtitle}`
-    )
+    onFetchDetailRequest();
+    fetch(`${API_URL}/course/${courseNumber}?subtitle=${subtitle}`)
       .then(r => r.json())
       .then(json => {
         // There should not be another request
-        if (oldFetchId === this.lastFetchId) {
-          this.setState({ data: json, fetching: false });
-        }
+        onFetchDetailSuccess(json);
       })
-      .catch(e => console.error(e));
-
-    if (!this.state.fetching) {
-      this.setState({ fetching: true });
-    }
+      .catch(e => {
+        console.error(e);
+        onFetchDetailFailure(e);
+      });
   }
 
   public getAnotherLectureURL = (
@@ -307,38 +258,43 @@ class Detail extends React.Component<
   };
 
   public gotoAnotherDetail = (url: string) => {
-    this.props.history.replace(url, { modalDetail: true });
+    this.props.push(url, { modalDetail: true });
   };
 
+  public redirectTo = (url: string) => {
+    this.props.replace(url, { modalDetail: true });
+  }
+
   public handleLectureCardClick = (lecture: ILectureDetail) => () => {
-    const { courseNumber, subtitle } = this.state;
-    this.gotoAnotherDetail(
+    const { courseNumber, subtitle } = this.props;
+    this.redirectTo(
       this.getAnotherLectureURL(courseNumber, subtitle, lecture)
     );
+    this.props.onChangeLecture(lecture);
   };
 
   public handlePeerCourseClick = (courseNumber: string, subtitle: string) => {
-    this.props.history.replace(
+    this.gotoAnotherDetail(
       this.getAnotherLectureURL(courseNumber, subtitle, {
         division: '',
-        term: '123',
-        year: '123',
-      }),
-      { modalDetail: true }
+        term: 'term',
+        year: 'year',
+      })
     );
+    this.props.onChangeCourse({ subtitle, number: courseNumber });
   };
 
   public render() {
     const customClass = this.props.classes;
 
-    const { division, data, year, term, fetching } = this.state;
-
-    if (!data || !data.course) {
-      return <>NO DATA</>;
-    }
+    const { division, data, year, term, fetching } = this.props;
 
     if (fetching) {
       return <>Fetching data</>;
+    }
+
+    if (!data || !data.course) {
+      return <>NO DATA</>;
     }
 
     const course = data.course;
@@ -348,14 +304,14 @@ class Detail extends React.Component<
 
     /* Redirect if no division is chosen even if there is lecture data */
     if (!thisLecture && data.lectures && data.lectures.length > 0) {
-      this.gotoAnotherDetail(
+      this.redirectTo(
         this.getAnotherLectureURL(
           course.number,
           course.subtitle,
           data.lectures[0]
         )
       );
-
+      this.props.onChangeLecture(data.lectures[0]);
       return <>REDIRECTING</>;
     } else if (!thisLecture) {
       console.error('No lecture data found!');
@@ -618,4 +574,28 @@ class Detail extends React.Component<
   }
 }
 
-export default withStyles(themeStyle)(Detail);
+const mapStateToProps = (state: RootState) => state.courseDetail;
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(
+    {
+      onInitDetail: detailActions.initDetail,
+
+      onChangeCourse: detailActions.changeCourse,
+      onChangeLecture: detailActions.changeLecture,
+
+      onFetchDetailRequest: detailActions.fetchDetailRequest,
+
+      onFetchDetailSuccess: detailActions.fetchDetailSuccess,
+
+      onFetchDetailFailure: detailActions.fetchDetailFailure,
+
+      push,
+      replace
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  withStyles(themeStyle)(Detail)
+);
