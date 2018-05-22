@@ -12,10 +12,24 @@ export const semesterBoards: IBoardData = {
       cards: [
         {
           id: '123',
-          label: 'this is label',
-          title: 'world',
+          label: 'B+',
+          title: 'Discrete Mathmatics',
 
-          description: 'this is description',
+          description: 'Load: 1.9 Grade: 2.6',
+        },
+        {
+          id: '234',
+          label: 'A-',
+          title: 'Problem Solving',
+
+          description: 'Load: 2.4 Grade: 3.1',
+        },
+        {
+          id: '345',
+          label: 'A+',
+          title: 'Data Structure',
+
+          description: 'Load: 2.1 Grade: 3.2',
         },
       ],
     },
@@ -27,10 +41,24 @@ export const semesterBoards: IBoardData = {
       cards: [
         {
           id: '123',
-          label: 'this is label',
-          title: 'world',
+          label: 'A0',
+          title: 'System Programing',
 
-          description: 'this is description',
+          description: 'Load: 3.4 Grade: 2.4',
+        },
+        {
+          id: '234',
+          label: 'A0',
+          title: 'Introduction to Algorithm',
+
+          description: 'Load: 2.1 Grade: 2.6',
+        },
+        {
+          id: '345',
+          label: 'B+',
+          title: 'Programming Language',
+
+          description: 'Load: 3.2 Grade: 2.7',
         },
       ],
     },
@@ -175,6 +203,22 @@ export const semesterBoards: IBoardData = {
       id: 'lane12',
       label: 'lane label',
       title: '12th semester',
+
+      cards: [
+        {
+          id: '123',
+          label: 'this is label',
+          title: 'world',
+
+          description: 'this is description',
+        },
+      ],
+    },
+
+    {
+      id: 'pin lane',
+      label: 'lane label',
+      title: 'course pin',
 
       cards: [
         {
