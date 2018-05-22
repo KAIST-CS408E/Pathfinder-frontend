@@ -11,7 +11,8 @@
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {
-      "pathfinder": ["src/@types/pathfinder"]
+      "pathfinder": ["src/@types/pathfinder"],
+      "@src/*": ["src/*"]
     },
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,

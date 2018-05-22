@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import Detail from '../CourseDetail/Detail';
@@ -7,9 +8,11 @@ import Search, { RouteProps as SearchRouteProps } from '../CourseSearch/Search';
 
 import { IPinComponentProps } from 'pathfinder';
 
+import { RootState } from '@src/redux';
+
 interface IProps extends RouteComponentProps<{}>, IPinComponentProps {}
 
-export default class Courses extends React.Component<IProps> {
+class Courses extends React.Component<IProps> {
   public previousLocation?: IProps['location'] = undefined;
 
   public componentWillUpdate(nextProps: IProps) {
@@ -24,14 +27,7 @@ export default class Courses extends React.Component<IProps> {
   }
 
   public renderSearch = (props: SearchRouteProps) => {
-    return (
-      <Search
-        {...props}
-        pinnedList={this.props.pinnedList}
-        onPinnedCourse={this.props.onPinnedCourse}
-        onUnpinCourse={this.props.onUnpinCourse}
-      />
-    );
+    return <Search {...props} />;
   };
 
   public render() {
@@ -42,18 +38,24 @@ export default class Courses extends React.Component<IProps> {
       location.state &&
       location.state.modalDetail &&
       location !== this.previousLocation;
-
+    console.log(this.previousLocation);
     return (
       <div>
         <Switch location={isModal ? this.previousLocation : location}>
-          <Route path={`${match.url}/s/:keyword?`} render={this.renderSearch} />
           <Route
+            location={location}
+            path={`${match.url}/s/:keyword?`}
+            render={this.renderSearch}
+          />
+          <Route
+            location={location}
             path={`${match.url}/d/:year/:term/:courseNumber/:division?`}
             component={Detail}
           />
         </Switch>
         {isModal ? (
           <Route
+            location={location}
             path={`${match.url}/d/:year/:term/:courseNumber/:division?`}
             component={ModalDetail}
           />
@@ -62,3 +64,7 @@ export default class Courses extends React.Component<IProps> {
     );
   }
 }
+
+export default connect((state: RootState) => ({
+  location: state.router.location,
+}))(Courses);
