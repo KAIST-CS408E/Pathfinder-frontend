@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import Icon from '@material-ui/core/Icon';
 
 import { ICourse, IPinnedTable, IQueryResult } from 'pathfinder';
-import { buildCourseKey } from '../../utils';
+import { buildCourseKey } from '../../utils/index';
 
 const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueD = '#1A237E';

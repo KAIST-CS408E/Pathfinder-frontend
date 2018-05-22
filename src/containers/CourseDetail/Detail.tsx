@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Redirect, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
 
 import * as classNames from 'classnames';
 import * as d3Array from 'd3-array';
@@ -21,17 +21,15 @@ import TableCell, { TableCellProps } from '@material-ui/core/TableCell';
 import TableRow, { TableRowProps } from '@material-ui/core/TableRow';
 
 import List from '@material-ui/core/List';
-import ListItem /*, {ListItemProps}*/ from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText, {
-  ListItemTextProps,
-} from '@material-ui/core/ListItemText';
 import ListSubheader, {
   ListSubheaderProps,
 } from 'material-ui/List/ListSubheader';
 
 import withStyles, { WithStyles } from 'material-ui/es/styles/withStyles';
 import styles from './Detail.style';
+import PeerCourseListItem from './PeerCourseListItem';
+
+import { buildCourseKey } from '../../utils';
 
 const { classes } = styles;
 
@@ -74,14 +72,6 @@ const StatusChip = withStyles(theme => ({
     margin: '0px 6px',
   },
 }))(Chip as React.ComponentType<ChipProps & WithStyles<'root'>>);
-
-const RcmListItemText = withStyles(theme => ({
-  primary: {
-    fontSize: '0.875em' + doFirst,
-  },
-}))(ListItemText as React.ComponentType<
-  ListItemTextProps & WithStyles<'primary'>
->);
 
 const RcmSubHeader = withStyles(theme => ({
   root: {
@@ -172,13 +162,9 @@ interface ILectureKeys {
 }
 
 interface ILectureDetail extends ILectureKeys {
-  // division: string;
   competitionRatio: '-';
   sizeChange: string[];
   professor: string;
-  // year: string;
-  // name: string;
-  // term: string;
   grade: string[];
   dropChange: string[];
   classTime: string[];
@@ -232,6 +218,14 @@ class Detail extends React.Component<
 > {
   public static getDerivedStateFromProps(nextProps: IProps, prevState: IState) {
     const { year, term, courseNumber, division } = nextProps.match.params;
+    const subtitle =
+      new URLSearchParams(nextProps.location.search).get('subtitle') || '';
+
+    const prevKey = buildCourseKey({
+      courseNumber: prevState.courseNumber,
+      subtitle: prevState.subtitle,
+    });
+    const nextKey = buildCourseKey({ courseNumber, subtitle });
 
     return {
       term,
@@ -239,8 +233,10 @@ class Detail extends React.Component<
 
       courseNumber,
       division: division ? division : '',
-      subtitle:
-        new URLSearchParams(nextProps.location.search).get('subtitle') || '',
+      subtitle,
+
+      // Invalidate current course data when need fetch
+      data: prevKey !== nextKey ? null : prevState.data,
     };
   }
 
@@ -269,16 +265,18 @@ class Detail extends React.Component<
 
   public componentDidUpdate(prevProps: IProps, prevState: IState) {
     const { courseNumber } = prevState;
-    if (courseNumber !== this.state.courseNumber) {
+    if (courseNumber !== this.state.courseNumber && !this.state.fetching) {
+      console.log('Updating %s to %s', courseNumber, this.state.courseNumber);
       this.fetchDetailedData();
     }
   }
 
   public fetchDetailedData() {
+    const { courseNumber, subtitle } = this.state;
+
     this.lastFetchId += 1;
     const oldFetchId = this.lastFetchId;
-    // TODO:: Need to bring subtitle from somewhere!
-    const { courseNumber, subtitle } = this.state;
+
     fetch(
       `https://ny3acklsf2.execute-api.ap-northeast-2.amazonaws.com/api/course/${courseNumber}?subtitle=${subtitle}`
     )
@@ -296,22 +294,51 @@ class Detail extends React.Component<
     }
   }
 
-  public handleLectureCardClick = (lecture: ILectureDetail) => () => {
-    const { courseNumber, subtitle } = this.state;
+  public getAnotherLectureURL = (
+    courseNumber: string,
+    subtitle: string,
+    lecture: ILectureKeys
+  ) => {
     const [basePath] = this.props.match.url.split('/courses/d/');
     const paramPath = `${lecture.year}/${lecture.term}/${courseNumber}/${
       lecture.division
     }?subtitle=${subtitle}`;
-    this.props.history.replace(`${basePath}/courses/d/${paramPath}`, { modalDetail: true });
+    return `${basePath}/courses/d/${paramPath}`;
+  };
+
+  public gotoAnotherDetail = (url: string) => {
+    this.props.history.replace(url, { modalDetail: true });
+  };
+
+  public handleLectureCardClick = (lecture: ILectureDetail) => () => {
+    const { courseNumber, subtitle } = this.state;
+    this.gotoAnotherDetail(
+      this.getAnotherLectureURL(courseNumber, subtitle, lecture)
+    );
+  };
+
+  public handlePeerCourseClick = (courseNumber: string, subtitle: string) => {
+    this.props.history.replace(
+      this.getAnotherLectureURL(courseNumber, subtitle, {
+        division: '',
+        term: '123',
+        year: '123',
+      }),
+      { modalDetail: true }
+    );
   };
 
   public render() {
     const customClass = this.props.classes;
 
-    const { division, data, year, term } = this.state;
+    const { division, data, year, term, fetching } = this.state;
 
     if (!data || !data.course) {
       return <>NO DATA</>;
+    }
+
+    if (fetching) {
+      return <>Fetching data</>;
     }
 
     const course = data.course;
@@ -321,19 +348,15 @@ class Detail extends React.Component<
 
     /* Redirect if no division is chosen even if there is lecture data */
     if (!thisLecture && data.lectures && data.lectures.length > 0) {
-      const divisionPathPosition = this.props.match.params.division
-        ? -1
-        : undefined;
-
-      return (
-        <Redirect
-          to={this.props.match.url
-            .split('/')
-            .slice(0, divisionPathPosition)
-            .concat(data.lectures[0].division)
-            .join('/')}
-        />
+      this.gotoAnotherDetail(
+        this.getAnotherLectureURL(
+          course.number,
+          course.subtitle,
+          data.lectures[0]
+        )
       );
+
+      return <>REDIRECTING</>;
     } else if (!thisLecture) {
       console.error('No lecture data found!');
       return <>NO LECTURE DATA</>;
@@ -465,11 +488,13 @@ class Detail extends React.Component<
                 >
                   {/* TODO:: Prerequisite by college -> star_rate */}
                   {data.before.map(([courseNumber, courseName]) => (
-                    <PeerCourseItem
+                    <PeerCourseListItem
                       key={courseNumber}
                       className={customClass.listItems}
                       courseName={courseName}
+                      courseNumber={courseNumber}
                       icon="equalizer"
+                      onClick={this.handlePeerCourseClick}
                     />
                   ))}
                   {/* TODO:: Prerequisite done -> done */}
@@ -500,11 +525,13 @@ class Detail extends React.Component<
                   }
                 >
                   {data.with.map(([courseNumber, courseName]) => (
-                    <PeerCourseItem
+                    <PeerCourseListItem
                       key={courseName}
                       className={customClass.listItems}
                       courseName={courseName}
+                      courseNumber={courseNumber}
                       icon="equalizer"
+                      onClick={this.handlePeerCourseClick}
                     />
                   ))}
                   {/* TODO:: Taken with done -> done */}
@@ -527,7 +554,10 @@ class Detail extends React.Component<
                       key: string;
                       values: ILectureDetail[];
                     }) => (
-                      <div key={lecturesInYear.key} className={classes.testDiv}>
+                      <div
+                        key={lecturesInYear.key + lecturesInTerm.key}
+                        className={classes.testDiv}
+                      >
                         <Typography
                           gutterBottom
                           variant="subheading"
@@ -589,22 +619,3 @@ class Detail extends React.Component<
 }
 
 export default withStyles(themeStyle)(Detail);
-
-interface IPeerCourseItemProps {
-  className: string;
-  courseName: string;
-  icon: string;
-}
-
-const PeerCourseItem = ({
-  className,
-  courseName,
-  icon,
-}: IPeerCourseItemProps) => (
-  <ListItem button className={className}>
-    <ListItemIcon>
-      <Icon style={{ fontSize: 18, marginRight: 0 }}>{icon}</Icon>
-    </ListItemIcon>
-    <RcmListItemText inset>{courseName}</RcmListItemText>
-  </ListItem>
-);

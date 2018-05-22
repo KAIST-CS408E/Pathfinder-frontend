@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
-import Detail from './Detail';
-import ModalDetail from './ModalDetail';
-import Search, { RouteProps as SearchRouteProps } from './Search';
+import Detail from '../CourseDetail/Detail';
+import ModalDetail from '../CourseDetail/ModalDetail';
+import Search, { RouteProps as SearchRouteProps } from '../CourseSearch/Search';
 
 import { IPinComponentProps } from 'pathfinder';
 

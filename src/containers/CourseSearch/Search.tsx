@@ -19,7 +19,7 @@ import Filter, {
 import SearchList, { ClickEntryHandler, ClickPinHandler } from './SearchList';
 import Sidebar from './Sidebar';
 
-import { buildCourseKey } from '../../utils';
+import { buildCourseKey } from '../../utils/index';
 import styles from './Search.style';
 
 const { classes } = styles;
@@ -39,23 +39,6 @@ interface ISearchState {
 }
 
 export default class Search extends React.Component<IProps, ISearchState> {
-  // public static getDerivedStateFromProps(
-  //   nextProps: IProps,
-  //   prevState: ISearchState
-  // ) {
-  //   return iassign(
-  //     prevState,
-  //     state => state.pinnedList || {},
-  //     list => {
-  //       if (nextProps.pinnedList) {
-  //         Object.values(nextProps.pinnedList).forEach(pinEntry => {
-  //           list[buildCourseKey(pinEntry)] = pinEntry;
-  //         });
-  //       }
-  //       return list;
-  //     }
-  //   );
-  // }
 
   constructor(props: IProps) {
     super(props);
@@ -171,7 +154,6 @@ export default class Search extends React.Component<IProps, ISearchState> {
   };
 
   public fetchQueryResult = (query: string) => {
-    // const params = new URLSearchParams(query);
     console.group('courseQuery');
     console.log('Send course query');
 
@@ -182,20 +164,6 @@ export default class Search extends React.Component<IProps, ISearchState> {
     fetch(`${url}${year}/${term}/${this.getSearchQuery()}`)
       .then(r => r.json())
       .then(d => {
-        // const newPinnedList = iassign(
-        //   this.state.pinnedList || {},
-        //   pinnedList => {
-        //     d.pinned.map((pinEntry: [string, string]) => {
-        //       const datum = {
-        //         courseName: '',
-        //         courseNumber: pinEntry[0],
-        //         subtitle: pinEntry[1],
-        //       };
-        //       pinnedList[buildCourseKey(datum)] = datum;
-        //     });
-        //     return pinnedList;
-        //   }
-        // );
 
         this.setState({ queryResult: d });
       })
