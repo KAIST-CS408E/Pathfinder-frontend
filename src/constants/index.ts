@@ -2,6 +2,9 @@ import { IBoardData } from "react-trello";
 
 export const hello = "hello";
 
+const profColorD = "#9E9E9E";
+const profColorS = "#536DFE";
+
 export const semesterBoards: IBoardData = {
   lanes: [
     {
@@ -15,21 +18,35 @@ export const semesterBoards: IBoardData = {
           label: 'B+',
           title: 'Discrete Mathmatics',
 
-          description: 'Load: 1.9 Grade: 2.6',
+          description: 'Load: 1.9  Grade: 2.6',
+
+          tags: [
+            {title: 'Sungwon Kang', color: 'white', bgcolor: profColorS},
+            {title: 'Jina Park', color: 'white', bgcolor: profColorD },
+            {title: 'Martin Giggler', color: 'white', bgcolor: profColorD },
+          ],
         },
         {
           id: '234',
           label: 'A-',
           title: 'Problem Solving',
 
-          description: 'Load: 2.4 Grade: 3.1',
+          description: 'Load: 2.4  Grade: 3.1',
+          tags: [
+            {title: 'Kyungryong Chwa', color: 'white', bgcolor: profColorS },
+          ],
         },
         {
           id: '345',
           label: 'A+',
           title: 'Data Structure',
 
-          description: 'Load: 2.1 Grade: 3.2',
+          description: 'Load: 2.1  Grade: 3.2',
+          tags: [
+            {title: 'Otfried Jung', color: 'white', bgcolor: profColorD },
+            {title: 'Hyeyeon Oh', color: 'white', bgcolor: profColorS },
+            {title: 'Deoksan Ryu', color: 'white', bgcolor: profColorD },
+          ],
         },
       ],
     },
@@ -44,21 +61,31 @@ export const semesterBoards: IBoardData = {
           label: 'A0',
           title: 'System Programing',
 
-          description: 'Load: 3.4 Grade: 2.4',
+          description: 'Load: 3.4  Grade: 2.4',
+          tags: [
+            {title: 'John Dongjun Kim', color: 'white', bgcolor: profColorS},
+          ],
         },
         {
           id: '234',
           label: 'A0',
           title: 'Introduction to Algorithm',
 
-          description: 'Load: 2.1 Grade: 2.6',
+          description: 'Load: 2.1  Grade: 2.6',
+          tags: [
+            {title: 'Otfried Jung', color: 'white', bgcolor: profColorS },
+            {title: 'Sunghui Choi', color: 'white', bgcolor: profColorD },
+          ],
         },
         {
           id: '345',
           label: 'B+',
           title: 'Programming Language',
 
-          description: 'Load: 3.2 Grade: 2.7',
+          description: 'Load: 3.2  Grade: 2.7',
+          tags: [
+            {title: 'Seokyoung Ryu', color: 'white', bgcolor: profColorS },
+          ],
         },
       ],
     },
@@ -68,12 +95,39 @@ export const semesterBoards: IBoardData = {
       title: '3rd semester',
 
       cards: [
+
         {
           id: '123',
-          label: 'this is label',
-          title: 'world',
+          label: '',
+          title: 'Computer Science Projects',
 
-          description: 'this is description',
+          description: 'Load:4.1  Grade: 3.6',
+
+          tags: [
+            {title: 'Jongmoon Baik', color: 'white', bgcolor: profColorD},
+            {title: 'Dongman Lee', color: 'white', bgcolor: profColorD },
+            {title: 'Sung-Ju Lee', color: 'white', bgcolor: profColorS },
+            {title: 'In-Young Ko', color: 'white', bgcolor: profColorD },
+            {title: 'Okjoo Choi', color: 'white', bgcolor: profColorD },
+          ],
+        },
+        {
+          id: '345',
+          label: '',
+          title: 'Computer Organization',
+
+          description: 'Load: 3.8  Grade: 3.1',
+
+          tags: [
+            {title: 'Jaehyuk Huh', color: 'white', bgcolor: profColorS},
+          ],
+        },
+        {
+          id: '123',
+          label: 'feedback',
+          title: 'prerequisite miss',
+
+          description: "'computer Organization' should take after taking prerequisite 'system programming'",
         },
       ],
     },
@@ -83,12 +137,25 @@ export const semesterBoards: IBoardData = {
       title: '4th semester',
 
       cards: [
+
+        {
+          id: '234',
+          label: '',
+          title: 'Operating Systems and Lab',
+
+          description: 'Load: -  Grade: -',
+
+          tags: [
+            {title: 'Junehwa Song', color: 'white', bgcolor: profColorD},
+          ],
+        },
         {
           id: '123',
-          label: 'this is label',
-          title: 'world',
+          label: 'feedback',
+          title: 'balanced',
 
-          description: 'this is description',
+          description: 'Load: the load is similar with the other semesters\n' +
+          'Prerequisite: done',
         },
       ],
     },
@@ -98,13 +165,6 @@ export const semesterBoards: IBoardData = {
       title: '5th semester',
 
       cards: [
-        {
-          id: '123',
-          label: 'this is label',
-          title: 'world',
-
-          description: 'this is description',
-        },
       ],
     },
     {
@@ -113,13 +173,6 @@ export const semesterBoards: IBoardData = {
       title: '6th semester',
 
       cards: [
-        {
-          id: '123',
-          label: 'this is label',
-          title: 'world',
-
-          description: 'this is description',
-        },
       ],
     },
 
@@ -130,13 +183,6 @@ export const semesterBoards: IBoardData = {
       title: '7th semester',
 
       cards: [
-        {
-          id: '123',
-          label: 'this is label',
-          title: 'world',
-
-          description: 'this is description',
-        },
       ],
     },
     {
@@ -145,13 +191,6 @@ export const semesterBoards: IBoardData = {
       title: '8th semester',
 
       cards: [
-        {
-          id: '123',
-          label: 'this is label',
-          title: 'world',
-
-          description: 'this is description',
-        },
       ],
     },
     {
@@ -160,13 +199,6 @@ export const semesterBoards: IBoardData = {
       title: '9th semester',
 
       cards: [
-        {
-          id: '123',
-          label: 'this is label',
-          title: 'world',
-
-          description: 'this is description',
-        },
       ],
     },
     {
@@ -175,13 +207,6 @@ export const semesterBoards: IBoardData = {
       title: '10th semester',
 
       cards: [
-        {
-          id: '123',
-          label: 'this is label',
-          title: 'world',
-
-          description: 'this is description',
-        },
       ],
     },
     {
@@ -190,13 +215,6 @@ export const semesterBoards: IBoardData = {
       title: '11th semester',
 
       cards: [
-        {
-          id: '123',
-          label: 'this is label',
-          title: 'world',
-
-          description: 'this is description',
-        },
       ],
     },
     {
@@ -205,13 +223,6 @@ export const semesterBoards: IBoardData = {
       title: '12th semester',
 
       cards: [
-        {
-          id: '123',
-          label: 'this is label',
-          title: 'world',
-
-          description: 'this is description',
-        },
       ],
     },
 
@@ -223,10 +234,62 @@ export const semesterBoards: IBoardData = {
       cards: [
         {
           id: '123',
-          label: 'this is label',
-          title: 'world',
+          label: '',
+          title: 'Computer Science Projects',
 
-          description: 'this is description',
+          description: 'Load: -  Grade: -',
+
+          tags: [
+            {title: 'Jongmoon Baik', color: 'white', bgcolor: profColorD},
+            {title: 'Dongman Lee', color: 'white', bgcolor: profColorD },
+            {title: 'Sung-Ju Lee', color: 'white', bgcolor: profColorD },
+            {title: 'In-Young Ko', color: 'white', bgcolor: profColorD },
+            {title: 'Okjoo Choi', color: 'white', bgcolor: profColorD },
+          ],
+        },
+        {
+          id: '234',
+          label: '',
+          title: 'Operating Systems and Lab',
+
+          description: 'Load: -  Grade: -',
+
+          tags: [
+            {title: 'Junehwa Song', color: 'white', bgcolor: profColorD},
+          ],
+        },
+        {
+          id: '345',
+          label: '',
+          title: 'Computer Organization',
+
+          description: 'Load: -  Grade: -',
+
+          tags: [
+            {title: 'Jaehyuk Huh', color: 'white', bgcolor: profColorD},
+          ],
+        },
+        {
+          id: '456',
+          label: '',
+          title: 'Special Topics in Computer Science<Crowdsourcing and Social Computing>',
+
+          description: 'Load: -  Grade: -',
+
+          tags: [
+            {title: 'Juho Kim', color: 'white', bgcolor: profColorD},
+          ],
+        },
+        {
+          id: '567',
+          label: '',
+          title: 'Introduction to Software Engineering',
+
+          description: 'Load: -  Grade: -',
+
+          tags: [
+            {title: 'Doo-Hwan Bae', color: 'white', bgcolor: profColorD},
+          ],
         },
       ],
     },

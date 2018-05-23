@@ -16,6 +16,9 @@ declare module 'react-trello' {
     description: string;
     label: string;
     metadata?: any;
+    subtitle?: string; // get subtitle
+    body?: string; // d
+    tags?: any; // to get tag, temporary added
   }
 
   export interface IBoardProps {
@@ -44,6 +47,30 @@ declare module 'react-trello' {
     customLaneHeader?: any,
     style?: object,
     tagStyle?: object
+  }
+
+  export interface cardPropTypes {
+    id?: string,
+    title?: string,
+    index?: number,
+    description: string,
+    label?: string,
+    laneId?: string,
+    removeCard?: Function,
+    onClick: Function,
+    onDelete: Function,
+    metadata: object,
+    cardStyle: object,
+    tagStyle: object,
+    customCardLayout: boolean,
+    editable: boolean,
+    cardColor?: string,
+    name?: string,
+    dueOn: string,
+    subTitle: string,
+    body: string,
+    escalationText: string,
+
   }
 
   export default class Board extends React.Component<IBoardProps> {}
