@@ -59,6 +59,7 @@ export default jss
       overflowX: 'auto',
 
       height: '77vh',
+
       marginRight: '10vw',
       paddingLeft: '10vw',
       textAlign: 'left',
@@ -67,7 +68,6 @@ export default jss
         backgroundColor: lightGrey1,
 
         flex: '0 0 auto',
-        maxHeight: '77vh',
         minWidth: 300,
 
         margin: '10px',
@@ -112,17 +112,30 @@ export default jss
 
     cardHeader: {
       display: "flex",
-    },
+
+      '& svg': {
+        height: 20,
+      },
+    } as Style,
 
     cardMiddle: {
-
+      fontSize: 12,
+      marginBottom: 10,
     },
 
     cardProfs: {
-      '& span': {
+      display: "flex",
+      textAlign: "right",
+
+      '& div': {
         backgroundColor: defaultGrey,
-        fontSize: "70%",
-        height: 20,
+        borderRadius: 6,
+
+        fontSize: 12,
+        height: 18,
+
+        margin: 2,
+        padding: "2px 10px",
 
         '&:hover': {
           backgroundColor: 'ourKaistBlueH',
