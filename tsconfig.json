@@ -12,7 +12,8 @@
     "baseUrl": ".",
     "paths": {
       "pathfinder": ["src/@types/pathfinder"],
-      "@src/*": ["src/*"]
+      "@src/*": ["src/*"],
+      "*": ["custom_modules/*"]
     },
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
