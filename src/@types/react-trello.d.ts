@@ -1,13 +1,13 @@
 declare module 'react-trello' {
-  export interface IBoardData {
-    lanes: ILaneData[];
+  export interface IBoardData<T = ICardData> {
+    lanes: Array<ILaneData<T>>;
   }
 
-  export interface ILaneData {
+  export interface ILaneData<T> {
     id: string;
     title: string;
-    label: string;
-    cards: ICardData[];
+    label?: string;
+    cards: T[];
   }
 
   export interface ICardData {
@@ -22,10 +22,10 @@ declare module 'react-trello' {
   }
 
   export interface IBoardProps {
-    data?: IBoardData;
+    data?: any;
     actions?: object,
     reducerData?: object,
-    onDataChange?: Function,
+    onDataChange?: (newData: any) => void,
     eventBusHandle?: Function,
     onLaneScroll?: Function,
     onCardClick?: Function,
@@ -47,30 +47,6 @@ declare module 'react-trello' {
     customLaneHeader?: any,
     style?: object,
     tagStyle?: object
-  }
-
-  export interface cardPropTypes {
-    id?: string,
-    title?: string,
-    index?: number,
-    description: string,
-    label?: string,
-    laneId?: string,
-    removeCard?: Function,
-    onClick: Function,
-    onDelete: Function,
-    metadata: object,
-    cardStyle: object,
-    tagStyle: object,
-    customCardLayout: boolean,
-    editable: boolean,
-    cardColor?: string,
-    name?: string,
-    dueOn: string,
-    subTitle: string,
-    body: string,
-    escalationText: string,
-
   }
 
   export default class Board extends React.Component<IBoardProps> {}
