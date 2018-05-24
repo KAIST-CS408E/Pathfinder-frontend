@@ -285,6 +285,7 @@ export const semesterBoards: IBoardData = {
 export const plannerBoardData = [
   {
     id: 'semester1',
+    label: 'Load: 1.5 / Grade: 3.1',
 
     courses: [
       {
