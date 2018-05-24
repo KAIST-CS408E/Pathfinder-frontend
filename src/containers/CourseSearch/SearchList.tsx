@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 
 import Icon from '@material-ui/core/Icon';
 
-import { ICourse, IPinnedTable, IQueryResult } from 'pathfinder';
+import { ICourse, IPinnedTable, IQueryResult, TakenCourses } from 'pathfinder';
 import { buildCourseKey } from '../../utils/index';
 
 const ourKaistBlue = '#E3F2FD';
@@ -22,6 +22,7 @@ const ourKaistBlueD = '#1A237E';
 interface IProps {
   data?: IQueryResult['courses'];
   pinnedList: IPinnedTable;
+  takenCourses?: TakenCourses;
   onClickEntry: ClickEntryHandler;
   onClickPin: ClickPinHandler;
 }
@@ -53,19 +54,23 @@ export default class SearchList extends React.Component<IProps> {
   };
 
   public render() {
-    const { data, pinnedList } = this.props;
+    const { data, pinnedList, takenCourses } = this.props;
 
     let renderData: JSX.Element | JSX.Element[] = (
       <span>{'Sorry! nothing to show... perhaps broken API again?'}</span>
     );
 
-    if (data) {
+    if (data && takenCourses) {
       renderData = data.map(course => (
         <ListItem
           clickHandlerBuilder={this.handleClickEntry}
           clickPinHandlerBuilder={this.handleClickPin}
           course={course}
           key={course.number + course.lectures[0].division}
+          taken={takenCourses.some(
+            courseArr =>
+              courseArr[0] === course.number && courseArr[1] === course.subtitle
+          )}
           pinned={Boolean(
             pinnedList[
               buildCourseKey({
@@ -145,8 +150,8 @@ const styles = (theme: Theme) => ({
 
     '&:hover': {
       backgroundColor: 'rgba(0, 0, 0, 0.07)',
-      transition: 'background-color 300ms ease-in-out'
-    }
+      transition: 'background-color 300ms ease-in-out',
+    },
   },
 
   typo: {
@@ -188,6 +193,7 @@ interface ITableProps
   clickHandlerBuilder: ClickHandlerBuilder;
   clickPinHandlerBuilder: ClickPinHandlerBuilder;
   pinned: boolean;
+  taken?: boolean;
 }
 
 function CustomizedTable(props: ITableProps) {
@@ -197,6 +203,7 @@ function CustomizedTable(props: ITableProps) {
     clickHandlerBuilder,
     clickPinHandlerBuilder,
     pinned,
+    taken,
   } = props;
   const { lectures } = course;
 
@@ -210,33 +217,52 @@ function CustomizedTable(props: ITableProps) {
           className={classes.title}
           style={{ fontWeight: 500 }}
         >
-          <Chip label={`${course.number}`}
-                style={{ backgroundColor: ourKaistBlueD, color: "white", fontWeight: 400,
-                  height: "80%", margin: "0px 6px 0px -3px", padding: "0px 0px"}}
-          />{`${course.name}`}
+          <Chip
+            label={`${course.number}`}
+            style={{
+              backgroundColor: ourKaistBlueD,
+              color: 'white',
+              fontWeight: 400,
+              height: '80%',
+              margin: '0px 6px 0px -3px',
+              padding: '0px 0px',
+            }}
+          />
+          {`${course.name}`}
         </Typography>
         <IconButton
           className={classes.btn}
           color="inherit"
-          onClick={clickPinHandlerBuilder(course)}
+          onClick={taken ? undefined : clickPinHandlerBuilder(course)}
         >
-          <Icon>{pinned ? 'turned_in' : 'turned_in_not'}</Icon>
+          <Icon>{taken ? 'done' : pinned ? 'turned_in' : 'turned_in_not'}</Icon>
         </IconButton>
       </div>
       <Table className={classes.table}>
-        <TableHead >
+        <TableHead>
           <CustomTableRow>
             <CustomTableCell
-              style={{ paddingLeft: 16, fontWeight:400 }}
+              style={{ paddingLeft: 16, fontWeight: 400 }}
               className={classes.head}
             >
               School of Computing
             </CustomTableCell>
-            <CustomTableCell className={classes.head}  style={{ fontWeight: 400 }}>
+            <CustomTableCell
+              className={classes.head}
+              style={{ fontWeight: 400 }}
+            >
               Major Elective
             </CustomTableCell>
-            <CustomTableCell className={classes.head} style={{ fontWeight: 400 }}>Bachelor</CustomTableCell>
-            <CustomTableCell className={classes.head} style={{ fontWeight: 400 }}>
+            <CustomTableCell
+              className={classes.head}
+              style={{ fontWeight: 400 }}
+            >
+              Bachelor
+            </CustomTableCell>
+            <CustomTableCell
+              className={classes.head}
+              style={{ fontWeight: 400 }}
+            >
               Credit. 3:0:3
             </CustomTableCell>
             <CustomTableCell />

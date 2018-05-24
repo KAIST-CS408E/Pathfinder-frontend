@@ -257,6 +257,7 @@ class Search extends React.Component<IProps> {
       <div className={classes.resultContainer}>
         <SearchList
           data={queryResult ? queryResult.courses : undefined}
+          takenCourses={queryResult ? queryResult.take : undefined}
           pinnedList={pinnedList || {}}
           onClickEntry={this.handleClickEntry}
           onClickPin={this.handleClickPin}

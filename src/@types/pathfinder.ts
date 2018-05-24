@@ -72,8 +72,10 @@ export interface IQueryResult {
   year: string;
   term: string;
   courses: ICourse[];
-  take: Array<[CourseNumber, CourseSubtitle]>
+  take: TakenCourses
 }
+
+export type TakenCourses = Array<[CourseNumber, CourseSubtitle]>;
 
 export interface ICourse {
   name: string;
