@@ -35,6 +35,9 @@ interface IProps {
 const profColorD = '#9E9E9E';
 // const profColorS = '#536DFE';
 
+const warnColor = 'rgb(232, 113, 151)';
+const passColor = 'rgb(153, 190, 221)';
+
 class Planner extends React.Component<IProps> {
   constructor(props: any) {
     super(props);
@@ -139,8 +142,17 @@ class Planner extends React.Component<IProps> {
                     </div>
                   </Draggable>
                 );
-              })}
-            </Container>
+              }
+              )}
+              {semester.feedback ?
+                <div style={{ backgroundColor: semester.feedback[0].ok ? passColor : warnColor}}
+                     className={classes.feedback}>
+                  <div>{semester.feedback[0].type}
+                  {semester.feedback[0].ok ? " balanced" : " error"}</div>
+                  <div>{semester.feedback[0].reason}</div>
+                </div>
+                : "" }
+        </Container>
           ))}
         </div>
 

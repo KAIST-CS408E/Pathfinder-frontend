@@ -49,6 +49,7 @@ export const semesterBoards: IBoardData = {
           ],
         },
       ],
+
     },
     {
       id: 'lane2',
@@ -330,6 +331,11 @@ export const plannerBoardData = [
         ],
       },
     ],
+
+    feedback: [
+      {type: 'prerequisite', ok: false, reason: 'CALCULUSII requires CALCULUSI as prerequisite'},
+      {type: 'time', ok: true, reason: 'time well balanced'}
+    ]
   },
   {
     id: 'lane2',

@@ -143,6 +143,19 @@ export default jss
       },
     } as Style,
 
+    feedback: {
+      borderRadius: 4,
+      color: "white",
+      fontSize: 15,
+      fontWeight: 500,
+      height:200,
+      width: 320,
+
+      bottom: -210,
+      position: "absolute",
+      right: 0,
+    },
+
       /*
         '& > div': {
           zIndex: 0,
