@@ -22,14 +22,15 @@ interface IPeerCourseItemProps {
   courseNumber: string;
   icon: string;
   onClick: (courseNumber: string, subtitle: string) => void;
+  subtitle: string;
 }
 
 export default class PeerCourseListItem extends React.Component<
   IPeerCourseItemProps
 > {
   public handleClick = () => {
-    const { courseNumber } = this.props;
-    this.props.onClick(courseNumber, '');
+    const { courseNumber, subtitle } = this.props;
+    this.props.onClick(courseNumber, subtitle);
   };
 
   public render() {
