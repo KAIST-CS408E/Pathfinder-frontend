@@ -25,22 +25,46 @@ type CourseSubtitle = string;
 
 export type PinEntryAPI = [CourseNumber, CourseName, CourseSubtitle];
 
+/* Data structures for kanban */
+
+export interface IPlannerGetAll {
+  boardData: ISemester[];
+  currentSemester: number;
+}
 
 export interface ISemester {
   id: string;
+  semester: number;
+
   courses: ICourseCard[];
+
+  feedback: ISemesterFeedback[]
 }
 
 export interface ICourseCard {
   id: string;
+
+  type: 'pinned' | 'interested';
 
   name: string;
   courseNumber: string;
   subtitle: string;
 
   lectures: ILecture[];
-  professor: string;
+  selectedProfessor: string;
+
+  myGrade?: string; // undefined if not taken
+
+  special: string; // Use for colored feedback on cards
 }
+
+export interface ISemesterFeedback {
+  type: 'prerequisite' | 'time';
+  ok: boolean;
+  reason: any; // may be course number of colliding
+}
+
+export type RecommendedCourses = ICourseCard[]
 
 /* Data structures for searching and displaying */
 
