@@ -1,135 +1,65 @@
 import * as React from 'react';
+import { connect, Dispatch } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 import { Container, Draggable } from 'react-smooth-dnd';
 
-import iassign from 'immutable-assign';
+import { plannerBoardData } from '@src/constants';
+import { RootState } from '@src/redux';
+import { actions as plannerActions } from '@src/redux/planner';
 
-interface IState {
-  data: ICourseList[];
+import { ISemester } from 'pathfinder';
+
+interface IProps {
+  boardData: ISemester[];
+
+  onInitBoard: typeof plannerActions.initBoard;
+  onAddCourse: typeof plannerActions.addCourse;
+  onRemoveCourse: typeof plannerActions.removeCourse;
 }
 
-interface ICourseList {
-  id: string;
-  courses: ICourse[];
-  semester: number;
-}
-
-interface ICourse {
-  id: string;
-
-  name: string;
-  number: string;
-  subtitle: string;
-
-  lectures: ILecture[];
-  professor: string;
-}
-
-interface ILecture {
-  professor: string;
-}
-
-export default class Planner extends React.Component<{}, IState> {
+class Planner extends React.Component<IProps> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      data: [
-        {
-          id: 'sem1',
-          semester: 1,
+  }
 
-          courses: [
-            {
-              id: 'CS101|',
-
-              name: 'Intro to Programming',
-              number: 'CS101',
-              subtitle: '',
-
-              lectures: [{ professor: 'hello' }],
-              professor: 'hello',
-            },
-            {
-              id: 'CS204|',
-
-              name: 'Discrete Mathematics',
-              number: 'CS204',
-              subtitle: '',
-
-              lectures: [{ professor: 'hello' }],
-              professor: 'hello',
-            },
-          ],
-        },
-        {
-          id: 'sem2',
-          semester: 1,
-
-          courses: [
-            {
-              id: 'CS330|',
-
-              name: 'Operating System',
-              number: 'CS330',
-              subtitle: '',
-
-              lectures: [{ professor: 'hello' }],
-              professor: 'hello',
-            },
-            {
-              id: 'CS320|',
-
-              name: 'Programming Languages',
-              number: 'CS320',
-              subtitle: '',
-
-              lectures: [{ professor: 'hello' }],
-              professor: 'hello',
-            },
-          ],
-        }
-      ],
-    };
+  public componentDidMount() {
+    this.props.onInitBoard(plannerBoardData);
   }
 
   public onCardDrop = (semesterId: string) => (dropResult: any) => {
+    const { onAddCourse, onRemoveCourse } = this.props;
     const { removedIndex, addedIndex, payload } = dropResult;
     console.log(semesterId, dropResult);
-    const courseListIndex = this.state.data.findIndex(
-      courseL => courseL.id === semesterId
-    );
 
-    this.setState(
-      iassign(
-        this.state,
-        state => state.data[courseListIndex].courses,
-        (courses: ICourse[]) => {
-          if (removedIndex !== null) {
-            courses.splice(removedIndex, 1);
-          }
-
-          if (addedIndex !== null) {
-            courses.splice(addedIndex, 0, payload);
-          }
-
-          return courses;
-        }
-      )
-    );
+    if (removedIndex !== null) {
+      onRemoveCourse(semesterId, removedIndex);
+    }
+    if (addedIndex !== null) {
+      onAddCourse(semesterId, addedIndex, payload);
+    }
   };
 
   public getChildPayload = (semsterId: string) => (courseIndex: number) => {
-    return this.state.data.filter(courseList => courseList.id === semsterId)[0]
-      .courses[courseIndex];
+    return this.props.boardData.filter(
+      courseList => courseList.id === semsterId
+    )[0].courses[courseIndex];
   };
 
   public render() {
+    const { boardData } = this.props;
+
+    if (boardData === undefined) {
+      return <>Loading</>;
+    }
+
     return (
-      <div>
-        {this.state.data.map(semester => (
+      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {boardData.map(semester => (
           <Container
             key={semester.id}
             className="courseContainer"
-            style={{ marginTop: 30 }}
+            style={{ marginTop: 30, width: 300 }}
             groupName="col"
             orientation="vertical"
             onDrop={this.onCardDrop(semester.id)}
@@ -148,3 +78,17 @@ export default class Planner extends React.Component<{}, IState> {
     );
   }
 }
+
+const mapStateToProps = (state: RootState) => state.planner;
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(
+    {
+      onInitBoard: plannerActions.initBoard,
+
+      onAddCourse: plannerActions.addCourse,
+      onRemoveCourse: plannerActions.removeCourse,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchToProps)(Planner);

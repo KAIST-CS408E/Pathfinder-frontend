@@ -25,6 +25,23 @@ type CourseSubtitle = string;
 
 export type PinEntryAPI = [CourseNumber, CourseName, CourseSubtitle];
 
+
+export interface ISemester {
+  id: string;
+  courses: ICourseCard[];
+}
+
+export interface ICourseCard {
+  id: string;
+
+  name: string;
+  courseNumber: string;
+  subtitle: string;
+
+  lectures: ILecture[];
+  professor: string;
+}
+
 /* Data structures for searching and displaying */
 
 export interface IQueryResult {
