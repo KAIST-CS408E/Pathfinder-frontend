@@ -205,28 +205,29 @@ class Detail extends React.Component<
     const subtitle = new URLSearchParams(location.search).get('subtitle') || '';
 
     onInitDetail({ year, term, division, subtitle, number: courseNumber });
-    this.fetchDetailedData();
+    this.fetchDetailedData(courseNumber, subtitle);
   }
 
   public componentDidUpdate(prevProps: IProps) {
     if (!this.props.data) {
       return;
     }
+    const {
+      courseNumber: targetCourseNumber,
+      subtitle: targetSubtitle,
+    } = this.props;
     const { number: courseNumber, subtitle } = this.props.data.course;
     if (
       !this.props.fetching &&
-      (courseNumber !== this.props.courseNumber ||
-      subtitle !== this.props.subtitle)
+      (courseNumber !== targetCourseNumber || subtitle !== targetSubtitle)
     ) {
-      console.log('Updating %s to %s', courseNumber, this.props.courseNumber);
-      this.fetchDetailedData();
+      console.log('Updating %s to %s', courseNumber, targetCourseNumber);
+      this.fetchDetailedData(targetCourseNumber, targetSubtitle);
     }
   }
 
-  public fetchDetailedData() {
+  public fetchDetailedData(courseNumber: string, subtitle: string) {
     const {
-      courseNumber,
-      subtitle,
       onFetchDetailRequest,
       onFetchDetailSuccess,
       onFetchDetailFailure,
@@ -263,13 +264,11 @@ class Detail extends React.Component<
 
   public redirectTo = (url: string) => {
     this.props.replace(url, { modalDetail: true });
-  }
+  };
 
   public handleLectureCardClick = (lecture: ILectureDetail) => () => {
     const { courseNumber, subtitle } = this.props;
-    this.redirectTo(
-      this.getAnotherLectureURL(courseNumber, subtitle, lecture)
-    );
+    this.redirectTo(this.getAnotherLectureURL(courseNumber, subtitle, lecture));
     this.props.onChangeLecture(lecture);
   };
 
@@ -444,7 +443,7 @@ class Detail extends React.Component<
                   }
                 >
                   {/* TODO:: Prerequisite by college -> star_rate */}
-                  {data.before.map(([courseNumber, courseName]) => (
+                  {data.before.map(([courseNumber, courseName, subtitle]) => (
                     <PeerCourseListItem
                       key={courseNumber}
                       className={customClass.listItems}
@@ -452,19 +451,20 @@ class Detail extends React.Component<
                       courseNumber={courseNumber}
                       icon="equalizer"
                       onClick={this.handlePeerCourseClick}
+                      subtitle={subtitle}
                     />
                   ))}
                   {/* TODO:: Prerequisite done -> done */}
                 </List>
               </div>
-              <CardMedia className={classes.sankyGraphDiv}>
-                <img
-                  style={{ maxHeight: '30vh' }}
-                  src={
-                    'https://csaladenes.files.wordpress.com/2014/11/clipboard01.png?w=720&h=488'
-                  }
-                />
-              </CardMedia>
+              {/*<CardMedia className={classes.sankyGraphDiv}>*/}
+              {/*<img*/}
+              {/*style={{ maxHeight: '30vh' }}*/}
+              {/*src={*/}
+              {/*'https://csaladenes.files.wordpress.com/2014/11/clipboard01.png?w=720&h=488'*/}
+              {/*}*/}
+              {/*/>*/}
+              {/*</CardMedia>*/}
               <div className={classes.besideSankyGraph}>
                 <List
                   component="nav"
@@ -481,7 +481,7 @@ class Detail extends React.Component<
                     </RcmSubHeader>
                   }
                 >
-                  {data.with.map(([courseNumber, courseName]) => (
+                  {data.with.map(([courseNumber, courseName, subtitle]) => (
                     <PeerCourseListItem
                       key={courseName}
                       className={customClass.listItems}
@@ -489,6 +489,37 @@ class Detail extends React.Component<
                       courseNumber={courseNumber}
                       icon="equalizer"
                       onClick={this.handlePeerCourseClick}
+                      subtitle={subtitle}
+                    />
+                  ))}
+                  {/* TODO:: Taken with done -> done */}
+                </List>
+              </div>
+              <div className={classes.besideSankyGraph}>
+                <List
+                  component="nav"
+                  subheader={
+                    <RcmSubHeader
+                      component="div"
+                      style={{
+                        backgroundColor: lightGrey1,
+                        position: 'relative',
+                      }}
+                    >
+                      Other students takes<br />
+                      <strong>those</strong> after OS...
+                    </RcmSubHeader>
+                  }
+                >
+                  {data.after.map(([courseNumber, courseName, subtitle]) => (
+                    <PeerCourseListItem
+                      key={courseName}
+                      className={customClass.listItems}
+                      courseName={courseName}
+                      courseNumber={courseNumber}
+                      icon="equalizer"
+                      onClick={this.handlePeerCourseClick}
+                      subtitle={subtitle}
                     />
                   ))}
                   {/* TODO:: Taken with done -> done */}
@@ -592,7 +623,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       onFetchDetailFailure: detailActions.fetchDetailFailure,
 
       push,
-      replace
+      replace,
     },
     dispatch
   );

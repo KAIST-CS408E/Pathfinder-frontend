@@ -1,81 +1,150 @@
 import * as React from 'react';
 
-import { RouteComponentProps } from 'react-router-dom';
+import { Container, Draggable } from 'react-smooth-dnd';
 
+import iassign from 'immutable-assign';
 
-import { semesterBoards } from '@src/constants';
-import Board from 'react-trello';
+interface IState {
+  data: ICourseList[];
+}
 
-import Avatar from '@material-ui/core/Avatar';
-import Chip from '@material-ui/core/Chip';
-import Typography from '@material-ui/core/Typography';
+interface ICourseList {
+  id: string;
+  courses: ICourse[];
+  semester: number;
+}
 
-import PlayCircleOutline from '@material-ui/icons/PlayCircleOutline';
-import ThumbUp from '@material-ui/icons/ThumbUp';
+interface ICourse {
+  id: string;
 
-import styles from './Planner.style';
+  name: string;
+  number: string;
+  subtitle: string;
 
-const { classes } = styles;
-// const ourKaistBlue = '#E3F2FD';
+  lectures: ILecture[];
+  professor: string;
+}
 
+interface ILecture {
+  professor: string;
+}
 
+export default class Planner extends React.Component<{}, IState> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      data: [
+        {
+          id: 'sem1',
+          semester: 1,
 
-export default class Planner extends React.Component<RouteComponentProps<{}>> {
+          courses: [
+            {
+              id: 'CS101|',
+
+              name: 'Intro to Programming',
+              number: 'CS101',
+              subtitle: '',
+
+              lectures: [{ professor: 'hello' }],
+              professor: 'hello',
+            },
+            {
+              id: 'CS204|',
+
+              name: 'Discrete Mathematics',
+              number: 'CS204',
+              subtitle: '',
+
+              lectures: [{ professor: 'hello' }],
+              professor: 'hello',
+            },
+          ],
+        },
+        {
+          id: 'sem2',
+          semester: 1,
+
+          courses: [
+            {
+              id: 'CS330|',
+
+              name: 'Operating System',
+              number: 'CS330',
+              subtitle: '',
+
+              lectures: [{ professor: 'hello' }],
+              professor: 'hello',
+            },
+            {
+              id: 'CS320|',
+
+              name: 'Programming Languages',
+              number: 'CS320',
+              subtitle: '',
+
+              lectures: [{ professor: 'hello' }],
+              professor: 'hello',
+            },
+          ],
+        }
+      ],
+    };
+  }
+
+  public onCardDrop = (semesterId: string) => (dropResult: any) => {
+    const { removedIndex, addedIndex, payload } = dropResult;
+    console.log(semesterId, dropResult);
+    const courseListIndex = this.state.data.findIndex(
+      courseL => courseL.id === semesterId
+    );
+
+    this.setState(
+      iassign(
+        this.state,
+        state => state.data[courseListIndex].courses,
+        (courses: ICourse[]) => {
+          if (removedIndex !== null) {
+            courses.splice(removedIndex, 1);
+          }
+
+          if (addedIndex !== null) {
+            courses.splice(addedIndex, 0, payload);
+          }
+
+          return courses;
+        }
+      )
+    );
+  };
+
+  public getChildPayload = (semsterId: string) => (courseIndex: number) => {
+    return this.state.data.filter(courseList => courseList.id === semsterId)[0]
+      .courses[courseIndex];
+  };
+
   public render() {
     return (
       <div>
-        <div className={classes.titleContainer}>
-          <Typography align="left" variant="headline">
-            My Academic Path Simulator
-          </Typography>
-          <Typography align="left" variant="subheading">
-            Plan my academic path, simulate, and get recommends based on real
-            data.
-            <br />* This system is helpful, but blind trust can be dangerous.
-          </Typography>
-        </div>
-
-        <div className={classes.division}>{/* give division */}</div>
-        <div style={{ textAlign: 'right', margin: '0vh 10vw 3vh 0vw' }}>
-          <Chip
-            style={{
-              backgroundColor: '#FF9800',
-              color: 'white',
-              marginRight: '1vw',
-            }}
-            label="Course Recommendation"
-            avatar={
-              <Avatar style={{ backgroundColor: '#FF9800', color: 'white' }}>
-                <ThumbUp />
-              </Avatar>
-            }
-          />
-          <Chip
-            style={{
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              marginRight: '1vw',
-            }}
-            label="Course Simulation"
-            avatar={
-              <Avatar style={{ backgroundColor: '#4CAF50', color: 'white' }}>
-                <PlayCircleOutline />
-              </Avatar>
-            }
-          />
-        </div>
-        <div className={classes.boardContainer}>
-          <Board
-            draggable
-            data={semesterBoards}
-            style={{
-              backgroundColor: 'white',
-              flex: '0 0 auto',
-              marginRight: '10vw',
-              padding: '0vh 0vw 0vh 10vw',
-            }}
-          />
-        </div>
+        {this.state.data.map(semester => (
+          <Container
+            key={semester.id}
+            className="courseContainer"
+            style={{ marginTop: 30 }}
+            groupName="col"
+            orientation="vertical"
+            onDrop={this.onCardDrop(semester.id)}
+            getChildPayload={this.getChildPayload(semester.id)}
+          >
+            {semester.courses.map(course => {
+              return (
+                <Draggable key={course.id}>
+                  <p>{course.name}</p>
+                </Draggable>
+              );
+            })}
+          </Container>
+        ))}
       </div>
     );
   }

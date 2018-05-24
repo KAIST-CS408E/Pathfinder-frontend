@@ -33,8 +33,8 @@ import { RootState } from '@src/redux';
 import { actions as pinActions } from '@src/redux/pinnedList';
 import { buildCourseKey } from '@src/utils';
 
-
 jss.setup(preset());
+
 const { classes } = jss
   .createStyleSheet({
     label: {
@@ -68,7 +68,6 @@ interface IState {
 }
 
 class App extends React.Component<IProps, IState> {
-
   public pinnedListAnchor: React.RefObject<any>;
 
   constructor(props: any) {
