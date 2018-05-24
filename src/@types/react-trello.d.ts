@@ -51,3 +51,4 @@ declare module 'react-trello' {
 
   export default class Board extends React.Component<IBoardProps> {}
 }
+

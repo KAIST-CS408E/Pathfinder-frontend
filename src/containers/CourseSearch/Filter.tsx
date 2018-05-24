@@ -3,9 +3,9 @@ import * as React from 'react';
 // import * as cn from 'classnames';
 import iassign from 'immutable-assign';
 
+import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
-import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Add from '@material-ui/icons/Add';
@@ -198,12 +198,12 @@ export default class Filter extends React.Component<IProps, IState> {
         />
 
         <div className="filterItem department">
-          <IconButton
+          <Chip
+            label={Object.values(filterOptions.department).length}
+            avatar={<Avatar style={{ backgroundColor: "rgba(0, 0, 0, 0.0)"}}><Add/></Avatar>}
             className={classes.addDepartmentBtn}
             onClick={this.handleClickAddDepartment}
-          >
-            <Add />
-          </IconButton>
+          />
           <DepartmentPopover
             anchor={
               openAddDepartment ? (openAddDepartment as HTMLElement) : undefined

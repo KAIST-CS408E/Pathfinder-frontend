@@ -213,7 +213,7 @@ class Search extends React.Component<IProps> {
 
     return (
       <Card className={classes.searchCard}>
-        <CardContent>
+        <CardContent style={{ paddingBottom: 18 }}>
           <div className={classes.searchBox}>
             <div className={classes.optionContainer}>
               <TextField
