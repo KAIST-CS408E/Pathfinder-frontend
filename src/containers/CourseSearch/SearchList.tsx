@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import Chip from '@material-ui/core/Chip';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import { Theme, withStyles, WithStyles } from '@material-ui/core/styles';
@@ -202,8 +203,12 @@ function CustomizedTable(props: ITableProps) {
           variant="headline"
           component="h3"
           className={classes.title}
+          style={{ fontWeight: 500 }}
         >
-          {`${course.name} (${course.number})`}
+          <Chip label={`${course.number}`}
+                style={{ backgroundColor: ourKaistBlueD, color: "white", fontWeight: 400,
+                  height: "80%", margin: "0px 6px 0px -3px", padding: "0px 0px"}}
+          />{`${course.name}`}
         </Typography>
         <IconButton
           className={classes.btn}
@@ -214,19 +219,19 @@ function CustomizedTable(props: ITableProps) {
         </IconButton>
       </div>
       <Table className={classes.table}>
-        <TableHead>
+        <TableHead >
           <CustomTableRow>
             <CustomTableCell
-              style={{ paddingLeft: 16 }}
+              style={{ paddingLeft: 16, fontWeight:400 }}
               className={classes.head}
             >
               School of Computing
             </CustomTableCell>
-            <CustomTableCell className={classes.head}>
+            <CustomTableCell className={classes.head}  style={{ fontWeight: 400 }}>
               Major Elective
             </CustomTableCell>
-            <CustomTableCell className={classes.head}>Bachelor</CustomTableCell>
-            <CustomTableCell className={classes.head}>
+            <CustomTableCell className={classes.head} style={{ fontWeight: 400 }}>Bachelor</CustomTableCell>
+            <CustomTableCell className={classes.head} style={{ fontWeight: 400 }}>
               Credit. 3:0:3
             </CustomTableCell>
             <CustomTableCell />

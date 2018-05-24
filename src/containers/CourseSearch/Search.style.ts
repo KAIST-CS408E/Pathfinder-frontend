@@ -91,29 +91,51 @@ export default jss
       // height: 100,
       width: 150,
 
+      marginBottom: 4,
       marginLeft: 6,
     },
 
     searchFilter: {
       display: 'flex',
       flexWrap: 'wrap',
+      paddingTop: 8,
 
       alignItems: 'center',
 
       flexGrow: 1,
 
+      '& > div': {
+        marginBottom: 6,
+      },
+
       '& .filterItem': {
         marginRight: 12,
       },
 
-      '& .department .chip': {
+      '& .chip': {
         marginRight: 6,
+      },
+
+      '& .department': {
+        display: "flex",
+        marginRight: 6,
+        paddingTop: 4,
+
+        '& > div': {
+          '&:first-child': {
+            '& span': {
+              paddingLeft: 0,
+            },
+          },
+        },
       },
     } as Style,
 
     addDepartmentBtn: {
-      height: 24,
-      width: 24,
+      backgroundColor: "rgba(0, 0, 0, 0.0)",
+      border: "1px solid rgba(0, 0, 0, 0.43)",
+      height: 30,
+      marginRight: 6,
 
       // margin: 0,
     },
