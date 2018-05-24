@@ -54,12 +54,13 @@ class Planner extends React.Component<IProps> {
     }
 
     return (
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-        {boardData.map(semester => (
+      <div style={{ display: 'flex', flexWrap: 'nowrap' }}>
+        <div style={{ width: 600, overflowX: 'scroll'}}>
+        {boardData.slice(0, -1).map(semester => (
           <Container
             key={semester.id}
             className="courseContainer"
-            style={{ marginTop: 30, width: 300 }}
+            style={{ backgroundColor: 'steelblue', margin: 30, minHeight: 100, width: 300 }}
             groupName="col"
             orientation="vertical"
             onDrop={this.onCardDrop(semester.id)}
@@ -74,6 +75,28 @@ class Planner extends React.Component<IProps> {
             })}
           </Container>
         ))}
+        </div>
+        <div>
+        {boardData.slice(-2, -1).map(courseList => (
+          <Container
+            key={courseList.id}
+            className="courseContainer"
+            style={{ backgroundColor: 'steelblue', margin: 30, minHeight: 100, width: 300 }}
+            groupName="col"
+            orientation="vertical"
+            onDrop={this.onCardDrop(courseList.id)}
+            getChildPayload={this.getChildPayload(courseList.id)}
+          >
+            {courseList.courses.map(course => {
+              return (
+                <Draggable key={course.id}>
+                  <p>{course.name}</p>
+                </Draggable>
+              );
+            })}
+          </Container>
+        ))}
+        </div>
       </div>
     );
   }

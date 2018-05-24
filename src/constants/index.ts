@@ -336,7 +336,7 @@ export const plannerBoardData = [
 
     courses: [
       {
-        id: '123',
+        id: 'CS230',
         label: 'A0',
         name: 'System Programing',
         subtitle: '',
@@ -355,7 +355,7 @@ export const plannerBoardData = [
         ],
       },
       {
-        id: '234',
+        id: 'CS300',
         label: 'A0',
         name: 'Introduction to Algorithm',
 
@@ -368,7 +368,7 @@ export const plannerBoardData = [
         ],
       },
       {
-        id: '345',
+        id: 'CS320',
         name: 'Programming Language',
 
         courseNumber: 'CS320',
@@ -382,7 +382,7 @@ export const plannerBoardData = [
 
     courses: [
       {
-        id: '123',
+        id: 'CS408',
 
         name: 'Computer Science Projects',
 
@@ -398,7 +398,7 @@ export const plannerBoardData = [
         ],
       },
       {
-        id: '345',
+        id: 'CS340',
 
         name: 'Computer Organization',
 
@@ -416,7 +416,7 @@ export const plannerBoardData = [
 
     courses: [
       {
-        id: '234',
+        id: 'CS330',
 
         name: 'Operating Systems and Lab',
 
