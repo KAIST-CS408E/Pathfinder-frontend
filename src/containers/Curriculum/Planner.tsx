@@ -1,184 +1,150 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { Container, Draggable } from 'react-smooth-dnd';
 
-// import { semesterBoards } from '@src/constants';
-import Board, { IBoardData } from 'react-trello';
+import iassign from 'immutable-assign';
 
-import Avatar from '@material-ui/core/Avatar';
-import Chip from '@material-ui/core/Chip';
-import Typography from '@material-ui/core/Typography';
+interface IState {
+  data: ICourseList[];
+}
 
-import PlayCircleOutline from '@material-ui/icons/PlayCircleOutline';
-import ThumbUp from '@material-ui/icons/ThumbUp';
+interface ICourseList {
+  id: string;
+  courses: ICourse[];
+  semester: number;
+}
 
-import styles from './Planner.style';
+interface ICourse {
+  id: string;
 
-const { classes } = styles;
-// const ourKaistBlue = '#E3F2FD';
+  name: string;
+  number: string;
+  subtitle: string;
 
-export default class Planner extends React.Component<RouteComponentProps<{}>> {
+  lectures: ILecture[];
+  professor: string;
+}
+
+interface ILecture {
+  professor: string;
+}
+
+export default class Planner extends React.Component<{}, IState> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      data: [
+        {
+          id: 'sem1',
+          semester: 1,
+
+          courses: [
+            {
+              id: 'CS101|',
+
+              name: 'Intro to Programming',
+              number: 'CS101',
+              subtitle: '',
+
+              lectures: [{ professor: 'hello' }],
+              professor: 'hello',
+            },
+            {
+              id: 'CS204|',
+
+              name: 'Discrete Mathematics',
+              number: 'CS204',
+              subtitle: '',
+
+              lectures: [{ professor: 'hello' }],
+              professor: 'hello',
+            },
+          ],
+        },
+        {
+          id: 'sem2',
+          semester: 1,
+
+          courses: [
+            {
+              id: 'CS330|',
+
+              name: 'Operating System',
+              number: 'CS330',
+              subtitle: '',
+
+              lectures: [{ professor: 'hello' }],
+              professor: 'hello',
+            },
+            {
+              id: 'CS320|',
+
+              name: 'Programming Languages',
+              number: 'CS320',
+              subtitle: '',
+
+              lectures: [{ professor: 'hello' }],
+              professor: 'hello',
+            },
+          ],
+        }
+      ],
+    };
+  }
+
+  public onCardDrop = (semesterId: string) => (dropResult: any) => {
+    const { removedIndex, addedIndex, payload } = dropResult;
+    console.log(semesterId, dropResult);
+    const courseListIndex = this.state.data.findIndex(
+      courseL => courseL.id === semesterId
+    );
+
+    this.setState(
+      iassign(
+        this.state,
+        state => state.data[courseListIndex].courses,
+        (courses: ICourse[]) => {
+          if (removedIndex !== null) {
+            courses.splice(removedIndex, 1);
+          }
+
+          if (addedIndex !== null) {
+            courses.splice(addedIndex, 0, payload);
+          }
+
+          return courses;
+        }
+      )
+    );
+  };
+
+  public getChildPayload = (semsterId: string) => (courseIndex: number) => {
+    return this.state.data.filter(courseList => courseList.id === semsterId)[0]
+      .courses[courseIndex];
+  };
+
   public render() {
     return (
       <div>
-        <div className={classes.titleContainer}>
-          <Typography align="left" variant="headline">
-            My Academic Path Simulator
-          </Typography>
-          <Typography align="left" variant="subheading">
-            Plan my academic path, simulate, and get recommends based on real
-            data.
-            <br />* This system is helpful, but blind trust can be dangerous.
-          </Typography>
-        </div>
-
-        <div className={classes.division}>{/* give division */}</div>
-        <div style={{ textAlign: 'right', margin: '0vh 10vw 3vh 0vw' }}>
-          <Chip
-            style={{
-              backgroundColor: '#FF9800',
-              color: 'white',
-              marginRight: '1vw',
-            }}
-            label="Course Recommendation"
-            avatar={
-              <Avatar style={{ backgroundColor: '#FF9800', color: 'white' }}>
-                <ThumbUp />
-              </Avatar>
-            }
-          />
-          <Chip
-            style={{
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              marginRight: '1vw',
-            }}
-            label="Course Simulation"
-            avatar={
-              <Avatar style={{ backgroundColor: '#4CAF50', color: 'white' }}>
-                <PlayCircleOutline />
-              </Avatar>
-            }
-          />
-        </div>
-        <div className={classes.boardContainer}>
-          <Board
-            customCardLayout
-            draggable
-            data={data}
-            style={{
-              backgroundColor: 'white',
-              flex: '0 0 auto',
-              marginRight: '10vw',
-              padding: '0vh 0vw 0vh 10vw',
-            }}
+        {this.state.data.map(semester => (
+          <Container
+            key={semester.id}
+            className="courseContainer"
+            style={{ marginTop: 30 }}
+            groupName="col"
+            orientation="vertical"
+            onDrop={this.onCardDrop(semester.id)}
+            getChildPayload={this.getChildPayload(semester.id)}
           >
-            <CustomCard />
-          </Board>
-        </div>
+            {semester.courses.map(course => {
+              return (
+                <Draggable key={course.id}>
+                  <p>{course.name}</p>
+                </Draggable>
+              );
+            })}
+          </Container>
+        ))}
       </div>
     );
   }
 }
-
-interface ICustomCardProps {
-  dueOn: string,
-  id: string,
-  name: string,
-
-  subTitle: string,
-
-  body: string,
-
-  escalationText: string,
-
-  cardColor: any,
-  cardStyle: any,
-}
-
-const CustomCard = (props: any) => {
-  return (
-    <div>
-      <header
-        style={{
-          borderBottom: '1px solid #eee',
-          color: props.cardColor,
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginBottom: 10,
-          paddingBottom: 6,
-        }}
-      >
-        <div style={{ fontSize: 14, fontWeight: 'bold' }}>{props.name}</div>
-        <div style={{ fontSize: 11 }}>{props.dueOn}</div>
-      </header>
-      <div style={{ fontSize: 12, color: '#BD3B36' }}>
-        <div style={{ color: '#4C4C4C', fontWeight: 'bold' }}>
-          {props.subTitle}
-        </div>
-        <div style={{ padding: '5px 0px' }}>
-          <i>{props.body}</i>
-        </div>
-        <div
-          style={{
-            color: props.cardColor,
-            fontSize: 15,
-            fontWeight: 'bold',
-            marginTop: 10,
-            textAlign: 'center',
-          }}
-        >
-          {props.escalationText}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const data: IBoardData<ICustomCardProps> = {
-  lanes: [
-    {
-      id: 'lane1',
-      title: 'Planned Tasks',
-
-      cards: [
-        {
-          dueOn: 'due in a day',
-          id: 'Card1',
-          name: 'John Smith',
-
-          subTitle: 'SMS received at 12:13pm today',
-
-          body: 'Thanks. Please schedule me for an estimate on Monday.',
-
-          escalationText: 'Escalated to OPS-ESCALATIONS!',
-
-          cardColor: '#BD3B36',
-          cardStyle: {
-            borderRadius: 6,
-            boxShadow: '0 0 6px 1px #BD3B36',
-            marginBottom: 15,
-          },
-        },
-        {
-          dueOn: 'due now',
-          id: 'Card2',
-          name: 'Card Weathers',
-
-          subTitle: 'Email received at 1:14pm',
-
-          body: 'Is the estimate free, and can someone call me soon?',
-
-          escalationText: 'Escalated to Admin',
-
-          cardColor: '#E08521',
-          cardStyle: {
-            borderRadius: 6,
-            boxShadow: '0 0 6px 1px #E08521',
-            marginBottom: 15,
-          },
-        },
-      ],
-    },
-  ],
-};
