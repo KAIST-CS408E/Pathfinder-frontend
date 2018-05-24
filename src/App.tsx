@@ -23,6 +23,7 @@ import TurnedIn from '@material-ui/icons/TurnedIn';
 
 import Courses from './containers/Courses';
 import Curriculum from './containers/Curriculum';
+import Dashboard from './containers/Dashboard';
 
 import './App.css';
 
@@ -211,9 +212,7 @@ class App extends React.Component<IProps, IState> {
         </AppBar>
         <Switch location={location}>
           <Redirect exact from="/" to="/dashboard" />
-          <Route path="/dashboard">
-            <div>This is dashboard</div>
-          </Route>
+          <Route path="/dashboard" component={Dashboard} />
           <Route path="/courses" render={this.renderCourses} />
           <Route path="/curriculum" render={this.renderCurriculum} />
         </Switch>
