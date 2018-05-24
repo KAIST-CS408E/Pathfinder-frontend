@@ -31,6 +31,10 @@ interface IProps {
   onRemoveCourse: typeof plannerActions.removeCourse;
 }
 
+
+const profColorD = '#9E9E9E';
+// const profColorS = '#536DFE';
+
 class Planner extends React.Component<IProps> {
   constructor(props: any) {
     super(props);
@@ -58,6 +62,10 @@ class Planner extends React.Component<IProps> {
       courseList => courseList.id === semsterId
     )[0].courses[courseIndex];
   };
+
+  public preventDragging = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+  }
 
   public render() {
     const { boardData } = this.props;
@@ -119,13 +127,16 @@ class Planner extends React.Component<IProps> {
               </header>
               {semester.courses.map(course => {
                 return (
-                  <Draggable key={course.id} className={classes.card}>
+                  <Draggable onClick={this.preventDragging} key={course.id} className={classes.card}>
                     <header className={classes.cardHeader}>
                       <div style={{ width: "100%" }}>{course.name}<span style={{fontSize: 12}}>{course.label ? course.label : ""}</span></div>
-                      <div><Description/></div>
+                      <div style={{ height: 20 }}><Description/></div>
                     </header>
-                    <div>{course.description ? course.description : "Load:-.- Grade:-.-"}</div>
-                    <div><span style={{ color: "white" }}>{course.lectures[0].professor}</span></div>
+                    <div className={classes.cardMiddle}>{course.description ? course.description : "Load:-.- Grade:-.-"}</div>
+                    <div className={classes.cardProfs}>
+                      <div style={{ backgroundColor: profColorD, color: "white" }}>
+                        {course.lectures[0].professor}</div>
+                    </div>
                   </Draggable>
                 );
               })}
