@@ -28,11 +28,14 @@ export type PinEntryAPI = [CourseNumber, CourseName, CourseSubtitle];
 
 export interface ISemester {
   id: string;
+  label?: string;
   courses: ICourseCard[];
 }
 
 export interface ICourseCard {
   id: string;
+  label?: string;
+  description?: string;
 
   name: string;
   courseNumber: string;
