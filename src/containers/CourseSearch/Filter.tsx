@@ -199,8 +199,15 @@ export default class Filter extends React.Component<IProps, IState> {
 
         <div className="filterItem department">
           <Chip
-            label={Object.values(filterOptions.department).length}
-            avatar={<Avatar style={{ backgroundColor: "rgba(0, 0, 0, 0.0)"}}><Add/></Avatar>}
+            label={
+              Object.values(filterOptions.department).filter(bool => bool)
+                .length || 'Department'
+            }
+            avatar={
+              <Avatar style={{ backgroundColor: 'rgba(0, 0, 0, 0.0)' }}>
+                <Add />
+              </Avatar>
+            }
             className={classes.addDepartmentBtn}
             onClick={this.handleClickAddDepartment}
           />

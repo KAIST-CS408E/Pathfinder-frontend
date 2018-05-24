@@ -142,6 +142,11 @@ const styles = (theme: Theme) => ({
       // padding: theme.spacing.unit.valueOf()[1],
       height: 36,
     },
+
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.07)',
+      transition: 'background-color 300ms ease-in-out'
+    }
   },
 
   typo: {

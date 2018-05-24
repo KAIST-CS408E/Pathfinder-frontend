@@ -13,6 +13,7 @@ import TextField from '@material-ui/core/TextField';
 
 import { IFilterOptions, IPinComponentProps, IQueryResult } from 'pathfinder';
 
+import { pinCourse, unpinCourse } from '@src/api';
 import { API_URL } from '@src/constants/api';
 import { RootState } from '@src/redux';
 import { rootActions as actions } from '@src/redux';
@@ -202,9 +203,17 @@ class Search extends React.Component<IProps> {
       subtitle: course.subtitle,
     };
     if (!this.props.pinnedList[buildCourseKey(datum)]) {
-      this.props.onPinnedCourse(datum);
+      pinCourse(datum).then(response => {
+        if (response.success) {
+          this.props.onPinnedCourse(datum);
+        }
+      });
     } else {
-      this.props.onUnpinCourse(datum);
+      unpinCourse(datum).then(response => {
+        if (response.success) {
+          this.props.onUnpinCourse(datum);
+        }
+      });
     }
   };
 
