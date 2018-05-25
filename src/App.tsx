@@ -29,7 +29,7 @@ import './App.css';
 
 import { IPinnedCourse, IPinnedTable, PinEntryAPI } from 'pathfinder';
 
-import { API_URL } from '@src/constants/api';
+import { getAllPin, pinCourse, unpinCourse } from '@src/api';
 import { RootState } from '@src/redux';
 import { actions as pinActions } from '@src/redux/pinnedList';
 import { buildCourseKey } from '@src/utils';
@@ -80,47 +80,33 @@ class App extends React.Component<IProps, IState> {
   }
 
   public componentDidMount() {
-    fetch(API_URL + '/pin')
-      .then(r => r.json())
-      .then(d => {
-        this.props.onPinMultipleCourses(d);
-      });
+    getAllPin().then(d => {
+      this.props.onPinMultipleCourses(d);
+    });
   }
 
   public pinCourse = (course: IPinnedCourse) => {
     // only if it does not exist in list
     if (!this.props.pinnedList[buildCourseKey(course)]) {
-      fetch(
-        `${API_URL}/pin/${course.courseNumber}?subtitle=${course.subtitle}`,
-        { method: 'POST' }
-      )
-        .then(r => r.json())
-        .then((response: any) => {
-          if (response.success) {
-            this.props.onPinCourse(course);
-          } else {
-            console.error('FAILED to PIN');
-          }
-        })
-        .catch(e => console.error(e));
+      pinCourse(course).then((response: any) => {
+        if (response.success) {
+          this.props.onPinCourse(course);
+        } else {
+          console.error('FAILED to PIN');
+        }
+      });
     }
   };
 
   public unpinCourse = (course: IPinnedCourse) => {
     if (this.props.pinnedList[buildCourseKey(course)]) {
-      fetch(
-        `${API_URL}/pin/${course.courseNumber}?subtitle=${course.subtitle}`,
-        { method: 'DELETE' }
-      )
-        .then(r => r.json())
-        .then((response: any) => {
-          if (response.success) {
-            this.props.onUnpinCourse(course);
-          } else {
-            console.error('FAILED to UNPIN');
-          }
-        })
-        .catch(e => console.error(e));
+      unpinCourse(course).then((response: any) => {
+        if (response.success) {
+          this.props.onUnpinCourse(course);
+        } else {
+          console.error('FAILED to UNPIN');
+        }
+      });
     }
   };
 
@@ -206,6 +192,7 @@ class App extends React.Component<IProps, IState> {
                     </ListItem>
                   ))}
                 </List>
+                <Typography variant="title">HelloHello!</Typography>
               </Popover>
             </Toolbar>
           </div>

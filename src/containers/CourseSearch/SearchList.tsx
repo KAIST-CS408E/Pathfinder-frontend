@@ -37,7 +37,7 @@ type ClickHandler = () => void;
 export type ClickPinHandler = (course: ICourse) => void;
 type ClickPinHandlerBuilder = (course: ICourse) => ClickHandler;
 
-export default class SearchList extends React.Component<IProps> {
+export default class SearchList extends React.PureComponent<IProps> {
   public handleClickEntry: ClickHandlerBuilder = (course, index) => () => {
     const { onClickEntry } = this.props;
 
@@ -288,7 +288,7 @@ function CustomizedTable(props: ITableProps) {
                   {`Prof. ${n.professor || 'None'}`}
                 </CustomTableCell>
                 <CustomTableCell>
-                  {n.division !== '' ? `Class. ${n.division}` : n.division}
+                  {n.division !== '' ? `Class. ${n.division}` : 'No Class'}
                 </CustomTableCell>
                 <CustomTableCell>
                   {n.limit ? `0/${n.limit}` : '∞'}

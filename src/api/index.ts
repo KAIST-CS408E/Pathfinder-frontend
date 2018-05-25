@@ -6,6 +6,8 @@ export interface IPinCourseResponse {
   success: boolean;
 }
 
+export const getAllPin = () => fetch(API_URL + '/pin').then(r => r.json());
+
 export const pinCourse = (course: IPinnedCourse): Promise<IPinCourseResponse> =>
   // only if it does not exist in list
   fetch(`${API_URL}/pin/${course.courseNumber}?subtitle=${course.subtitle}`, {
