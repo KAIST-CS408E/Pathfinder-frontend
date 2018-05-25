@@ -5,6 +5,8 @@ import { connect, Dispatch } from 'react-redux';
 import { push, replace } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
 
+import { Location } from 'history';
+
 import * as classNames from 'classnames';
 import * as d3Array from 'd3-array';
 import * as d3Coll from 'd3-collection';
@@ -147,8 +149,13 @@ const themeStyle = () => ({
   },
 });
 
+// TODO:: API에서 string으로 와야 할 게 숫자로 오고 있다 ㅡㅡ
 function isSameLecture(a: ILectureKeys, b: ILectureKeys) {
-  return a.year === b.year && a.term === b.term && a.division === b.division;
+  return (
+    String(a.year) === String(b.year) &&
+    a.term === b.term &&
+    a.division === b.division
+  );
 }
 
 export interface ICourseQuery {
@@ -159,6 +166,8 @@ export interface ICourseQuery {
 }
 
 export interface IProps extends RouteComponentProps<ICourseQuery> {
+  location: Location;
+
   year: string;
   term: string;
   division: string;
@@ -200,30 +209,57 @@ class Detail extends React.Component<
   }
 
   public componentDidMount() {
-    const { location, match, onInitDetail } = this.props;
-    const { year, term, courseNumber, division } = match.params;
-    const subtitle = new URLSearchParams(location.search).get('subtitle') || '';
-
-    onInitDetail({ year, term, division, subtitle, number: courseNumber });
-    this.fetchDetailedData(courseNumber, subtitle);
+    const { onInitDetail } = this.props;
+    const routeState = this.getRouteState();
+    onInitDetail(routeState);
+    this.fetchDetailedData(routeState.number, routeState.subtitle);
   }
 
   public componentDidUpdate(prevProps: IProps) {
     if (!this.props.data) {
       return;
     }
+    const { data, location } = this.props;
     const {
-      courseNumber: targetCourseNumber,
+      number: targetCourseNumber,
       subtitle: targetSubtitle,
-    } = this.props;
-    const { number: courseNumber, subtitle } = this.props.data.course;
-    if (
-      !this.props.fetching &&
-      (courseNumber !== targetCourseNumber || subtitle !== targetSubtitle)
-    ) {
-      console.log('Updating %s to %s', courseNumber, targetCourseNumber);
-      this.fetchDetailedData(targetCourseNumber, targetSubtitle);
+      division,
+      term,
+      year,
+    } = this.getRouteState();
+
+    if (location !== prevProps.location) {
+      const { number: courseNumber, subtitle } = data.course;
+      if (
+        !this.props.fetching &&
+        (courseNumber !== targetCourseNumber || subtitle !== targetSubtitle)
+      ) {
+        console.log('Updating %s to %s', courseNumber, targetCourseNumber);
+        this.fetchDetailedData(targetCourseNumber, targetSubtitle);
+      }
     }
+
+    if (data !== prevProps.data) {
+      const thisLecture = data.lectures.find(lecture =>
+        isSameLecture(lecture, { division, term, year })
+      );
+      if (data.lectures && data.lectures.length > 0 && !thisLecture) {
+        this.redirectTo(
+          this.getAnotherLectureURL(
+            targetCourseNumber,
+            targetSubtitle,
+            data.lectures[0]
+          )
+        );
+      }
+    }
+  }
+
+  public getRouteState() {
+    const { location, match } = this.props;
+    const { year, term, courseNumber, division = '' } = match.params;
+    const subtitle = new URLSearchParams(location.search).get('subtitle') || '';
+    return { year, term, division, subtitle, number: courseNumber };
   }
 
   public fetchDetailedData(courseNumber: string, subtitle: string) {
@@ -267,13 +303,14 @@ class Detail extends React.Component<
   };
 
   public handleLectureCardClick = (lecture: ILectureDetail) => () => {
-    const { courseNumber, subtitle } = this.props;
+    const { number: courseNumber, subtitle } = this.getRouteState();
     this.redirectTo(this.getAnotherLectureURL(courseNumber, subtitle, lecture));
-    this.props.onChangeLecture(lecture);
+    // this.props.onChangeLecture(lecture);
   };
 
   public handlePeerCourseClick = (courseNumber: string, subtitle: string) => {
     // TODO:: goBack 핸들링을 아직 구현 안해서 그냥 redirect로 대체
+    console.log('Clicked %s<%s>', courseNumber, subtitle);
     this.redirectTo(
       this.getAnotherLectureURL(courseNumber, subtitle, {
         division: '',
@@ -281,14 +318,14 @@ class Detail extends React.Component<
         year: 'year',
       })
     );
-    this.props.onChangeCourse({ subtitle, number: courseNumber });
+    // this.props.onChangeCourse({ subtitle, number: courseNumber });
   };
 
   public render() {
     const customClass = this.props.classes;
 
-    const { division, data, year, term, fetching } = this.props;
-
+    const { data, fetching } = this.props;
+    const { division, year, term } = this.getRouteState();
     if (fetching) {
       return <>Fetching data</>;
     }
@@ -302,20 +339,8 @@ class Detail extends React.Component<
       isSameLecture(lecture, { division, term, year })
     );
 
-    /* Redirect if no division is chosen even if there is lecture data */
-    if (!thisLecture && data.lectures && data.lectures.length > 0) {
-      this.redirectTo(
-        this.getAnotherLectureURL(
-          course.number,
-          course.subtitle,
-          data.lectures[0]
-        )
-      );
-      this.props.onChangeLecture(data.lectures[0]);
+    if (!thisLecture) {
       return <>REDIRECTING</>;
-    } else if (!thisLecture) {
-      console.error('No lecture data found!');
-      return <>NO LECTURE DATA</>;
     }
 
     return (
@@ -396,8 +421,8 @@ class Detail extends React.Component<
                       {course.type}
                     </CustomTableCellD>
                     <CustomTableCellD>
-                      {thisLecture.classTime.map(text => (
-                        <span key={text}>
+                      {thisLecture.classTime.map((text, i) => (
+                        <span key={i}>
                           {' '}
                           {text}
                           <br />
