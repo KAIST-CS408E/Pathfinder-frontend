@@ -117,70 +117,44 @@ class Planner extends React.Component<IProps> {
       <div>
         <div className={classes.boardContainer}>
           {boardData.slice(0, -1).map(semester => (
-            <Container
-              key={semester.id}
-              groupName="col"
-              orientation="vertical"
-              onDrop={this.onCardDrop(semester.id)}
-              getChildPayload={this.getChildPayload(semester.id)}
-            >
-              <header className={classes.laneHeader}>
-                <div className={classes.laneTitle}>{ semester.id }</div>
-                <div className={classes.laneLabel}>{ semester.label ? semester.label : "Load: -.- Grade: -.-" }</div>
-              </header>
-              {semester.courses.map(course => {
-                return (
-                  <Draggable onClick={this.preventDragging} key={course.id} className={classes.card}>
-                    <header className={classes.cardHeader}>
-                      <div style={{ width: "100%" }}>{course.name}<span style={{fontSize: 12}}>{course.label ? course.label : ""}</span></div>
-                      <div style={{ height: 20 }}><Description/></div>
-                    </header>
-                    <div className={classes.cardMiddle}>{course.description ? course.description : "Load:-.- Grade:-.-"}</div>
-                    <div className={classes.cardProfs}>
-                      <div style={{ backgroundColor: profColorD, color: "white" }}>
-                        {course.lectures[0].professor}</div>
-                    </div>
-                  </Draggable>
-                );
-              }
-              )}
+            <div className={ classes.semesterBoard }>
+              <Container
+                key={semester.id}
+                groupName="col"
+                orientation="vertical"
+                onDrop={this.onCardDrop(semester.id)}
+                getChildPayload={this.getChildPayload(semester.id)}
+              >
+                <header className={classes.laneHeader}>
+                  <div className={classes.laneTitle}>{ semester.id }</div>
+                  <div className={classes.laneLabel}>{ semester.label ? semester.label : "Load: -.- Grade: -.-" }</div>
+                </header>
+                {semester.courses.map(course => {
+                  return (
+                    <Draggable onClick={this.preventDragging} key={course.id} className={classes.card}>
+                      <header className={classes.cardHeader}>
+                        <div style={{ width: "100%" }}>{course.name}<span style={{fontSize: 12}}>{course.label ? course.label : ""}</span></div>
+                        <div style={{ height: 20 }}><Description/></div>
+                      </header>
+                      <div className={classes.cardMiddle}>{course.description ? course.description : "Load:-.- Grade:-.-"}</div>
+                      <div className={classes.cardProfs}>
+                        <div style={{ backgroundColor: profColorD, color: "white" }}>
+                          {course.lectures[0].professor}</div>
+                      </div>
+                    </Draggable>
+                  );
+                }
+                )}
+                </Container>
               {semester.feedback ?
                 <div style={{ backgroundColor: semester.feedback[0].ok ? passColor : warnColor}}
                      className={classes.feedback}>
                   <div>{semester.feedback[0].type}
-                  {semester.feedback[0].ok ? " balanced" : " error"}</div>
+                    {semester.feedback[0].ok ? " balanced" : " error"}</div>
                   <div>{semester.feedback[0].reason}</div>
                 </div>
                 : "" }
-        </Container>
-          ))}
-        </div>
-
-
-        <div>
-          {boardData.slice(-2, -1).map(courseList => (
-            <Container
-              key={courseList.id}
-              className="courseContainer"
-              style={{
-                backgroundColor: 'steelblue',
-                margin: 30,
-                minHeight: 100,
-                width: 300,
-              }}
-              groupName="col"
-              orientation="vertical"
-              onDrop={this.onCardDrop(courseList.id)}
-              getChildPayload={this.getChildPayload(courseList.id)}
-            >
-              {courseList.courses.map(course => {
-                return (
-                  <Draggable key={course.id}>
-                    <p>{course.name}</p>
-                  </Draggable>
-                );
-              })}
-            </Container>
+            </div>
           ))}
         </div>
       </div>

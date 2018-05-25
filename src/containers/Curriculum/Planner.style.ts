@@ -37,7 +37,10 @@ export default jss
 
     laneHeader: {
       display: 'flex',
-    },
+      padding: 10,
+      paddingTop: 0,
+    } as Style,
+
     laneLabel: {
       fontSize: 12,
       textAlign: 'right',
@@ -58,25 +61,46 @@ export default jss
       flexWrap: 'nowrap',
       overflowX: 'auto',
 
-      height: '77vh',
+      height: '71vh',
 
       marginRight: '10vw',
       paddingLeft: '10vw',
       textAlign: 'left',
 
-      '& > div': { // lane
-        backgroundColor: lightGrey1,
+    } as Style,
 
-        flex: '0 0 auto',
+    semesterBoard: { // lane
+      flex: '0 0 auto',
+      margin: 10,
+
+      '& > div:first-child': {
+        backgroundColor: lightGrey1,
         minWidth: 300,
 
-        margin: '10px',
+        borderRadius: 4,
         padding: 10,
+        paddingBottom: 30,
       },
     } as Style,
 
+    feedback: {
+      borderRadius: 4,
+      color: "white",
+      fontSize: 15,
+      fontWeight: 500,
+      width: 320,
+
+      marginTop: 10,
+      padding: 10,
+      paddingBottom: 20,
+
+      position: "relative",
+      right: 0,
+    },
+
     card: {
       backgroundColor: "white",
+      margin: "auto",
       marginBottom: 7,
       padding: 10,
 
@@ -127,7 +151,7 @@ export default jss
       display: "flex",
       textAlign: "right",
 
-      '& div': {
+      '& > div': {
         backgroundColor: defaultGrey,
         borderRadius: 6,
 
@@ -138,23 +162,11 @@ export default jss
         padding: "2px 10px",
 
         '&:hover': {
-          backgroundColor: 'ourKaistBlueH',
+          backgroundColor: ourKaistBlueH,
         },
       },
     } as Style,
 
-    feedback: {
-      borderRadius: 4,
-      color: "white",
-      fontSize: 15,
-      fontWeight: 500,
-      height:200,
-      width: 320,
-
-      bottom: -210,
-      position: "absolute",
-      right: 0,
-    },
 
       /*
         '& > div': {

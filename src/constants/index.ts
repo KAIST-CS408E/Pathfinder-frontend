@@ -383,6 +383,11 @@ export const plannerBoardData = [
         lectures: [{ professors: 'Seokyoung Ryu', color: 'white', bgcolor: profColorS }],
       },
     ],
+
+    feedback: [
+      {type: 'time', ok: true, reason: 'time well balanced'},
+      {type: 'prerequisite', ok: false, reason: 'CALCULUSII requires CALCULUSI as prerequisite'},
+    ]
   },
   {
     id: 'lane3',
