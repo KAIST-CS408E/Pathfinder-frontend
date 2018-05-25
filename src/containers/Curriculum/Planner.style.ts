@@ -78,7 +78,7 @@ export default jss
         minWidth: 300,
 
         borderRadius: 4,
-        padding: 10,
+        padding: "10px 10px",
         paddingBottom: 30,
       },
     } as Style,
@@ -88,23 +88,49 @@ export default jss
       color: "white",
       fontSize: 15,
       fontWeight: 500,
-      width: 320,
 
       marginTop: 10,
-      padding: 10,
-      paddingBottom: 20,
 
       position: "relative",
       right: 0,
+
+      maxWidth: 320,
+
+      '& > div': {
+        padding: "10px 10px",
+
+        '&:first-child': {
+          borderRadius: "4px 4px 0px 0px",
+          paddingTop: 10,
+        },
+        '&:last-child': {
+          borderRadius: "0px 0px 4px 4px",
+          paddingBottom: 10,
+        },
+      },
+    } as Style,
+
+    feedbackDetail: {
+      fontSize: 12,
+      fontWeight: 500,
+
+      padding: "6px 10px",
+      paddingBottom: 10,
+    },
+    feedbackTitle: {
+      fontSize: 15,
+      fontWeight: 500,
+
+      padding: "0px 10px",
     },
 
     card: {
       backgroundColor: "white",
       margin: "auto",
-      marginBottom: 7,
-      padding: 10,
+      marginBottom: 8,
+      padding: "10px 6px",
 
-      width: 300,
+      width: "100%",
 
       '& > span': {
         '& > header': {

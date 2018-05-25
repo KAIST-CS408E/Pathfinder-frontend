@@ -146,14 +146,18 @@ class Planner extends React.Component<IProps> {
                 }
                 )}
                 </Container>
-              {semester.feedback ?
-                <div style={{ backgroundColor: semester.feedback[0].ok ? passColor : warnColor}}
-                     className={classes.feedback}>
-                  <div>{semester.feedback[0].type}
-                    {semester.feedback[0].ok ? " balanced" : " error"}</div>
-                  <div>{semester.feedback[0].reason}</div>
-                </div>
-                : "" }
+              <div className={classes.feedback}>
+                {semester.feedback.map( feedback => {
+                  return (
+                    <div key={feedback.type} style={{ backgroundColor: feedback.ok ? passColor : warnColor }}>
+                      <div className={classes.feedbackTitle}>{feedback.type}
+                        {feedback.ok ? " balanced" : " error"}</div>
+                      <div className={classes.feedbackDetail}>{feedback.reason}</div>
+                    </div>
+                  );
+                }
+                )}
+              </div>
             </div>
           ))}
         </div>
