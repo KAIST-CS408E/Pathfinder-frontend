@@ -137,6 +137,8 @@ class App extends React.Component<IProps, IState> {
     const { showPinned } = this.state;
     const { pinnedList, location } = this.props;
 
+    const pinnedCourses = Object.values<IPinnedCourse>(pinnedList);
+
     return (
       <div className="App">
         <AppBar position="sticky" color="default">
@@ -179,7 +181,7 @@ class App extends React.Component<IProps, IState> {
                 }}
               >
                 <List>
-                  {Object.values<IPinnedCourse>(pinnedList).map(pinEntry => (
+                  {pinnedCourses.map(pinEntry => (
                     <ListItem key={buildCourseKey(pinEntry)} button>
                       <ListItemText>
                         {pinEntry.courseNumber}
@@ -192,6 +194,9 @@ class App extends React.Component<IProps, IState> {
                     </ListItem>
                   ))}
                 </List>
+                {pinnedCourses.length === 0 ? (
+                  <>Nothing has been pinned</>
+                ) : null}
                 <Typography variant="title">HelloHello!</Typography>
               </Popover>
             </Toolbar>
