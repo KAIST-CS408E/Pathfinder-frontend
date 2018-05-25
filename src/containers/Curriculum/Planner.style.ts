@@ -7,91 +7,210 @@ jss.setup(preset());
 // const paddingDiv = 12;
 
 // const indigoBlue50 = '#E8EAF6';
-const ourKaistBlue = '#E3F2FD';
+// const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueH = '#039BE5';
-
-const warnColor = "rgb(232, 113, 151)";
-const passColor =  "rgb(153, 190, 221)";
+//
+// const warnColor = 'rgb(232, 113, 151)';
+// const passColor = 'rgb(153, 190, 221)';
 /*
 const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueD = '#1A237E';
-const recommendColor = '#FFC107';
-const lightGrey1 = '#f5f5f5'; */
+const recommendColor = '#FFC107'; */
+const lightGrey1 = '#f8f8f8';
+const defaultGrey = "#757575";
 
 export default jss
   .createStyleSheet({
-    testDiv: {
-      backgroundColor: "blue",
-      display: 'flex',
-      height: 400,
-      width: 400,
-
-      '&:hover': {
-        backgroundColor: 'red',
-      },
-
-      '& div':{
-        backgroundColor: "grey",
-        height: 50,
-        width: 50,
-
-        margin: 10,
-
-        '&:hover': {
-          backgroundColor: 'red',
-        },
-
-        '&:lastChild':{
-          backgroundColor: "black !important"
-        },
-
-        '&:last-child':{
-          backgroundColor: "black !important"
-        }
-      },
-
-      '&:last-child':{
-        backgroudColor: "black !important"
-      }
-    } as Style,
-
     titleContainer: {
-      margin: "auto",
-      marginBottom: "3vh",
-      marginTop: "4vh",
-      width: "80vw",
+      margin: 'auto',
+      marginBottom: '3vh',
+      marginTop: '4vh',
+      width: '80vw',
     },
 
     division: {
-      border: "1px solid grey",
-      margin:"auto",
-      marginBottom: "2vh",
-      width: "80vw",
+      border: '1px solid grey',
+      margin: 'auto',
+      marginBottom: '2vh',
+      width: '80vw',
+    },
+
+    laneHeader: {
+      display: 'flex',
+      padding: 10,
+      paddingTop: 0,
+    } as Style,
+
+    laneLabel: {
+      fontSize: 12,
+      textAlign: 'right',
+
+      padding: '0px 2px',
+      width: '60%',
+    },
+    laneTitle: {
+      fontSize: 15,
+      textAlign: 'left',
+
+      padding: '0px 2px',
+      width: '40%',
     },
 
     boardContainer: {
-      // div.boardContainer-0-0-29 > div > div.smooth-dnd-container > div:last-child
-      '& > div':{
-        height: "77vh",
-        textAlign: "left",
+      display: 'flex',
+      flexWrap: 'nowrap',
+      overflowX: 'auto',
 
+      height: '71vh',
+
+      marginRight: '10vw',
+      paddingLeft: '10vw',
+      textAlign: 'left',
+
+    } as Style,
+
+    semesterBoard: { // lane
+      flex: '0 0 auto',
+      margin: 10,
+
+      '& > div:first-child': {
+        backgroundColor: lightGrey1,
+        minWidth: 300,
+
+        borderRadius: 4,
+        padding: "10px 10px",
+        paddingBottom: 30,
+      },
+    } as Style,
+
+    feedback: {
+      borderRadius: 4,
+      color: "white",
+      fontSize: 15,
+      fontWeight: 500,
+
+      marginTop: 10,
+
+      position: "relative",
+      right: 0,
+
+      maxWidth: 320,
+
+      '& > div': {
+        padding: "10px 10px",
+
+        '&:first-child': {
+          borderRadius: "4px 4px 0px 0px",
+          paddingTop: 10,
+        },
+        '&:last-child': {
+          borderRadius: "0px 0px 4px 4px",
+          paddingBottom: 10,
+        },
+      },
+    } as Style,
+
+    feedbackDetail: {
+      fontSize: 12,
+      fontWeight: 500,
+
+      padding: "6px 10px",
+      paddingBottom: 10,
+    },
+    feedbackTitle: {
+      fontSize: 15,
+      fontWeight: 500,
+
+      padding: "0px 10px",
+    },
+
+    card: {
+      backgroundColor: "white",
+      margin: "auto",
+      marginBottom: 8,
+      padding: "10px 6px",
+
+      width: "100%",
+
+      '& > span': {
+        '& > header': {
+          borderBottom: 0,
+          marginBottom: 0,
+          paddingBottom: 8,
+
+          '& > span': {
+            '&:first-child': {
+              textAlign: 'left',
+            },
+            '&:last-child': {},
+          },
+        },
+
+        '& > :nth-child(2)': {
+          paddingBottom: 8,
+        },
+
+        '& > :last-child': {
+          '& span': {
+            '&:hover': {
+              backgroundColor: ourKaistBlueH + ' !important',
+            },
+          },
+        },
+      },
+    } as Style,
+
+    cardHeader: {
+      display: "flex",
+
+      '& svg': {
+        height: 20,
+      },
+    } as Style,
+
+    cardMiddle: {
+      fontSize: 12,
+      marginBottom: 10,
+    },
+
+    cardProfs: {
+      display: "flex",
+      textAlign: "right",
+
+      '& > div': {
+        backgroundColor: defaultGrey,
+        borderRadius: 6,
+
+        fontSize: 12,
+        height: 18,
+
+        margin: 2,
+        padding: "2px 10px",
+
+        '&:hover': {
+          backgroundColor: ourKaistBlueH,
+        },
+      },
+    } as Style,
+
+
+      /*
         '& > div': {
-
           zIndex: 0,
 
           '& > div': {
             '& > section': {
               '& > header': {
-                textAlign: "left",
-                zIndex: "0",
+                textAlign: 'left',
+                zIndex: '0',
 
                 '& span': {
-                  '&:first-child':{
-                    textAlign:"left",
-                    width: "40%"
+                  '&:first-child': {
+                    textAlign: 'left',
+                    width: '40%',
                   },
                   '&:last-child': {
-                    width: "60%",
+                    width: '60%',
                   },
                 },
               },
@@ -109,7 +228,7 @@ export default jss
 
                     '& > span': {
                       '&:first-child': {
-                        textAlign: "left",
+                        textAlign: 'left',
                       },
                       '&:last-child': {},
                     },
@@ -119,30 +238,24 @@ export default jss
                     paddingBottom: 8,
                   },
 
-                  '& > :last-child': {
-                    '& span': {
-                      '&:hover': {
-                        backgroundColor: ourKaistBlueH + " !important",
-                      },
-                    },
-                  },
+
                 },
               },
             },
           },
 
           '& > :last-child': {
-            backgroundColor: "rgba(255, 255, 255, 0.8)",
-            position: "sticky",
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            position: 'sticky',
             zIndex: 100,
 
-            right: "0vw",
-            top: "0vh",
+            right: '0vw',
+            top: '0vh',
 
             // '& > div': {
-              '& > section': {
-                backgroundColor:ourKaistBlue,
-              },
+            '& > section': {
+              backgroundColor: ourKaistBlue,
+            },
             // },
           },
 
@@ -150,36 +263,35 @@ export default jss
           '& > :nth-child(3)': {
             '& > section': {
               '& > div': {
-                overflow: "visible",
+                overflow: 'visible',
 
                 '& > div': {
                   '& > :last-child': {
                     borderRadius: 0,
-                    boxShadow: "0px 0px 0px 10px " + warnColor,
-                    float: "left",
-                    position: "absolute",
+                    boxShadow: '0px 0px 0px 10px ' + warnColor,
+                    float: 'left',
+                    position: 'absolute',
 
-                    top: "290px",
+                    top: '290px',
 
-                    height: "auto",
+                    height: 'auto',
 
                     '& article': {
                       backgroundColor: warnColor,
-                      border: "0px solid " + warnColor,
-                      color: "white",
-                      margin: "0px !important",
+                      border: '0px solid ' + warnColor,
+                      color: 'white',
+                      margin: '0px !important',
 
-                      '& header':{
+                      '& header': {
                         '& > span': {
-                          '&:last-child': {
-                          }
+                          '&:last-child': {},
                         },
                       },
 
                       '& div': {
-                        color: "white",
+                        color: 'white',
                       },
-                    }
+                    },
                   },
                 },
               },
@@ -190,38 +302,35 @@ export default jss
           '& > :nth-child(4)': {
             '& > section': {
               '& > div': {
-                overflow: "visible",
+                overflow: 'visible',
 
                 '& > div': {
                   '& > :last-child': {
                     borderRadius: 0,
-                    boxShadow: "0px 0px 0px 10px " + passColor,
-                    float: "left",
-                    position: "absolute",
+                    boxShadow: '0px 0px 0px 10px ' + passColor,
+                    float: 'left',
+                    position: 'absolute',
 
-                    top: "160px",
+                    top: '160px',
 
-                    height: "auto",
+                    height: 'auto',
 
                     '& article': {
                       backgroundColor: passColor,
-                      border: "0px solid " + passColor,
-                      color: "white",
-                      margin: "0px !important",
+                      border: '0px solid ' + passColor,
+                      color: 'white',
+                      margin: '0px !important',
 
                       '& div': {
-                        color: "white",
+                        color: 'white',
                       },
-                    }
+                    },
                   },
                 },
               },
             },
           },
         },
-
-      },
-    } as Style,
-
+      },*/
   })
   .attach();

@@ -49,6 +49,7 @@ export const semesterBoards: IBoardData = {
           ],
         },
       ],
+
     },
     {
       id: 'lane2',
@@ -285,6 +286,7 @@ export const semesterBoards: IBoardData = {
 export const plannerBoardData = [
   {
     id: 'semester1',
+    label: 'Load: 1.5 / Grade: 3.1',
 
     courses: [
       {
@@ -329,6 +331,11 @@ export const plannerBoardData = [
         ],
       },
     ],
+
+    feedback: [
+      {type: 'prerequisite', ok: false, reason: '1CALCULUSII requires CALCULUSI as prerequisite'},
+      {type: 'time', ok: false, reason: 'time conflict'}
+    ]
   },
   {
     id: 'lane2',
@@ -376,6 +383,11 @@ export const plannerBoardData = [
         lectures: [{ professors: 'Seokyoung Ryu', color: 'white', bgcolor: profColorS }],
       },
     ],
+
+    feedback: [
+      {type: 'time', ok: true, reason: 'time well balanced'},
+      {type: 'prerequisite', ok: true, reason: ' '},
+    ]
   },
   {
     id: 'lane3',
@@ -410,6 +422,7 @@ export const plannerBoardData = [
         ],
       },
     ],
+    feedback:[],
   },
   {
     id: 'lane4',
@@ -428,52 +441,64 @@ export const plannerBoardData = [
         ],
       },
     ],
+
+    feedback:[],
   },
   {
     id: 'lane5',
 
     courses: [],
+
+    feedback:[],
   },
   {
     id: 'lane6',
 
     courses: [],
+    feedback:[],
   },
 
   {
     id: 'lane7',
 
     courses: [],
+    feedback:[],
   },
   {
     id: 'lane8',
 
     courses: [],
+    feedback:[],
   },
   {
     id: 'lane9',
 
     courses: [],
+    feedback:[],
   },
   {
     id: 'lane10',
 
     courses: [],
+    feedback:[],
   },
   {
     id: 'lane11',
 
     courses: [],
+    feedback:[],
   },
   {
     id: 'lane12',
 
     courses: [],
+    feedback:[],
   },
 
   {
     id: 'pin lane',
 
     courses: [],
+    feedback:[],
   },
 ] as any;

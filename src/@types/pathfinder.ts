@@ -34,6 +34,7 @@ export interface IPlannerGetAll {
 
 export interface ISemester {
   id: string;
+  label?: string;
   semester: number;
 
   courses: ICourseCard[];
@@ -43,6 +44,8 @@ export interface ISemester {
 
 export interface ICourseCard {
   id: string;
+  label?: string;
+  description?: string;
 
   type: 'pinned' | 'interested';
 
