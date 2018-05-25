@@ -37,7 +37,10 @@ export default jss
 
     laneHeader: {
       display: 'flex',
-    },
+      padding: 10,
+      paddingTop: 0,
+    } as Style,
+
     laneLabel: {
       fontSize: 12,
       textAlign: 'right',
@@ -58,29 +61,76 @@ export default jss
       flexWrap: 'nowrap',
       overflowX: 'auto',
 
-      height: '77vh',
+      height: '71vh',
 
       marginRight: '10vw',
       paddingLeft: '10vw',
       textAlign: 'left',
 
-      '& > div': { // lane
-        backgroundColor: lightGrey1,
+    } as Style,
 
-        flex: '0 0 auto',
+    semesterBoard: { // lane
+      flex: '0 0 auto',
+      margin: 10,
+
+      '& > div:first-child': {
+        backgroundColor: lightGrey1,
         minWidth: 300,
 
-        margin: '10px',
-        padding: 10,
+        borderRadius: 4,
+        padding: "10px 10px",
+        paddingBottom: 30,
       },
     } as Style,
 
+    feedback: {
+      borderRadius: 4,
+      color: "white",
+      fontSize: 15,
+      fontWeight: 500,
+
+      marginTop: 10,
+
+      position: "relative",
+      right: 0,
+
+      maxWidth: 320,
+
+      '& > div': {
+        padding: "10px 10px",
+
+        '&:first-child': {
+          borderRadius: "4px 4px 0px 0px",
+          paddingTop: 10,
+        },
+        '&:last-child': {
+          borderRadius: "0px 0px 4px 4px",
+          paddingBottom: 10,
+        },
+      },
+    } as Style,
+
+    feedbackDetail: {
+      fontSize: 12,
+      fontWeight: 500,
+
+      padding: "6px 10px",
+      paddingBottom: 10,
+    },
+    feedbackTitle: {
+      fontSize: 15,
+      fontWeight: 500,
+
+      padding: "0px 10px",
+    },
+
     card: {
       backgroundColor: "white",
-      marginBottom: 7,
-      padding: 10,
+      margin: "auto",
+      marginBottom: 8,
+      padding: "10px 6px",
 
-      width: 300,
+      width: "100%",
 
       '& > span': {
         '& > header': {
@@ -127,7 +177,7 @@ export default jss
       display: "flex",
       textAlign: "right",
 
-      '& div': {
+      '& > div': {
         backgroundColor: defaultGrey,
         borderRadius: 6,
 
@@ -138,10 +188,11 @@ export default jss
         padding: "2px 10px",
 
         '&:hover': {
-          backgroundColor: 'ourKaistBlueH',
+          backgroundColor: ourKaistBlueH,
         },
       },
     } as Style,
+
 
       /*
         '& > div': {
