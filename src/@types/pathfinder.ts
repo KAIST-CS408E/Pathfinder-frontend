@@ -47,7 +47,7 @@ export interface ICourseCard {
   label?: string;
   description?: string;
 
-  type: 'pinned' | 'interested';
+  type: 'pinned' | 'interested' | 'recommended';
 
   name: string;
   courseNumber: string;

@@ -17,9 +17,7 @@ import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
 
 // icons
-import Description from '@material-ui/icons/Description';
-
-import { PlayCircleOutline, ThumbUp } from '@material-ui/icons';
+import { MoreHoriz, PlayCircleOutline, ThumbUp } from '@material-ui/icons';
 
 const { classes } = styles;
 
@@ -36,6 +34,7 @@ const profColorD = '#9E9E9E';
 
 const warnColor = 'rgb(232, 113, 151)';
 const passColor = 'rgb(153, 190, 221)';
+const recommendColor = '#FFC107';
 
 class Planner extends React.Component<IProps> {
   constructor(props: any) {
@@ -108,7 +107,7 @@ class Planner extends React.Component<IProps> {
                   </span>
                 </div>
                 <div style={{ height: 20 }}>
-                  <Description />
+                  <MoreHoriz />
                 </div>
               </header>
               <div className={classes.cardMiddle}>
@@ -201,8 +200,14 @@ class Planner extends React.Component<IProps> {
                       <Draggable
                         onClick={this.preventDragging}
                         key={course.id}
-                        className={classes.card}
-                      >
+                        className={course.type === 'recommended' ?
+                          classes.recCard : classes.card}>
+                        {course.type === 'recommended' ?
+                          <div className={classes.recCardTop}>
+                            <Chip label={course.subtitle}
+                                  style={{ backgroundColor: recommendColor, color: "white",
+                                    fontSize: 12, height: 18 }}/>
+                          </div> : ""}
                         <header className={classes.cardHeader}>
                           <div style={{ width: '100%' }}>
                             {course.name}
@@ -211,7 +216,7 @@ class Planner extends React.Component<IProps> {
                             </span>
                           </div>
                           <div style={{ height: 20 }}>
-                            <Description />
+                            <MoreHoriz/>
                           </div>
                         </header>
                         <div className={classes.cardMiddle}>
@@ -256,7 +261,9 @@ class Planner extends React.Component<IProps> {
               </div>
             ))}
             {/* 여기가 핀해놓은 강의 리스트 있는 곳임 !!*/}
-            {this.renderPinnedCourse()}
+            <div className={classes.pinBoard}>
+              {this.renderPinnedCourse()}
+            </div>
           </div>
         </div>
       </div>
