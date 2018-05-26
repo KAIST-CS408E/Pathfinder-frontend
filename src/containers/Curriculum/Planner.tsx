@@ -16,8 +16,6 @@ import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
 
 // icons
-import Description from '@material-ui/icons/Description';
-
 import { MoreHoriz, PlayCircleOutline, ThumbUp } from '@material-ui/icons';
 import { getBoard } from '@src/api';
 
@@ -197,7 +195,7 @@ class Planner extends React.Component<IProps> {
         </div>
 
         {/* the kanban board */}
-        <div>
+        <div style={{ display:"flex"}}>
           <div className={classes.boardContainer}>
             {boardData.slice(0, -1).map(semester => (
               <div className={classes.semesterBoard}>
@@ -282,6 +280,7 @@ class Planner extends React.Component<IProps> {
             {/* 여기가 핀해놓은 강의 리스트 있는 곳임 !!*/}
               {this.renderPinnedCourse()}
           </div>
+          <div style={{flex: "0 0 auto", width: "10vw" }}>-</div>
         </div>
       </div>
     );
