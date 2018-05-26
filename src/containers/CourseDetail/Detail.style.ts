@@ -13,25 +13,25 @@ export default jss
       display: 'flex',
 
       flexWrap: 'nowrap',
-
-      minHeight: '20vh',
       overflow: 'auto',
 
       borderRadius: '0px 0px 6px 6px',
     },
 
-    testDiv: {
+    semesterChipSelected: {
+      backgroundColor: '#E3F2FD',
+    },
+
+    semesterDiv: {
       backgroundColor: 'white',
+      borderLeft: '5px solid ' + lightGrey1,
       display: 'flex',
       flex: '0 0 auto',
       minHeight: '19vh',
       minWidth: '10vw',
-
-      borderLeft: '5px solid ' + lightGrey1,
-      margin: '2px 6px',
-      padding: '16px 12px 4px 0px',
-
       position: 'relative',
+      // marginRight: 12,
+      // paddingLeft: 12,
     },
 
     semesterTypo: {

@@ -273,9 +273,12 @@ function CustomizedTable(props: ITableProps) {
           {lectures.map((n, i) => {
             return (
               // Key should be replaced later by uuid such as class ID
-              <CustomTableRow className={classes.row} key={i}>
+              <CustomTableRow
+                key={i}
+                className={classes.row}
+                onClick={clickHandlerBuilder(course, i)}
+              >
                 <CustomTableCell
-                  onClick={clickHandlerBuilder(course, i)}
                   component="th"
                   scope="row"
                   style={{

@@ -5,7 +5,8 @@ import { ICourseCard, ISemester } from 'pathfinder';
 const actions = {
   initBoard: createAction(
     'planner/initBoard',
-    resolve => (boardData: ISemester[]) => resolve(boardData)
+    resolve => (boardData: ISemester[], currentSemester: number) =>
+      resolve({ boardData, currentSemester })
   ),
 
   addCourse: createAction(

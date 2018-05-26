@@ -5,6 +5,9 @@ import CardContent from '@material-ui/core/CardContent';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 
+import Equalizer from '@material-ui/icons/Equalizer';
+import Person from '@material-ui/icons/Person';
+
 export default class Sidebar extends React.Component {
   public render() {
     return (
@@ -16,9 +19,8 @@ export default class Sidebar extends React.Component {
           scrollable
           scrollButtons="off"
         >
-          <Tab label="Item One" />
-          <Tab label="Item Two" />
-          <Tab label="Item Three" />
+          <Tab label="statistics" icon={<Equalizer />} />
+          <Tab label="relevance" icon={<Person />} />
         </Tabs>
         <CardContent />
       </Card>

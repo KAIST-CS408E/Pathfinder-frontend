@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux';
 
 import { Container, Draggable } from 'react-smooth-dnd';
 
-import { plannerBoardData } from '@src/constants';
 import { RootState } from '@src/redux';
 import { actions as plannerActions } from '@src/redux/planner';
 
@@ -17,7 +16,10 @@ import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
 
 // icons
+import Description from '@material-ui/icons/Description';
+
 import { MoreHoriz, PlayCircleOutline, ThumbUp } from '@material-ui/icons';
+import { getBoard } from '@src/api';
 
 const { classes } = styles;
 
@@ -44,7 +46,20 @@ class Planner extends React.Component<IProps> {
   }
 
   public componentDidMount() {
-    this.props.onInitBoard(plannerBoardData);
+    getBoard().then(json => {
+      const { boardData, currentSemester } = json;
+      this.props.onInitBoard(
+        Object.entries<any>(boardData).map(([semesterNumber, data]) => {
+          return {
+            courses: data.courses,
+            feedback: data.feedback,
+            id: String(semesterNumber),
+            semester: Number(semesterNumber),
+          };
+        }),
+        currentSemester
+      );
+    });
   }
 
   public onCardDrop = (semesterId: string) => (dropResult: any) => {
