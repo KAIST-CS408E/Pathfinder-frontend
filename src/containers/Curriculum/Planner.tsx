@@ -86,13 +86,17 @@ class Planner extends React.Component<IProps> {
     e.preventDefault();
   };
 
-  public preventOverlappedFromDrop = (semester: ISemester) => (
+  public preventOverlappedFromDrop = (semester?: ISemester) => (
     sourceContainerOptions: any,
     payload: any
   ) => {
-
     const pinnedListElem = document.querySelector(`.${classes.pinBoard}`);
-    const elem = document.querySelector(`.semesterBoard-_${semester.id}`);
+
+    // pin list는 semester가 undefined이므로 source 찾아서 판단
+    const selector = semester
+      ? `.semesterBoard-_${semester.id}`
+      : '.' + sourceContainerOptions.groupName;
+    const elem = document.querySelector(selector);
     if (pinnedListElem && elem) {
       const pinRect = pinnedListElem.getBoundingClientRect();
       const rect = elem.getBoundingClientRect();
@@ -132,6 +136,7 @@ class Planner extends React.Component<IProps> {
           orientation="vertical"
           onDrop={this.onCardDrop(pinnedCourseLane.id)}
           getChildPayload={this.getChildPayload(pinnedCourseLane.id)}
+          shouldAcceptDrop={this.preventOverlappedFromDrop()}
         >
           {pinnedCourseLane.courses.map(course => {
             return (
@@ -239,7 +244,7 @@ class Planner extends React.Component<IProps> {
                 </header>
                 <Container
                   key={semester.id}
-                  groupName="col"
+                  groupName={`semesterBoard-_${semester.id}`}
                   orientation="vertical"
                   onDrop={this.onCardDrop(semester.id)}
                   getChildPayload={this.getChildPayload(semester.id)}

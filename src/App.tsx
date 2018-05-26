@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { connect, Dispatch } from 'react-redux';
+import { push } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
 
 import { Location } from 'history';
@@ -62,6 +63,8 @@ interface IProps {
 
   onPinCourse: (course: IPinnedCourse) => any;
   onUnpinCourse: (course: IPinnedCourse) => any;
+
+  push: typeof push;
 }
 
 interface IState {
@@ -118,6 +121,10 @@ class App extends React.Component<IProps, IState> {
     this.setState({ showPinned: false });
   };
 
+  public handleMyCurriculumClick = () => {
+    this.props.push('/curriculum/planner');
+  };
+
   public renderCourses = (props: RouteComponentProps<{}>) => {
     return (
       <Courses
@@ -151,8 +158,8 @@ class App extends React.Component<IProps, IState> {
               >
                 KAIST Pathfinder
               </Typography>
-              <Button>
-                <span className={classes.label}>My Page</span>
+              <Button onClick={this.handleMyCurriculumClick}>
+                <span className={classes.label}>My Curriculum</span>
                 <AccountBox />
               </Button>
               <Button onClick={this.handleOpenPinnedList}>
@@ -225,6 +232,8 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
 
       onPinCourse: pinActions.pinCourse,
       onUnpinCourse: pinActions.unpinCourse,
+
+      push,
     },
     dispatch
   );
