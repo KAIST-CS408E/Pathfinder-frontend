@@ -8,7 +8,7 @@ import actions, { Action } from '../actions';
 export type State = Readonly<IState>;
 
 interface IState {
-  year: string;
+  year: number;
   term: string;
   division: string;
   courseNumber: string;
@@ -23,7 +23,7 @@ export const initialState: IState = {
   division: '',
   subtitle: '',
   term: '',
-  year: '',
+  year: 123,
 
   data: null,
   fetching: false,

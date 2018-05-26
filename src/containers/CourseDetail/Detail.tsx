@@ -259,7 +259,13 @@ class Detail extends React.Component<
     const { location, match } = this.props;
     const { year, term, courseNumber, division = '' } = match.params;
     const subtitle = new URLSearchParams(location.search).get('subtitle') || '';
-    return { year, term, division, subtitle, number: courseNumber };
+    return {
+      division,
+      number: courseNumber,
+      subtitle,
+      term,
+      year: Number(year),
+    };
   }
 
   public fetchDetailedData(courseNumber: string, subtitle: string) {
@@ -315,7 +321,7 @@ class Detail extends React.Component<
       this.getAnotherLectureURL(courseNumber, subtitle, {
         division: '',
         term: 'term',
-        year: 'year',
+        year: 123,
       })
     );
     // this.props.onChangeCourse({ subtitle, number: courseNumber });
@@ -556,7 +562,7 @@ class Detail extends React.Component<
             <CardContent className={classes.profContainer}>
               {d3Coll
                 .nest()
-                .key((d: ILectureDetail) => d.year)
+                .key((d: ILectureDetail) => String(d.year))
                 .sortKeys(d3Array.descending)
                 .key((d: ILectureDetail) => d.term)
                 .sortKeys(d3Array.ascending)
