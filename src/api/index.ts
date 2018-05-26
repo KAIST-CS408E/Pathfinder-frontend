@@ -24,3 +24,5 @@ export const unpinCourse = (
   })
     .then(r => r.json())
     .catch(e => console.error(e));
+
+export const getBoard = () => fetch(API_URL + '/board').then(r => r.json());

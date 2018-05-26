@@ -28,7 +28,7 @@ export type PinEntryAPI = [CourseNumber, CourseName, CourseSubtitle];
 /* Data structures for kanban */
 
 export interface IPlannerGetAll {
-  boardData: ISemester[];
+  boardData: Record<string, ISemester>;
   currentSemester: number;
 }
 
@@ -39,7 +39,7 @@ export interface ISemester {
 
   courses: ICourseCard[];
 
-  feedback: ISemesterFeedback[]
+  feedback: ISemesterFeedback[];
 }
 
 export interface ICourseCard {
@@ -47,14 +47,14 @@ export interface ICourseCard {
   label?: string;
   description?: string;
 
-  type: 'pinned' | 'interested';
+  type: 'pinned' | 'interested' | 'none';
 
   name: string;
   courseNumber: string;
   subtitle: string;
 
   lectures: ILecture[];
-  selectedProfessor: string;
+  selectedDivision: string;
 
   myGrade?: string; // undefined if not taken
 
@@ -67,7 +67,7 @@ export interface ISemesterFeedback {
   reason: any; // may be course number of colliding
 }
 
-export type RecommendedCourses = ICourseCard[]
+export type RecommendedCourses = ICourseCard[];
 
 /* Data structures for searching and displaying */
 
@@ -75,7 +75,7 @@ export interface IQueryResult {
   year: string;
   term: string;
   courses: ICourse[];
-  take: TakenCourses
+  take: TakenCourses;
 }
 
 export type TakenCourses = Array<[CourseNumber, CourseSubtitle]>;
@@ -84,6 +84,7 @@ export interface ICourse {
   name: string;
   subtitle: string;
   number: string;
+  courseType: string;
   lectures: ILecture[];
 }
 
@@ -94,7 +95,8 @@ export interface ILecture {
   classTime: string[];
   limit: number | null;
 
-  load: number;
+  load: string;
+  abandonmentRate: number;
   grades: number;
 }
 
@@ -123,7 +125,11 @@ export const defaultValues: IFilterOptions = {
 
 export type FilterKey = keyof IFilterOptions;
 
-export type FilterOption = string | IDepartmentSet | ICourseLevelSet | CourseSortOrder;
+export type FilterOption =
+  | string
+  | IDepartmentSet
+  | ICourseLevelSet
+  | CourseSortOrder;
 
 export interface IDepartmentSet {
   [key: string]: boolean;
@@ -159,7 +165,7 @@ export interface ICourseBasic extends ICourseKeys {
 }
 
 export interface ILectureKeys {
-  year: string;
+  year: number;
   term: string;
   division: string;
 }
