@@ -16,8 +16,10 @@ import Icon from '@material-ui/core/Icon';
 import { ICourse, IPinnedTable, IQueryResult, TakenCourses } from 'pathfinder';
 import { buildCourseKey } from '../../utils/index';
 
+
 const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueD = '#1A237E';
+const ranLoad = 8;
 
 interface IProps {
   data?: IQueryResult['courses'];
@@ -176,6 +178,21 @@ const styles = (theme: Theme) => ({
   title: {
     fontSize: 16,
   },
+
+  timeTable: {
+    height:"100%",
+    width: "100%",
+
+    '& th': {
+      backgroundColor: "#F1F8E9",
+      border: "1px solid rgba(0, 0, 0, 0)",
+      fontSize: 0,
+    },
+  },
+
+  classTimeCell: {
+    backgroundColor: "#4CAF50 !important",
+  },
 });
 
 interface ITableProps
@@ -188,6 +205,8 @@ interface ITableProps
       | 'paddingNone'
       | 'title'
       | 'head'
+      | 'timeTable'
+      | 'classTimeCell'
     > {
   course: ICourse;
   clickHandlerBuilder: ClickHandlerBuilder;
@@ -290,16 +309,57 @@ function CustomizedTable(props: ITableProps) {
                 >
                   {`Prof. ${n.professor || 'None'}`}
                 </CustomTableCell>
-                <CustomTableCell>
+                <CustomTableCell style={{ width: 150 }}>
                   {n.division !== '' ? `Class. ${n.division}` : 'No Class'}
                 </CustomTableCell>
-                <CustomTableCell>
+                <CustomTableCell style={{ width: 130 }}>
                   {n.limit ? `0/${n.limit}` : '∞'}
                 </CustomTableCell>
-                <CustomTableCell>{`Load ${n.load}`}</CustomTableCell>
-                <CustomTableCell>{`Grade ${n.grades}`}</CustomTableCell>
-                <CustomTableCell numeric style={{ paddingRight: 4 }}>
-                  Recommended
+                <CustomTableCell style={{ width: 180}}>
+                  <div style={{ display: "flex" }}>
+                    <div style={{marginRight: 2}}>Load: </div>
+                    <div style={{ backgroundColor: ranLoad > 1 ? "#FBE9E7" : "#BDBDBD",
+                      color: "white", fontSize: 8, height: 16, width: 16,}}>{`1hr`}</div>
+                    <div style={{ backgroundColor: ranLoad > 3 ? "#FFCCBC" : "#BDBDBD",
+                      color: "white", fontSize: 8, height: 16, width: 16,}}>{`3hr`}</div>
+                    <div style={{ backgroundColor: ranLoad > 5 ? "#FFAB91" : "#BDBDBD",
+                      color: "white", fontSize: 8, height: 16, width: 16,}}>{`5hr`}</div>
+                    <div style={{ backgroundColor: ranLoad > 7 ? "#FF8A65" : "#BDBDBD",
+                      color: "white", fontSize: 8, height: 16, width: 16,}}>{`7hr`}</div>
+                  </div>
+                </CustomTableCell>
+                <CustomTableCell style={{ width: 180}}>
+                  <div style={{ display: "flex" }}>
+                    <div style={{marginRight: 2}}>Grade: </div>
+                    <div style={{ background: "linear-gradient(to right, #E1F5FE , #03A9F4)",
+                      color: "#1A237E",fontSize: 10,height: 16, paddingLeft: 3, position:"relative", width: 64,}}>
+                      {n.grades}
+                      <div style={{ backgroundColor: "#BDBDBD", height: 16, paddingLeft: 3,
+                        position: "absolute", right: 0, top:0, width: 8,}}>{/* width: full grade - currunt grade */}</div>
+                    </div>
+                  </div>
+                </CustomTableCell>
+                <CustomTableCell numeric style={{ padding:0, height: 36}}>
+                  <table className={classes.timeTable}>
+                    <tr>
+                      <th className={classes.classTimeCell}>-</th> <th>-</th> <th className={classes.classTimeCell}>-</th> <th>-</th> <th>-</th>
+                    </tr>
+                    <tr>
+                      <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
+                    </tr>
+                    <tr>
+                      <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
+                    </tr>
+                    <tr>
+                      <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
+                    </tr>
+                    <tr>
+                      <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
+                    </tr>
+                    <tr>
+                      <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
+                    </tr>
+                  </table>
                 </CustomTableCell>
               </CustomTableRow>
             );
