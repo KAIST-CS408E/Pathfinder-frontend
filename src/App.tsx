@@ -19,8 +19,7 @@ import Popover from '@material-ui/core/Popover';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-import AccountBox from '@material-ui/icons/AccountBox';
-import TurnedIn from '@material-ui/icons/TurnedIn';
+import { AccountBox, Search, TurnedIn } from '@material-ui/icons';
 
 import Courses from './containers/Courses';
 import Curriculum from './containers/Curriculum';
@@ -125,6 +124,24 @@ class App extends React.Component<IProps, IState> {
     this.props.push('/curriculum/planner');
   };
 
+  public handleCourseSearchClick = () => {
+    this.props.push('/courses/s/');
+  };
+
+  public renderGotoCurriculum = () => (
+    <Button onClick={this.handleMyCurriculumClick}>
+      <span className={classes.label}>My Curriculum</span>
+      <AccountBox />
+    </Button>
+  );
+
+  public renderGotoCourseSearch = () => (
+    <Button onClick={this.handleCourseSearchClick}>
+      <span className={classes.label}>Course Search</span>
+      <Search />
+    </Button>
+  );
+
   public renderCourses = (props: RouteComponentProps<{}>) => {
     return (
       <Courses
@@ -158,10 +175,8 @@ class App extends React.Component<IProps, IState> {
               >
                 KAIST Pathfinder
               </Typography>
-              <Button onClick={this.handleMyCurriculumClick}>
-                <span className={classes.label}>My Curriculum</span>
-                <AccountBox />
-              </Button>
+              <Route path="/courses" render={this.renderGotoCurriculum} />
+              <Route path="/curriculum" render={this.renderGotoCourseSearch} />
               <Button onClick={this.handleOpenPinnedList}>
                 <span className={classes.label}>Pin List</span>
                 <TurnedIn />
@@ -204,7 +219,6 @@ class App extends React.Component<IProps, IState> {
                 {pinnedCourses.length === 0 ? (
                   <>Nothing has been pinned</>
                 ) : null}
-                <Typography variant="title">HelloHello!</Typography>
               </Popover>
             </Toolbar>
           </div>
