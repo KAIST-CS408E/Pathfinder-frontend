@@ -187,6 +187,7 @@ const styles = (theme: Theme) => ({
       backgroundColor: "#F1F8E9",
       border: "1px solid rgba(0, 0, 0, 0)",
       fontSize: 0,
+      padding: 0,
     },
   },
 
@@ -339,7 +340,7 @@ function CustomizedTable(props: ITableProps) {
                     </div>
                   </div>
                 </CustomTableCell>
-                <CustomTableCell numeric style={{ padding:0, height: 36}}>
+                <CustomTableCell numeric style={{ border: "1px solid #1B5E20", borderRight: "0px solid",  padding:"1px 0px", height: 30 }}>
                   <table className={classes.timeTable}>
                     <tr>
                       <th className={classes.classTimeCell}>-</th> <th>-</th> <th className={classes.classTimeCell}>-</th> <th>-</th> <th>-</th>
