@@ -9,6 +9,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell, { TableCellProps } from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow, { TableRowProps } from '@material-ui/core/TableRow';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
 import Icon from '@material-ui/core/Icon';
@@ -341,26 +342,28 @@ function CustomizedTable(props: ITableProps) {
                   </div>
                 </CustomTableCell>
                 <CustomTableCell numeric style={{ border: "1px solid #1B5E20", borderRight: "0px solid",  padding:"1px 0px", height: 30 }}>
-                  <table className={classes.timeTable}>
-                    <tr>
-                      <th className={classes.classTimeCell}>-</th> <th>-</th> <th className={classes.classTimeCell}>-</th> <th>-</th> <th>-</th>
-                    </tr>
-                    <tr>
-                      <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
-                    </tr>
-                    <tr>
-                      <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
-                    </tr>
-                    <tr>
-                      <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
-                    </tr>
-                    <tr>
-                      <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
-                    </tr>
-                    <tr>
-                      <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
-                    </tr>
-                  </table>
+                  <Tooltip id="tooltip-icon" title={n.classTime} placement="bottom-end">
+                    <table className={classes.timeTable}>
+                      <tr>
+                        <th className={classes.classTimeCell}>-</th> <th>-</th> <th className={classes.classTimeCell}>-</th> <th>-</th> <th>-</th>
+                      </tr>
+                      <tr>
+                        <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
+                      </tr>
+                      <tr>
+                        <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
+                      </tr>
+                      <tr>
+                        <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
+                      </tr>
+                      <tr>
+                        <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
+                      </tr>
+                      <tr>
+                        <th>-</th> <th>-</th> <th>-</th> <th>-</th> <th>-</th>
+                      </tr>
+                    </table>
+                  </Tooltip>
                 </CustomTableCell>
               </CustomTableRow>
             );
