@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux';
 
 import { Container, Draggable } from 'react-smooth-dnd';
 
+import * as classNames from 'classnames';
+
 import { RootState } from '@src/redux';
 import { actions as plannerActions } from '@src/redux/planner';
 
@@ -16,7 +18,7 @@ import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
 
 // icons
-import Description from '@material-ui/icons/Description';
+// import Description from '@material-ui/icons/Description';
 
 import { MoreHoriz, PlayCircleOutline, ThumbUp } from '@material-ui/icons';
 import { getBoard } from '@src/api';
@@ -38,7 +40,6 @@ const warnColor = 'rgb(232, 113, 151)';
 const passColor = 'rgb(153, 190, 221)';
 const recommendColor = '#FFC107';
 const ourKaistBlue = '#E3F2FD';
-
 
 class Planner extends React.Component<IProps> {
   constructor(props: any) {
@@ -85,6 +86,25 @@ class Planner extends React.Component<IProps> {
     e.preventDefault();
   };
 
+  public preventOverlappedFromDrop = (semester: ISemester) => (
+    sourceContainerOptions: any,
+    payload: any
+  ) => {
+
+    const pinnedListElem = document.querySelector(`.${classes.pinBoard}`);
+    const elem = document.querySelector(`.semesterBoard-_${semester.id}`);
+    if (pinnedListElem && elem) {
+      const pinRect = pinnedListElem.getBoundingClientRect();
+      const rect = elem.getBoundingClientRect();
+
+      if (rect.left + rect.width < pinRect.left) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   public renderPinnedCourse() {
     const { boardData } = this.props;
 
@@ -95,7 +115,10 @@ class Planner extends React.Component<IProps> {
 
     return (
       <div className={classes.pinBoard}>
-        <header className={classes.laneHeader} style={{backgroundColor: ourKaistBlue }}>
+        <header
+          className={classes.laneHeader}
+          style={{ backgroundColor: ourKaistBlue }}
+        >
           <div className={classes.laneTitle}>{pinnedCourseLane.id}</div>
           <div className={classes.laneLabel}>
             {pinnedCourseLane.label
@@ -129,7 +152,9 @@ class Planner extends React.Component<IProps> {
                   </div>
                 </header>
                 <div className={classes.cardMiddle}>
-                  {course.description ? course.description : 'Load:-.- Grade:-.-'}
+                  {course.description
+                    ? course.description
+                    : 'Load:-.- Grade:-.-'}
                 </div>
                 <div className={classes.cardProfs}>
                   <div style={{ backgroundColor: profColorD, color: 'white' }}>
@@ -200,7 +225,12 @@ class Planner extends React.Component<IProps> {
         <div>
           <div className={classes.boardContainer}>
             {boardData.slice(0, -1).map(semester => (
-              <div className={classes.semesterBoard}>
+              <div
+                className={classNames(
+                  classes.semesterBoard,
+                  `semesterBoard-_${semester.id}`
+                )}
+              >
                 <header className={classes.laneHeader}>
                   <div className={classes.laneTitle}>{semester.id}</div>
                   <div className={classes.laneLabel}>
@@ -213,20 +243,34 @@ class Planner extends React.Component<IProps> {
                   orientation="vertical"
                   onDrop={this.onCardDrop(semester.id)}
                   getChildPayload={this.getChildPayload(semester.id)}
+                  shouldAcceptDrop={this.preventOverlappedFromDrop(semester)}
                 >
                   {semester.courses.map(course => {
                     return (
                       <Draggable
                         onClick={this.preventDragging}
                         key={course.id}
-                        className={course.type === 'recommended' ?
-                          classes.recCard : classes.card}>
-                        {course.type === 'recommended' ?
+                        className={
+                          course.type === 'recommended'
+                            ? classes.recCard
+                            : classes.card
+                        }
+                      >
+                        {course.type === 'recommended' ? (
                           <div className={classes.recCardTop}>
-                            <Chip label={course.subtitle}
-                                  style={{ backgroundColor: recommendColor, color: "white",
-                                    fontSize: 12, height: 18 }}/>
-                          </div> : ""}
+                            <Chip
+                              label={course.subtitle}
+                              style={{
+                                backgroundColor: recommendColor,
+                                color: 'white',
+                                fontSize: 12,
+                                height: 18,
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          ''
+                        )}
                         <header className={classes.cardHeader}>
                           <div style={{ width: '100%' }}>
                             {course.name}
@@ -235,7 +279,7 @@ class Planner extends React.Component<IProps> {
                             </span>
                           </div>
                           <div style={{ height: 20 }}>
-                            <MoreHoriz/>
+                            <MoreHoriz />
                           </div>
                         </header>
                         <div className={classes.cardMiddle}>
@@ -280,7 +324,7 @@ class Planner extends React.Component<IProps> {
               </div>
             ))}
             {/* 여기가 핀해놓은 강의 리스트 있는 곳임 !!*/}
-              {this.renderPinnedCourse()}
+            {this.renderPinnedCourse()}
           </div>
         </div>
       </div>
