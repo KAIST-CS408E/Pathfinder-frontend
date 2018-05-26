@@ -13,7 +13,7 @@ import * as d3Coll from 'd3-collection';
 
 import Card from '@material-ui/core/Card';
 import CardContent, { CardContentProps } from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
+// import CardMedia from '@material-ui/core/CardMedia';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
@@ -33,6 +33,7 @@ import ListSubheader, {
 
 import withStyles, { WithStyles } from 'material-ui/es/styles/withStyles';
 import styles from './Detail.style';
+import GradeChart from './GradeChart';
 import PeerCourseListItem from './PeerCourseListItem';
 
 import { API_URL } from '@src/constants/api';
@@ -48,11 +49,6 @@ const recommendColor = '#FFC107';
 const lightGrey1 = '#f5f5f5';
 
 const doFirst = ' !important';
-/* 로드, 그레이드 난수 함수! 실제 구현시에는 반드시 지울것 */
-function gradeGen() {
-  const factor = Math.pow(10, 2);
-  return Math.round(Math.random() * 4 * factor) / factor;
-}
 
 const CustomTableCellD = withStyles(theme => ({
   root: {
@@ -137,6 +133,7 @@ const themeStyle = () => ({
     marginTop: '1rem',
     maxWidth: 345,
   },
+
   media: {
     border: '1px solid ' + ourKaistBlue,
     height: 0,
@@ -149,7 +146,6 @@ const themeStyle = () => ({
   },
 });
 
-// TODO:: API에서 string으로 와야 할 게 숫자로 오고 있다 ㅡㅡ
 function isSameLecture(a: ILectureKeys, b: ILectureKeys) {
   return (
     String(a.year) === String(b.year) &&
@@ -189,6 +185,13 @@ export interface IProps extends RouteComponentProps<ICourseQuery> {
   replace: typeof replace;
 }
 
+export interface IState {
+  selectedSemester: {
+    year: number;
+    term: string;
+  };
+}
+
 class Detail extends React.Component<
   IProps &
     WithStyles<
@@ -202,10 +205,14 @@ class Detail extends React.Component<
       | 'media'
       | 'typo'
       | 'selectedCard'
-    >
+    >,
+  IState
 > {
   constructor(props: any) {
     super(props);
+    this.state = {
+      selectedSemester: { year: 0, term: '' },
+    };
   }
 
   public componentDidMount() {
@@ -349,6 +356,20 @@ class Detail extends React.Component<
       return <>REDIRECTING</>;
     }
 
+    let globalMax = 0;
+    const maxArray = data.lectures.map(
+      lecture => (lecture.grades ? d3Array.max(lecture.grades) : undefined)
+    );
+
+    if (maxArray) {
+      globalMax = d3Array.max(maxArray.filter(d => d !== undefined) as number[]) || 0;
+    }
+
+    const latestSemester = {
+      term: data.lectures[0].term,
+      year: data.lectures[0].year,
+    };
+
     return (
       <div className="courseDetail">
         <Paper className={classes.paperCutting} elevation={4}>
@@ -374,6 +395,7 @@ class Detail extends React.Component<
                 <Typography component="p">Intoduction of.....</Typography>
               </div>
             </CardContent>
+
             <div>
               {/* course description title, reccommandation, pinned */}
               <Typography
@@ -409,13 +431,44 @@ class Detail extends React.Component<
                     className={customClass.buttonPin}
                   >
                     Pin
-                    <Icon className={customClass.pinIcon}>
-                      turned_in_not
-                    </Icon>{' '}
+                    <Icon className={customClass.pinIcon}>turned_in_not</Icon>
                   </Button>
                   {/* turned_in 은 꽉찬 깃발, turned_in_not을 입력하면 빗 깃발 출력 */}
                 </div>
               </Typography>
+            </div>
+            {/* 가장 최근 학기에 강의를 개설한 교수님들 */}
+            <Typography variant="caption">
+              Lecturer of the latest semester ({latestSemester.year}{' '}
+              {latestSemester.term})
+            </Typography>
+            <div>
+              {data.lectures
+                .concat()
+                .filter(
+                  lecture =>
+                    lecture.year === latestSemester.year &&
+                    lecture.term === latestSemester.term
+                )
+                .sort((a: ILectureDetail, b: ILectureDetail) =>
+                  d3Array.ascending(a.division, b.division)
+                )
+                .map((lecture: ILectureDetail) => (
+                  <Chip
+                    key={lecture.division}
+                    className={classNames({
+                      [customClass.card]: true,
+                      [customClass.selectedCard]: isSameLecture(
+                        lecture,
+                        thisLecture
+                      ),
+                    })}
+                    label={`${lecture.professor} ${
+                      lecture.division !== '' ? `(${lecture.division})` : ''
+                    }`}
+                    onClick={this.handleLectureCardClick(lecture)}
+                  />
+                ))}
             </div>
             {/* give detail information with table */}
             <div className={classes.tableContainer}>
@@ -557,7 +610,6 @@ class Detail extends React.Component<
                 </List>
               </div>
             </CardContent>
-
             {/* information for each semester with professor */}
             <CardContent className={classes.profContainer}>
               {d3Coll
@@ -567,6 +619,7 @@ class Detail extends React.Component<
                 .key((d: ILectureDetail) => d.term)
                 .sortKeys(d3Array.ascending)
                 .entries(data.lectures)
+                .filter(yearEntry => yearEntry.key !== '2018')
                 .map(lecturesInYear =>
                   lecturesInYear.values.map(
                     (lecturesInTerm: {
@@ -575,7 +628,7 @@ class Detail extends React.Component<
                     }) => (
                       <div
                         key={lecturesInYear.key + lecturesInTerm.key}
-                        className={classes.testDiv}
+                        className={classes.semesterDiv}
                       >
                         <Typography
                           gutterBottom
@@ -594,14 +647,7 @@ class Detail extends React.Component<
                           .map((lecture: ILectureDetail) => (
                             <Card
                               key={lecture.division}
-                              className={classNames({
-                                [customClass.card]: true,
-                                [customClass.selectedCard]: isSameLecture(
-                                  lecture,
-                                  thisLecture
-                                ),
-                              })}
-                              onClick={this.handleLectureCardClick(lecture)}
+                              className={customClass.card}
                             >
                               <ProfCardContent>
                                 <Typography
@@ -616,13 +662,20 @@ class Detail extends React.Component<
                                   }`}
                                 </Typography>
                                 <Typography component="p" align="left">
-                                  Load: {gradeGen()}/ Grade: {gradeGen()}
+                                  Load: {lecture.spendTime}/ Grade:{' '}
+                                  {lecture.averageGrade}
                                 </Typography>
                               </ProfCardContent>
-                              <CardMedia
-                                className={customClass.media}
-                                image="https://www.mathsisfun.com/data/images/histogram.gif"
-                              />
+                              {lecture.grades ? (
+                                <GradeChart
+                                  width={200}
+                                  height={130}
+                                  globalMax={globalMax}
+                                  grades={lecture.grades}
+                                />
+                              ) : (
+                                'NO DATA'
+                              )}
                             </Card>
                           ))}
                       </div>

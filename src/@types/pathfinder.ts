@@ -94,11 +94,11 @@ export interface ILecture {
   division: string | '';
   classTime: string[];
   limit: number | null;
-
-  load: string;
-  abandonmentRate: number;
+  load: SpentTime;
   grades: number;
 }
+
+type SpentTime = '< 1' | '1 to 3' | '3 to 5' | '5 to 7' | '> 7';
 
 /* Data structures for the filter */
 export interface IFilterOptions {
@@ -171,13 +171,18 @@ export interface ILectureKeys {
 }
 
 export interface ILectureDetail extends ILectureKeys {
-  competitionRatio: '-';
-  sizeChange: string[];
   professor: string;
-  grade: string[];
-  dropChange: string[];
   classTime: string[];
   isEnglish: string;
+
+  // Statistics
+  abandonmentRate?: number;
+  averageGrade?: number;
+  competitionRatio?: number;
+  dropChange?: [number, number];
+  grades?: number[];
+  sizeChange?: number[];
+  spendTime?: SpentTime;
 }
 
 /* CourseNumber CourseName NumOfTaken */
