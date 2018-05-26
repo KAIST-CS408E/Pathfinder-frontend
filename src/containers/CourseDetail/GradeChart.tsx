@@ -70,11 +70,7 @@ export default class D3Chart extends React.Component<IProps> {
     const arc = d3
       .arc<PieArcDatum<IDatum>>()
       .innerRadius(0)
-      .outerRadius(radius)
-      .padAngle(0.1);
-
-    console.log(data);
-    console.log(arc(pie(data)[0]));
+      .outerRadius(radius);
 
     const color = d3.scaleOrdinal([
       '#1b7b3d',
@@ -94,16 +90,15 @@ export default class D3Chart extends React.Component<IProps> {
     const svg = d3
       .select(this.container.current)
       .select('svg')
-      .enter()
-      .append('svg')
       .attr('width', width)
       .attr('height', height);
 
-    const g = svg.select('.pie')
-      .enter()
-      .append('g').attr('transform', `translate(${center})`).attr('class', '.pie');
+    const g = svg
+      .select('.pie')
+      .attr('transform', `translate(${center})`)
+      .attr('class', '.pie');
 
-    const fractionSelect = g.selectAll('.fraction').data(pie(data));
+    const fractionSelect = g.selectAll('g').data(pie(data));
 
     const fraction = fractionSelect
       .enter()
@@ -164,6 +159,9 @@ export default class D3Chart extends React.Component<IProps> {
     return (
       <div ref={this.container}>
         <div ref={this.tooltip} />
+        <svg>
+          <g className="pie"/>
+        </svg>
       </div>
     );
   }
