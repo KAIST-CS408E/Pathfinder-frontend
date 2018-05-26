@@ -35,6 +35,8 @@ const profColorD = '#9E9E9E';
 const warnColor = 'rgb(232, 113, 151)';
 const passColor = 'rgb(153, 190, 221)';
 const recommendColor = '#FFC107';
+const ourKaistBlue = '#E3F2FD';
+
 
 class Planner extends React.Component<IProps> {
   constructor(props: any) {
@@ -77,14 +79,8 @@ class Planner extends React.Component<IProps> {
     const pinnedCourseLane = boardData[boardData.length - 1];
 
     return (
-      <Container
-        key={pinnedCourseLane.id}
-        groupName="col"
-        orientation="vertical"
-        onDrop={this.onCardDrop(pinnedCourseLane.id)}
-        getChildPayload={this.getChildPayload(pinnedCourseLane.id)}
-      >
-        <header className={classes.laneHeader}>
+      <div className={classes.pinBoard}>
+        <header className={classes.laneHeader} style={{backgroundColor: ourKaistBlue }}>
           <div className={classes.laneTitle}>{pinnedCourseLane.id}</div>
           <div className={classes.laneLabel}>
             {pinnedCourseLane.label
@@ -92,36 +88,44 @@ class Planner extends React.Component<IProps> {
               : 'Load: -.- Grade: -.-'}
           </div>
         </header>
-        {pinnedCourseLane.courses.map(course => {
-          return (
-            <Draggable
-              onClick={this.preventDragging}
-              key={course.id}
-              className={classes.card}
-            >
-              <header className={classes.cardHeader}>
-                <div style={{ width: '100%' }}>
-                  {course.name}
-                  <span style={{ fontSize: 12 }}>
-                    {course.label ? course.label : ''}
-                  </span>
+        <Container
+          key={pinnedCourseLane.id}
+          groupName="col"
+          orientation="vertical"
+          onDrop={this.onCardDrop(pinnedCourseLane.id)}
+          getChildPayload={this.getChildPayload(pinnedCourseLane.id)}
+        >
+          {pinnedCourseLane.courses.map(course => {
+            return (
+              <Draggable
+                onClick={this.preventDragging}
+                key={course.id}
+                className={classes.card}
+              >
+                <header className={classes.cardHeader}>
+                  <div style={{ width: '100%' }}>
+                    {course.name}
+                    <span style={{ fontSize: 12 }}>
+                      {course.label ? course.label : ''}
+                    </span>
+                  </div>
+                  <div style={{ height: 20 }}>
+                    <MoreHoriz />
+                  </div>
+                </header>
+                <div className={classes.cardMiddle}>
+                  {course.description ? course.description : 'Load:-.- Grade:-.-'}
                 </div>
-                <div style={{ height: 20 }}>
-                  <MoreHoriz />
+                <div className={classes.cardProfs}>
+                  <div style={{ backgroundColor: profColorD, color: 'white' }}>
+                    {course.lectures[0].professor}
+                  </div>
                 </div>
-              </header>
-              <div className={classes.cardMiddle}>
-                {course.description ? course.description : 'Load:-.- Grade:-.-'}
-              </div>
-              <div className={classes.cardProfs}>
-                <div style={{ backgroundColor: profColorD, color: 'white' }}>
-                  {course.lectures[0].professor}
-                </div>
-              </div>
-            </Draggable>
-          );
-        })}
-      </Container>
+              </Draggable>
+            );
+          })}
+        </Container>
+      </div>
     );
   }
 
@@ -182,6 +186,12 @@ class Planner extends React.Component<IProps> {
           <div className={classes.boardContainer}>
             {boardData.slice(0, -1).map(semester => (
               <div className={classes.semesterBoard}>
+                <header className={classes.laneHeader}>
+                  <div className={classes.laneTitle}>{semester.id}</div>
+                  <div className={classes.laneLabel}>
+                    {semester.label ? semester.label : 'Load: -.- Grade: -.-'}
+                  </div>
+                </header>
                 <Container
                   key={semester.id}
                   groupName="col"
@@ -189,12 +199,6 @@ class Planner extends React.Component<IProps> {
                   onDrop={this.onCardDrop(semester.id)}
                   getChildPayload={this.getChildPayload(semester.id)}
                 >
-                  <header className={classes.laneHeader}>
-                    <div className={classes.laneTitle}>{semester.id}</div>
-                    <div className={classes.laneLabel}>
-                      {semester.label ? semester.label : 'Load: -.- Grade: -.-'}
-                    </div>
-                  </header>
                   {semester.courses.map(course => {
                     return (
                       <Draggable
@@ -261,9 +265,7 @@ class Planner extends React.Component<IProps> {
               </div>
             ))}
             {/* 여기가 핀해놓은 강의 리스트 있는 곳임 !!*/}
-            <div className={classes.pinBoard}>
               {this.renderPinnedCourse()}
-            </div>
           </div>
         </div>
       </div>

@@ -37,9 +37,10 @@ export default jss
     },
 
     laneHeader: {
+      backgroundColor: lightGrey1,
       display: 'flex',
       padding: 10,
-      paddingTop: 0,
+      paddingBottom: 0,
     } as Style,
 
     laneLabel: {
@@ -73,8 +74,9 @@ export default jss
     semesterBoard: { // lane
       flex: '0 0 auto',
       margin: 10,
+      marginTop: 0,
 
-      '& > div:first-child': {
+      '& > div.smooth-dnd-container': {
         backgroundColor: lightGrey1,
         minWidth: 300,
 
@@ -86,13 +88,12 @@ export default jss
 
     pinBoard: { // lane
       flex: '0 0 auto',
-      margin: 10,
-      marginRight: 0,
+      margin: "0px 0px 10px 0px",
 
       position: 'fixed',
       right: "10vw",
 
-      '& > div:first-child': {
+      '& > div.smooth-dnd-container': {
         backgroundColor: ourKaistBlue,
         width: 320,
 
