@@ -13,11 +13,12 @@ const ourKaistBlueH = '#039BE5';
 // const warnColor = 'rgb(232, 113, 151)';
 // const passColor = 'rgb(153, 190, 221)';
 /*
-const ourKaistBlue = '#E3F2FD';
-const ourKaistBlueD = '#1A237E';
-const recommendColor = '#FFC107'; */
+const ourKaistBlueD = '#1A237E'; */
+const recommendColor = '#FFC107';
 const lightGrey1 = '#f8f8f8';
 const defaultGrey = "#757575";
+const ourKaistBlue = '#E3F2FD';
+
 
 export default jss
   .createStyleSheet({
@@ -36,9 +37,10 @@ export default jss
     },
 
     laneHeader: {
+      backgroundColor: lightGrey1,
       display: 'flex',
       padding: 10,
-      paddingTop: 0,
+      paddingBottom: 0,
     } as Style,
 
     laneLabel: {
@@ -72,10 +74,28 @@ export default jss
     semesterBoard: { // lane
       flex: '0 0 auto',
       margin: 10,
+      marginTop: 0,
 
-      '& > div:first-child': {
+      '& > div.smooth-dnd-container': {
         backgroundColor: lightGrey1,
         minWidth: 300,
+
+        borderRadius: 4,
+        padding: "10px 10px",
+        paddingBottom: 30,
+      },
+    } as Style,
+
+    pinBoard: { // lane
+      flex: '0 0 auto',
+      margin: "0px 0px 10px 0px",
+
+      position: 'fixed',
+      right: "10vw",
+
+      '& > div.smooth-dnd-container': {
+        backgroundColor: ourKaistBlue,
+        width: 320,
 
         borderRadius: 4,
         padding: "10px 10px",
@@ -124,8 +144,10 @@ export default jss
       padding: "0px 10px",
     },
 
+    // default card css
     card: {
       backgroundColor: "white",
+      borderRadius: 4,
       margin: "auto",
       marginBottom: 8,
       padding: "10px 6px",
@@ -194,6 +216,62 @@ export default jss
     } as Style,
 
 
+    // default card css
+    recCard: {
+      backgroundColor: "rgb(255, 152, 0, 0.05)",
+      border: "1px solid rgb(255, 152, 0)",
+      borderRadius: 4,
+      shadows: "0 0 3 rgb(255, 152, 0)",
+
+      color: "#424242",
+
+      margin: "auto",
+      marginBottom: 8,
+      padding: "10px 6px",
+
+      width: "100%",
+
+      '& > span': {
+        '& > header': {
+          borderBottom: 0,
+          marginBottom: 0,
+          paddingBottom: 8,
+
+          '& > span': {
+            '&:first-child': {
+              textAlign: 'left',
+            },
+            '&:last-child': {},
+          },
+        },
+
+        '& > :nth-child(2)': {
+          paddingBottom: 8,
+        },
+
+        '& > :last-child': {
+          '& span': {
+            '&:hover': {
+              backgroundColor: ourKaistBlueH + ' !important',
+            },
+          },
+        },
+      },
+    } as Style,
+
+    recCardHeader: {
+      display: "flex",
+
+      '& svg': {
+        height: 20,
+      },
+    } as Style,
+
+    recCardTop: {
+      borderBottom: "1px solid " + recommendColor,
+       marginBottom: 6,
+      paddingBottom: 4,
+    },
       /*
         '& > div': {
           zIndex: 0,
