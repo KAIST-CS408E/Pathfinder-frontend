@@ -440,6 +440,19 @@ export const plannerBoardData = [
           { professor: 'Junehwa Song', color: 'white', bgcolor: profColorD },
         ],
       },
+      {
+        id: 'CS330',
+
+        courseNumber: 'CS330',
+        name: 'Operating Systems and Lab',
+        subtitle: "popular",
+        type: 'recommended',
+
+
+        lectures: [
+          { professor: 'Junehwa Song', color: 'white', bgcolor: profColorD },
+        ],
+      },
     ],
 
     feedback:[],
@@ -498,7 +511,70 @@ export const plannerBoardData = [
   {
     id: 'pin lane',
 
-    courses: [],
+    courses: [
+      {
+        id: '123',
+
+        courseNumber: 'CS408',
+        name: 'Computer Science Projects',
+
+        description: 'Load: -  Grade: -',
+
+        lectures: [
+          { professor: 'Jongmoon Baik', color: 'white', bgcolor: profColorD },
+          { professor: 'Dongman Lee', color: 'white', bgcolor: profColorD },
+          { professor: 'Sung-Ju Lee', color: 'white', bgcolor: profColorD },
+          { professor: 'In-Young Ko', color: 'white', bgcolor: profColorD },
+          { professor: 'Okjoo Choi', color: 'white', bgcolor: profColorD },
+        ],
+      },
+      {
+        id: '234',
+
+        courseNumber: 'CS330',
+        name: 'Operating Systems and Lab',
+
+        description: 'Load: -  Grade: -',
+
+        lectures: [
+          { professor: 'Junehwa Song', color: 'white', bgcolor: profColorD },
+        ],
+      },
+      {
+        id: '345',
+
+        courseNumber: 'CS330',
+        name: 'Computer Organization',
+
+        description: 'Load: -  Grade: -',
+
+        lectures: [{ professor: 'Jaehyuk Huh', color: 'white', bgcolor: profColorD }],
+      },
+      {
+        id: '456',
+
+        courseNumber: 'CS361',
+        name:
+          'Special Topics in Computer Science<Crowdsourcing and Social Computing>',
+
+        description: 'Load: -  Grade: -',
+
+        lectures: [{ professor: 'Juho Kim', color: 'white', bgcolor: profColorD }],
+      },
+      {
+        id: '567',
+
+        courseNumber: "CS353",
+        name: 'Introduction to Software Engineering',
+
+        description: 'Load: -  Grade: -',
+
+        lectures: [
+          { professor: 'Doo-Hwan Bae', color: 'white', bgcolor: profColorD },
+        ],
+      },
+    ],
+
     feedback:[],
   },
 ] as any;
