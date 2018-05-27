@@ -175,8 +175,16 @@ class App extends React.Component<IProps, IState> {
               >
                 KAIST Pathfinder
               </Typography>
-              <Route path="/courses" render={this.renderGotoCurriculum} />
-              <Route path="/curriculum" render={this.renderGotoCourseSearch} />
+              <Route
+                location={location}
+                path="/courses"
+                render={this.renderGotoCurriculum}
+              />
+              <Route
+                location={location}
+                path="/curriculum"
+                render={this.renderGotoCourseSearch}
+              />
               <Button onClick={this.handleOpenPinnedList}>
                 <span className={classes.label}>Pin List</span>
                 <TurnedIn />

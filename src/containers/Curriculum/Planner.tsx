@@ -87,31 +87,35 @@ class Planner extends React.Component<IProps> {
   }
 
   public componentDidUpdate(prevProps: IProps) {
-    // When the board data is initialized
+    // When the board data is initialized, align
     if (prevProps.boardData.length === 0 && this.props.boardData.length !== 0) {
-      const { currentSemester } = this.props;
-      const board = document.querySelector(`.${classes.boardContainer}`);
-      const lane = document.querySelector(
-        `.semesterBoard-_${currentSemester + 1}`
-      );
-      const paddingLeft =
-        (document.scrollingElement || document.body).getBoundingClientRect()
-          .width * 0.1;
-      if (board && lane) {
-        board.scrollLeft += lane.getBoundingClientRect().left - paddingLeft;
-      }
+      this.alignToNextSemester();
+    }
+  }
+
+  public alignToNextSemester() {
+    const { currentSemester } = this.props;
+    const board = document.querySelector(`.${classes.boardContainer}`);
+    const lane = document.querySelector(
+      `.semesterBoard-_${currentSemester + 1}`
+    );
+    const paddingLeft =
+      (document.scrollingElement || document.body).getBoundingClientRect()
+        .width * 0.1;
+    if (board && lane) {
+      board.scrollLeft += lane.getBoundingClientRect().left - paddingLeft;
     }
   }
 
   public addtionalBoards = (exclude: ICourseCard[]): ISemester[] => {
     const { pinnedList } = this.props;
     const excludeList = {};
-    console.group('Pin Exclusion');
+    // console.group('Pin Exclusion');
     exclude.forEach(card => {
       excludeList[buildCourseKey(card)] = true;
-      console.log('exclude %s', card.name);
+      // console.log('exclude %s', card.name);
     });
-    console.groupEnd();
+    // console.groupEnd();
 
     const courses = Object.entries(pinnedList)
       .filter(([_, pin]) => !excludeList[buildCourseKey(pin)])
@@ -149,9 +153,9 @@ class Planner extends React.Component<IProps> {
   public onCardDrop = (semesterId: string) => (dropResult: any) => {
     // const { onAddCourse, onRemoveCourse } = this.props;
     const { removedIndex, addedIndex, payload } = dropResult;
-    console.group('onCardDrop');
-    console.log(semesterId, dropResult);
-    console.groupEnd();
+    // console.group('onCardDrop');
+    // console.log(semesterId, dropResult);
+    // console.groupEnd();
 
     if (removedIndex !== null) {
       const dropEventIndex = this.dropQueue.findIndex(
@@ -206,14 +210,23 @@ class Planner extends React.Component<IProps> {
     payload: ICourseCard
   ) {
     const { onAddCourse, onRemoveCourse } = this.props;
+    onRemoveCourse(from, fromIndex);
+    onAddCourse(to, toIndex, payload);
     (to.startsWith('side')
       ? deleteCourse(payload.courseNumber, payload.subtitle)
       : moveCourse(payload.courseNumber, payload.subtitle, to)
     ).then(json => {
       if (json.success) {
-        onRemoveCourse(from, fromIndex);
-        onAddCourse(to, toIndex, payload);
-        console.log('success');
+        console.log('board update success');
+      } else {
+        console.error(
+          'board update failed',
+          from,
+          fromIndex,
+          to,
+          toIndex,
+          payload
+        );
       }
     });
   }
@@ -238,14 +251,24 @@ class Planner extends React.Component<IProps> {
       return true;
     }
 
+    // If target container is not the future container
     if (semester && semester.semester <= this.props.currentSemester) {
       return false;
     }
 
-    // pin list는 semester가 undefined이므로 source 찾아서 판단
+    // if the source container is not the future semester
+    const sourceSelector = `.${sourceContainerOptions.groupName}`;
+    if (sourceContainerOptions.groupName.startsWith('semesterBoard')) {
+      if (Number(sourceSelector.split('-_')[1]) <= this.props.currentSemester) {
+        return false;
+      }
+    }
+
+    // See if target or source container is properly positioned away from pin list
+    // Find source container only if the function is called by the pin list
     const selector = semester
       ? `.semesterBoard-_${semester.id}`
-      : '.' + sourceContainerOptions.groupName;
+      : sourceSelector;
     const elem = document.querySelector(selector);
     if (pinnedListElem && elem) {
       const pinRect = pinnedListElem.getBoundingClientRect();
@@ -381,6 +404,7 @@ class Planner extends React.Component<IProps> {
           <div className={classes.boardContainer}>
             {boardData.slice(1).map(semester => (
               <div
+                key={semester.id}
                 className={classNames(
                   classes.semesterBoard,
                   `semesterBoard-_${semester.id}`
