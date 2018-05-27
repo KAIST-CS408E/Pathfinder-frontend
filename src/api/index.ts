@@ -26,3 +26,22 @@ export const unpinCourse = (
     .catch(e => console.error(e));
 
 export const getBoard = () => fetch(API_URL + '/board').then(r => r.json());
+
+export const moveCourse = (
+  courseNumber: string,
+  subtitle: string,
+  boardId: string,
+  division?: string
+) =>
+  fetch(
+    API_URL +
+      `/plan/${courseNumber}?subtitle=${subtitle}&to=${boardId}${
+        division ? `&division=${division}` : ''
+      }`,
+    { method: 'POST' }
+  ).then(r => r.json());
+
+export const deleteCourse = (courseNumber: string, subtitle: string) =>
+  fetch(API_URL + `/plan/${courseNumber}?subtitle=${subtitle}`, {
+    method: 'DELETE',
+  }).then(r => r.json());
