@@ -86,6 +86,23 @@ class Planner extends React.Component<IProps> {
     });
   }
 
+  public componentDidUpdate(prevProps: IProps) {
+    // When the board data is initialized
+    if (prevProps.boardData.length === 0 && this.props.boardData.length !== 0) {
+      const { currentSemester } = this.props;
+      const board = document.querySelector(`.${classes.boardContainer}`);
+      const lane = document.querySelector(
+        `.semesterBoard-_${currentSemester + 1}`
+      );
+      const paddingLeft =
+        (document.scrollingElement || document.body).getBoundingClientRect()
+          .width * 0.1;
+      if (board && lane) {
+        board.scrollLeft += lane.getBoundingClientRect().left - paddingLeft;
+      }
+    }
+  }
+
   public addtionalBoards = (exclude: ICourseCard[]): ISemester[] => {
     const { pinnedList } = this.props;
     const excludeList = {};
