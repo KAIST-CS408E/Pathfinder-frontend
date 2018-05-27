@@ -482,7 +482,6 @@ class Planner extends React.Component<IProps> {
             {/* 여기가 핀해놓은 강의 리스트 있는 곳임 !!*/}
             {this.renderPinnedCourse()}
           </div>
-          <div style={{ flex: '0 0 auto', width: '10vw' }}>-</div>
         </div>
       </div>
     );

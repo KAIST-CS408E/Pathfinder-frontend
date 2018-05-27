@@ -340,18 +340,18 @@ function CustomizedTable(props: ITableProps) {
                     color: ourKaistBlueD,
                     overflow: 'hidden',
                     paddingLeft: 18,
-                    width: 217,
+                    width: "20.9%",
                   }}
                 >
                   {`Prof. ${n.professor || 'None'}`}
                 </CustomTableCell>
-                <CustomTableCell style={{ width: 150 }}>
+                <CustomTableCell style={{ width: "14.5%" }}>
                   {n.division !== '' ? `Class. ${n.division}` : 'No Class'}
                 </CustomTableCell>
-                <CustomTableCell style={{ width: 130 }}>
+                <CustomTableCell style={{ width: "12.5%" }}>
                   {n.limit ? `0/${n.limit}` : '∞'}
                 </CustomTableCell>
-                <CustomTableCell style={{ width: 180 }}>
+                <CustomTableCell style={{ width: "18.8%"}}>
                   <div className={classes.levelBar}>
                     <div className={classes.levelTitle}>Load: </div>
                     <div
@@ -391,7 +391,7 @@ function CustomizedTable(props: ITableProps) {
                     </div>
                   </div>
                 </CustomTableCell>
-                <CustomTableCell style={{ width: 180 }}>
+                <CustomTableCell style={{ width: "16%"}}>
                   <div className={classes.levelBar}>
                     <div className={classes.levelTitle}>Grade: </div>
                     <div
@@ -429,20 +429,8 @@ function CustomizedTable(props: ITableProps) {
                     </div>
                   </div>
                 </CustomTableCell>
-                <CustomTableCell
-                  numeric
-                  style={{
-                    border: '1px solid ' + ourKaistBlue,
-                    borderRight: '0px solid',
-                    height: 30,
-                    padding: '1px 0px',
-                  }}
-                >
-                  <Tooltip
-                    id="tooltip-icon"
-                    title={n.classTime}
-                    placement="bottom"
-                  >
+                <CustomTableCell numeric style={{ border: "1px solid " + ourKaistBlue, borderRight: "0px solid",  padding:"1px 0px", height: 30, width:"17.4%" }}>
+                  <Tooltip id="tooltip-icon" title={n.classTime} placement="bottom">
                     <table className={classes.timeTable}>
                       <tr>
                         <th className={classes.classTimeCell}>-</th> <th>-</th>{' '}
