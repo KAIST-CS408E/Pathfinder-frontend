@@ -45,8 +45,8 @@ export const defaultValues: IFilterOptions = {
   },
   department: { cs: true },
   semester: 'Fall',
-  sortOrder: 'courseName',
-  year: '2017',
+  sortOrder: 'courseNumber',
+  year: '2018',
 };
 
 export type FilterKey = keyof IFilterOptions;

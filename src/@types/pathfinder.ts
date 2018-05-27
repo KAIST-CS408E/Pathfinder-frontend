@@ -1,7 +1,7 @@
 /* Data structures for pinning */
 
 export interface IPinnedTable {
-  [courseNumber: string]: IPinnedCourse;
+  [courseKey: string]: IPinnedCourse;
 }
 
 export interface IPinnedCourse {
@@ -54,11 +54,11 @@ export interface ICourseCard {
   subtitle: string;
 
   lectures: ILecture[];
-  selectedDivision: string;
+  selectedDivision?: string;
 
   myGrade?: string; // undefined if not taken
 
-  special: string; // Use for colored feedback on cards
+  special?: string; // Use for colored feedback on cards
 }
 
 export interface ISemesterFeedback {
@@ -91,14 +91,14 @@ export interface ICourse {
 export interface ILecture {
   professor: string;
 
-  division: string | '';
+  division: string | '' | undefined;
   classTime: string[];
   limit: number | null;
   load: SpentTime;
   grades: number;
 }
 
-type SpentTime = '< 1' | '1 to 3' | '3 to 5' | '5 to 7' | '> 7';
+export type SpentTime = '< 1' | '1 to 3' | '3 to 5' | '5 to 7' | '> 7';
 
 /* Data structures for the filter */
 export interface IFilterOptions {
@@ -119,8 +119,8 @@ export const defaultValues: IFilterOptions = {
   },
   department: { cs: true },
   semester: 'Fall',
-  sortOrder: 'courseName',
-  year: '2017',
+  sortOrder: 'courseNumber',
+  year: '2018',
 };
 
 export type FilterKey = keyof IFilterOptions;
