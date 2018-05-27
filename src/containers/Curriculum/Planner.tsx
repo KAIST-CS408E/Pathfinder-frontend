@@ -87,19 +87,23 @@ class Planner extends React.Component<IProps> {
   }
 
   public componentDidUpdate(prevProps: IProps) {
-    // When the board data is initialized
+    // When the board data is initialized, align
     if (prevProps.boardData.length === 0 && this.props.boardData.length !== 0) {
-      const { currentSemester } = this.props;
-      const board = document.querySelector(`.${classes.boardContainer}`);
-      const lane = document.querySelector(
-        `.semesterBoard-_${currentSemester + 1}`
-      );
-      const paddingLeft =
-        (document.scrollingElement || document.body).getBoundingClientRect()
-          .width * 0.1;
-      if (board && lane) {
-        board.scrollLeft += lane.getBoundingClientRect().left - paddingLeft;
-      }
+      this.alignToNextSemester();
+    }
+  }
+
+  public alignToNextSemester() {
+    const { currentSemester } = this.props;
+    const board = document.querySelector(`.${classes.boardContainer}`);
+    const lane = document.querySelector(
+      `.semesterBoard-_${currentSemester + 1}`
+    );
+    const paddingLeft =
+      (document.scrollingElement || document.body).getBoundingClientRect()
+        .width * 0.1;
+    if (board && lane) {
+      board.scrollLeft += lane.getBoundingClientRect().left - paddingLeft;
     }
   }
 
