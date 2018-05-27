@@ -153,9 +153,9 @@ class Planner extends React.Component<IProps> {
   public onCardDrop = (semesterId: string) => (dropResult: any) => {
     // const { onAddCourse, onRemoveCourse } = this.props;
     const { removedIndex, addedIndex, payload } = dropResult;
-    console.group('onCardDrop');
-    console.log(semesterId, dropResult);
-    console.groupEnd();
+    // console.group('onCardDrop');
+    // console.log(semesterId, dropResult);
+    // console.groupEnd();
 
     if (removedIndex !== null) {
       const dropEventIndex = this.dropQueue.findIndex(
@@ -210,14 +210,23 @@ class Planner extends React.Component<IProps> {
     payload: ICourseCard
   ) {
     const { onAddCourse, onRemoveCourse } = this.props;
+    onRemoveCourse(from, fromIndex);
+    onAddCourse(to, toIndex, payload);
     (to.startsWith('side')
       ? deleteCourse(payload.courseNumber, payload.subtitle)
       : moveCourse(payload.courseNumber, payload.subtitle, to)
     ).then(json => {
       if (json.success) {
-        onRemoveCourse(from, fromIndex);
-        onAddCourse(to, toIndex, payload);
-        console.log('success');
+        console.log('board update success');
+      } else {
+        console.error(
+          'board update failed',
+          from,
+          fromIndex,
+          to,
+          toIndex,
+          payload
+        );
       }
     });
   }
