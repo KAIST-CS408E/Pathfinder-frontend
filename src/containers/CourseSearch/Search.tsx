@@ -204,16 +204,19 @@ class Search extends React.Component<IProps> {
       courseNumber: course.number,
       subtitle: course.subtitle,
     };
+
     if (!this.props.pinnedList[buildCourseKey(datum)]) {
+      this.props.onPinnedCourse(datum);
       pinCourse(datum).then(response => {
-        if (response.success) {
-          this.props.onPinnedCourse(datum);
+        if (!response.success) {
+          console.error('Failed to update pin', datum);
         }
       });
     } else {
+      this.props.onUnpinCourse(datum);
       unpinCourse(datum).then(response => {
-        if (response.success) {
-          this.props.onUnpinCourse(datum);
+        if (!response.success) {
+          console.error('Failed to update pin', datum);
         }
       });
     }

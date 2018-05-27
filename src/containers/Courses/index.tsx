@@ -38,7 +38,7 @@ class Courses extends React.Component<IProps> {
       location.state &&
       location.state.modalDetail &&
       location !== this.previousLocation;
-    console.log(this.previousLocation);
+    
     return (
       <div>
         <Switch location={isModal ? this.previousLocation : location}>
