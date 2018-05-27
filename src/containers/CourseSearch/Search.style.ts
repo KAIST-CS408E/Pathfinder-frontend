@@ -182,8 +182,14 @@ export default jss
       border: "grey",
       borderRadius: roundingSmall,
 
-  }
+  },
 
+  lbb: { // Load Bar Block
+    height: 12,
+    width: 12,
+
+    padding: 1,
+  },
 
     
   })

@@ -38,6 +38,7 @@ export default jss
 
     laneHeader: {
       backgroundColor: lightGrey1,
+      borderRadius: "4px 4px 0px 0px",
       display: 'flex',
       padding: 10,
       paddingBottom: 0,
@@ -65,7 +66,7 @@ export default jss
 
       height: '71vh',
 
-      marginRight: '10vw',
+      marginRight: 340,
       paddingLeft: '10vw',
       textAlign: 'left',
 
@@ -78,9 +79,9 @@ export default jss
 
       '& > div.smooth-dnd-container': {
         backgroundColor: lightGrey1,
-        minWidth: 300,
+        width: 320,
 
-        borderRadius: 4,
+        borderRadius: "0px 0px 4px 4px",
         padding: "10px 10px",
         paddingBottom: 30,
       },
@@ -95,9 +96,10 @@ export default jss
 
       '& > div.smooth-dnd-container': {
         backgroundColor: ourKaistBlue,
+        minHeight: "60vh",
         width: 320,
 
-        borderRadius: 4,
+        borderRadius: "0px 0px 4px 4px",
         padding: "10px 10px",
         paddingBottom: 30,
       },
