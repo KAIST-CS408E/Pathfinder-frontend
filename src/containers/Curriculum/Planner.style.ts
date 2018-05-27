@@ -102,6 +102,8 @@ export default jss
         borderRadius: "0px 0px 4px 4px",
         padding: "10px 10px",
         paddingBottom: 30,
+
+        overflow: "auto",
       },
     } as Style,
 
