@@ -55,10 +55,12 @@ export default class D3Chart extends React.Component<IProps> {
     }
 
     const pieMargin = 10;
-    const data = xLabels.map((label, index): IDatum => ({
-      label,
-      value: grades[index],
-    }));
+    const data = xLabels
+      .map((label, index): IDatum => ({
+        label,
+        value: grades[index],
+      }))
+      .reverse();
 
     const radius = Math.min(width, height) / 2 - pieMargin;
     const center = `${pieMargin + radius},${pieMargin + radius}`;
@@ -70,38 +72,21 @@ export default class D3Chart extends React.Component<IProps> {
     const arc = d3
       .arc<PieArcDatum<IDatum>>()
       .innerRadius(0)
-      .outerRadius(radius)
-      .padAngle(0.1);
+      .outerRadius(radius);
 
-    console.log(data);
-    console.log(arc(pie(data)[0]));
-
-    const color = d3.scaleOrdinal([
-      '#1b7b3d',
-      '#c0d430',
-      '#ffd700',
-      '#f6891f',
-      '#cc382c',
-      '#a6a6a6',
-      '#c1b2ce',
-      '#767171',
-      '#3b3838',
-      '#1f4e79',
-      '#c4c4c4',
-      '#bf9000',
-    ]);
+    const color = (index: number) =>
+      d3.interpolateSpectral(index / data.length);
 
     const svg = d3
       .select(this.container.current)
       .select('svg')
-      .enter()
-      .append('svg')
       .attr('width', width)
       .attr('height', height);
 
-    const g = svg.select('.pie')
-      .enter()
-      .append('g').attr('transform', `translate(${center})`).attr('class', '.pie');
+    const g = svg
+      .select('.pie')
+      .attr('transform', `translate(${center})`)
+      .attr('class', '.pie');
 
     const fractionSelect = g.selectAll('.fraction').data(pie(data));
 
@@ -115,7 +100,21 @@ export default class D3Chart extends React.Component<IProps> {
     fraction
       .append('path')
       .attr('d', arc)
-      .attr('fill', (d: any) => color(d.data.value));
+      .attr('fill', (_, index: number) => color(index))
+      .on('mouseover', d => {
+        if (this.container.current && this.tooltip.current) {
+          const [x, y] = d3.mouse(this.container.current);
+          d3
+            .select(this.tooltip.current)
+            .style('top', `${y - 10}px`)
+            .style('left', `${x + 10}px`)
+            .style('display', 'block')
+            .text(`${d.data.label} ${d.data.value}`);
+        }
+      })
+      .on('mouseleave', () => {
+        d3.select(this.tooltip.current).style('display', 'none');
+      });
   }
 
   public updateHistogram() {
@@ -162,8 +161,21 @@ export default class D3Chart extends React.Component<IProps> {
 
   public render() {
     return (
-      <div ref={this.container}>
-        <div ref={this.tooltip} />
+      <div ref={this.container} style={{ position: 'relative' }}>
+        <div
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.35)',
+            borderRadius: 4,
+            color: 'white',
+            display: 'none',
+            padding: 8,
+            position: 'absolute',
+          }}
+          ref={this.tooltip}
+        />
+        <svg>
+          <g className="pie" />
+        </svg>
       </div>
     );
   }

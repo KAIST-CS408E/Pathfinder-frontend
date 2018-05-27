@@ -362,7 +362,8 @@ class Detail extends React.Component<
     );
 
     if (maxArray) {
-      globalMax = d3Array.max(maxArray.filter(d => d !== undefined) as number[]) || 0;
+      globalMax =
+        d3Array.max(maxArray.filter(d => d !== undefined) as number[]) || 0;
     }
 
     const latestSemester = {
@@ -438,11 +439,11 @@ class Detail extends React.Component<
               </Typography>
             </div>
             {/* 가장 최근 학기에 강의를 개설한 교수님들 */}
-            <Typography variant="caption">
+            <Typography variant="caption" style={{ display: 'flex', marginLeft: 12 }}>
               Lecturer of the latest semester ({latestSemester.year}{' '}
               {latestSemester.term})
             </Typography>
-            <div>
+            <div style={{ display: 'flex' }}>
               {data.lectures
                 .concat()
                 .filter(

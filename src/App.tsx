@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { connect, Dispatch } from 'react-redux';
+import { push } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
 
 import { Location } from 'history';
@@ -18,8 +19,7 @@ import Popover from '@material-ui/core/Popover';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-import AccountBox from '@material-ui/icons/AccountBox';
-import TurnedIn from '@material-ui/icons/TurnedIn';
+import { AccountBox, Search, TurnedIn } from '@material-ui/icons';
 
 import Courses from './containers/Courses';
 import Curriculum from './containers/Curriculum';
@@ -62,6 +62,8 @@ interface IProps {
 
   onPinCourse: (course: IPinnedCourse) => any;
   onUnpinCourse: (course: IPinnedCourse) => any;
+
+  push: typeof push;
 }
 
 interface IState {
@@ -118,6 +120,28 @@ class App extends React.Component<IProps, IState> {
     this.setState({ showPinned: false });
   };
 
+  public handleMyCurriculumClick = () => {
+    this.props.push('/curriculum/planner');
+  };
+
+  public handleCourseSearchClick = () => {
+    this.props.push('/courses/s/');
+  };
+
+  public renderGotoCurriculum = () => (
+    <Button onClick={this.handleMyCurriculumClick}>
+      <span className={classes.label}>My Curriculum</span>
+      <AccountBox />
+    </Button>
+  );
+
+  public renderGotoCourseSearch = () => (
+    <Button onClick={this.handleCourseSearchClick}>
+      <span className={classes.label}>Course Search</span>
+      <Search />
+    </Button>
+  );
+
   public renderCourses = (props: RouteComponentProps<{}>) => {
     return (
       <Courses
@@ -151,10 +175,8 @@ class App extends React.Component<IProps, IState> {
               >
                 KAIST Pathfinder
               </Typography>
-              <Button>
-                <span className={classes.label}>My Page</span>
-                <AccountBox />
-              </Button>
+              <Route path="/courses" render={this.renderGotoCurriculum} />
+              <Route path="/curriculum" render={this.renderGotoCourseSearch} />
               <Button onClick={this.handleOpenPinnedList}>
                 <span className={classes.label}>Pin List</span>
                 <TurnedIn />
@@ -197,7 +219,6 @@ class App extends React.Component<IProps, IState> {
                 {pinnedCourses.length === 0 ? (
                   <>Nothing has been pinned</>
                 ) : null}
-                <Typography variant="title">HelloHello!</Typography>
               </Popover>
             </Toolbar>
           </div>
@@ -225,6 +246,8 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
 
       onPinCourse: pinActions.pinCourse,
       onUnpinCourse: pinActions.unpinCourse,
+
+      push,
     },
     dispatch
   );
