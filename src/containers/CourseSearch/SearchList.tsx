@@ -20,7 +20,7 @@ import { buildCourseKey } from '../../utils/index';
 
 const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueD = '#1A237E';
-const ranLoad = 8;
+const ranLoad = 3;
 
 interface IProps {
   data?: IQueryResult['courses'];
@@ -180,12 +180,43 @@ const styles = (theme: Theme) => ({
     fontSize: 16,
   },
 
+  levelBar: {
+    display: "flex",
+    height: 34,
+    margin: "1px 10px 1px 0px",
+  },
+
+  levelBlock: {
+    backgroundColor: "#BDBDBD",
+    color: "white",
+    fontSize: 8,
+    height: 16,
+    width: 16,
+
+    margin: 1,
+    marginTop: 8,
+  },
+
+  levelTitle: { // level bar
+    color: ourKaistBlueD,
+    marginRight: 0,
+    padding:8,
+    paddingLeft: 0,
+  },
+
+  statNum: {
+    color: ourKaistBlueD,
+    fontSize: 15,
+    margin: "auto",
+    marginLeft: "4px",
+  },
+
   timeTable: {
     height:"100%",
     width: "100%",
 
     '& th': {
-      backgroundColor: "#F1F8E9",
+      backgroundColor: ourKaistBlue,
       border: "1px solid rgba(0, 0, 0, 0)",
       fontSize: 0,
       padding: 0,
@@ -193,22 +224,26 @@ const styles = (theme: Theme) => ({
   },
 
   classTimeCell: {
-    backgroundColor: "#4CAF50 !important",
+    backgroundColor: ourKaistBlueD + " !important",
   },
 });
 
 interface ITableProps
   extends WithStyles<
-      | 'root'
-      | 'table'
-      | 'row'
-      | 'typo'
-      | 'btn'
-      | 'paddingNone'
-      | 'title'
-      | 'head'
-      | 'timeTable'
-      | 'classTimeCell'
+    | 'root'
+    | 'table'
+    | 'row'
+    | 'typo'
+    | 'btn'
+    | 'paddingNone'
+    | 'title'
+    | 'head'
+    | 'timeTable'
+    | 'classTimeCell'
+    | 'statNum'
+    | 'levelTitle'
+    | 'levelBar'
+    | 'levelBlock'
     > {
   course: ICourse;
   clickHandlerBuilder: ClickHandlerBuilder;
@@ -318,31 +353,27 @@ function CustomizedTable(props: ITableProps) {
                   {n.limit ? `0/${n.limit}` : '∞'}
                 </CustomTableCell>
                 <CustomTableCell style={{ width: 180}}>
-                  <div style={{ display: "flex" }}>
-                    <div style={{marginRight: 2}}>Load: </div>
-                    <div style={{ backgroundColor: ranLoad > 1 ? "#FBE9E7" : "#BDBDBD",
-                      color: "white", fontSize: 8, height: 16, width: 16,}}>{`1hr`}</div>
-                    <div style={{ backgroundColor: ranLoad > 3 ? "#FFCCBC" : "#BDBDBD",
-                      color: "white", fontSize: 8, height: 16, width: 16,}}>{`3hr`}</div>
-                    <div style={{ backgroundColor: ranLoad > 5 ? "#FFAB91" : "#BDBDBD",
-                      color: "white", fontSize: 8, height: 16, width: 16,}}>{`5hr`}</div>
-                    <div style={{ backgroundColor: ranLoad > 7 ? "#FF8A65" : "#BDBDBD",
-                      color: "white", fontSize: 8, height: 16, width: 16,}}>{`7hr`}</div>
+                  <div className={classes.levelBar}>
+                    <div className={classes.levelTitle}>Load: </div>
+                    <div style={{ backgroundColor: ranLoad > 1 ? "#7986CB" : "" }} className={classes.levelBlock}>{`1hr`}</div>
+                    <div style={{ backgroundColor: ranLoad > 3 ? "#3F51B5" : "" }} className={classes.levelBlock}>{`3hr`}</div>
+                    <div style={{ backgroundColor: ranLoad > 5 ? "#303F9F" : "" }} className={classes.levelBlock}>{`5hr`}</div>
+                    <div style={{ backgroundColor: ranLoad > 7 ? "#1A237E" : "" }} className={classes.levelBlock}>{`7hr`}</div>
+                    <div className={classes.statNum} style={{fontSize:12, fontWeight:500, marginLeft: 0, paddingBottom: 1,}}>{n.load}</div>
                   </div>
                 </CustomTableCell>
                 <CustomTableCell style={{ width: 180}}>
-                  <div style={{ display: "flex" }}>
-                    <div style={{marginRight: 2}}>Grade: </div>
-                    <div style={{ background: "linear-gradient(to right, #E1F5FE , #03A9F4)",
-                      color: "#1A237E",fontSize: 10,height: 16, paddingLeft: 3, position:"relative", width: 64,}}>
-                      {n.grades}
-                      <div style={{ backgroundColor: "#BDBDBD", height: 16, paddingLeft: 3,
-                        position: "absolute", right: 0, top:0, width: 8,}}>{/* width: full grade - currunt grade */}</div>
+                  <div className={classes.levelBar}>
+                    <div className={classes.levelTitle}>Grade: </div>
+                    <div style={{ background: ourKaistBlueD, position:"relative", width: 64,}}
+                    className={classes.levelBlock}>
+                      <div style={{color: "white", marginTop: 1, position: 'absolute', zIndex: 10,}}>{n.grades ? n.grades : "-.-"}</div>
+                      <div style={{ position: "absolute", right: 0, margin:0, top:0, width: n.grades ? 64-64*(n.grades-2.5)/1.8 : 64 }} className={classes.levelBlock}>{/* width: full grade - currunt grade */}</div>
                     </div>
                   </div>
                 </CustomTableCell>
-                <CustomTableCell numeric style={{ border: "1px solid #1B5E20", borderRight: "0px solid",  padding:"1px 0px", height: 30 }}>
-                  <Tooltip id="tooltip-icon" title={n.classTime} placement="bottom-end">
+                <CustomTableCell numeric style={{ border: "1px solid " + ourKaistBlue, borderRight: "0px solid",  padding:"1px 0px", height: 30 }}>
+                  <Tooltip id="tooltip-icon" title={n.classTime} placement="bottom">
                     <table className={classes.timeTable}>
                       <tr>
                         <th className={classes.classTimeCell}>-</th> <th>-</th> <th className={classes.classTimeCell}>-</th> <th>-</th> <th>-</th>
