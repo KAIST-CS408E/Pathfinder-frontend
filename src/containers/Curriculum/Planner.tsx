@@ -251,14 +251,24 @@ class Planner extends React.Component<IProps> {
       return true;
     }
 
+    // If target container is not the future container
     if (semester && semester.semester <= this.props.currentSemester) {
       return false;
     }
 
-    // pin list는 semester가 undefined이므로 source 찾아서 판단
+    // if the source container is not the future semester
+    const sourceSelector = `.${sourceContainerOptions.groupName}`;
+    if (sourceContainerOptions.groupName.startsWith('semesterBoard')) {
+      if (Number(sourceSelector.split('-_')[1]) <= this.props.currentSemester) {
+        return false;
+      }
+    }
+
+    // See if target or source container is properly positioned away from pin list
+    // Find source container only if the function is called by the pin list
     const selector = semester
       ? `.semesterBoard-_${semester.id}`
-      : '.' + sourceContainerOptions.groupName;
+      : sourceSelector;
     const elem = document.querySelector(selector);
     if (pinnedListElem && elem) {
       const pinRect = pinnedListElem.getBoundingClientRect();
