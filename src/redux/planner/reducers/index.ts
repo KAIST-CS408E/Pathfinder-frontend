@@ -14,7 +14,7 @@ interface IState {
 
 export const initialState: IState = {
   boardData: [],
-  currentSemester: 1
+  currentSemester: 1,
 };
 
 export default (state: State = initialState, action: Action): State => {
@@ -55,6 +55,53 @@ export default (state: State = initialState, action: Action): State => {
         }
       );
     }
+    case getType(actions.setManyFeedbacks): {
+      const allFeedbacks = action.payload;
+      let reduction = state;
+      Object.entries(allFeedbacks).forEach(([semesterId, feedbacks]) => {
+        const semesterIndex = state.boardData.findIndex(
+          semester => semester.id === semesterId
+        );
+        reduction = iassign(
+          reduction,
+          prevState => prevState.boardData[semesterIndex],
+          (semester: ISemester) => {
+            semester.feedback = feedbacks;
+            return semester;
+          }
+        );
+      });
+      return reduction;
+    }
+    case getType(actions.removeAllFeedback): {
+      let reduction = state;
+      state.boardData.forEach((_, i) => {
+        reduction = iassign(
+          reduction,
+          prevState => prevState.boardData[i],
+          (semester: ISemester) => {
+            semester.feedback = [];
+            return semester;
+          }
+        );
+      });
+      return reduction;
+    }
+    case getType(actions.removeFeedback): {
+      const semesterId = action.payload;
+      const semesterIndex = state.boardData.findIndex(
+        semester => semester.id === semesterId
+      );
+      return iassign(
+        state,
+        prevState => prevState.boardData[semesterIndex],
+        (semester: ISemester) => {
+          semester.feedback = [];
+          return semester;
+        }
+      );
+    }
+
     default:
       return state;
   }

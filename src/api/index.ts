@@ -1,4 +1,4 @@
-import { IPinnedCourse } from 'pathfinder';
+import { IPinnedCourse, ISemesterFeedback } from 'pathfinder';
 
 import { API_URL } from '@src/constants/api';
 
@@ -45,3 +45,10 @@ export const deleteCourse = (courseNumber: string, subtitle: string) =>
   fetch(API_URL + `/plan/${courseNumber}?subtitle=${subtitle}`, {
     method: 'DELETE',
   }).then(r => r.json());
+
+export interface ISimulateResponse {
+  [semesterId: string]: ISemesterFeedback[];
+}
+
+export const doSimulation = () =>
+  fetch(API_URL + '/board/simulate').then<ISimulateResponse>(r => r.json());

@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { connect, Dispatch } from 'react-redux';
+import { RouteComponentProps } from 'react-router';
 import { bindActionCreators } from 'redux';
 
 import { Container, Draggable } from 'react-smooth-dnd';
 
 import * as classNames from 'classnames';
+import { Location } from 'history';
 import * as lodash from 'lodash';
 
-import { deleteCourse, getBoard, moveCourse } from '@src/api';
+import { deleteCourse, doSimulation, getBoard, moveCourse } from '@src/api';
 import { RootState } from '@src/redux';
 import { actions as plannerActions } from '@src/redux/planner';
 import { buildCourseKey, range } from '@src/utils';
@@ -24,15 +26,20 @@ import { MoreHoriz, PlayCircleOutline, ThumbUp } from '@material-ui/icons';
 
 const { classes } = styles;
 
-interface IProps {
+interface IProps extends RouteComponentProps<{}> {
   boardData: ISemester[];
   currentSemester: number;
 
   pinnedList: IPinnedTable;
 
+  location: Location;
+
   onInitBoard: typeof plannerActions.initBoard;
   onAddCourse: typeof plannerActions.addCourse;
   onRemoveCourse: typeof plannerActions.removeCourse;
+  onSetManyFeedbacks: typeof plannerActions.setManyFeedbacks;
+  onRemoveAllFeedback: typeof plannerActions.removeAllFeedback;
+  onRemoveFeedback: typeof plannerActions.removeFeedback;
 }
 
 const profColorD = '#9E9E9E';
@@ -83,6 +90,9 @@ class Planner extends React.Component<IProps> {
         ],
         currentSemester
       );
+      setTimeout(() => {
+        this.alignToNextSemester();
+      }, 0);
     });
   }
 
@@ -209,9 +219,11 @@ class Planner extends React.Component<IProps> {
     toIndex: number,
     payload: ICourseCard
   ) {
-    const { onAddCourse, onRemoveCourse } = this.props;
+    const { onAddCourse, onRemoveCourse, onRemoveFeedback } = this.props;
     onRemoveCourse(from, fromIndex);
     onAddCourse(to, toIndex, payload);
+    onRemoveFeedback(from);
+    onRemoveFeedback(to);
     (to.startsWith('side')
       ? deleteCourse(payload.courseNumber, payload.subtitle)
       : moveCourse(payload.courseNumber, payload.subtitle, to)
@@ -280,6 +292,19 @@ class Planner extends React.Component<IProps> {
     }
 
     return false;
+  };
+
+  public handleClickRecommendation = () => {
+    console.log('TODO: recommendation');
+  };
+
+  public handleClickSimulation = () => {
+    this.props.onRemoveAllFeedback();
+    doSimulation()
+      .then(json => this.props.onSetManyFeedbacks(json))
+      .catch(e => {
+        console.error(e);
+      });
   };
 
   public renderPinnedCourse() {
@@ -382,6 +407,7 @@ class Planner extends React.Component<IProps> {
                 <ThumbUp />
               </Avatar>
             }
+            onClick={this.handleClickRecommendation}
           />
           <Chip
             style={{
@@ -396,6 +422,7 @@ class Planner extends React.Component<IProps> {
                 <PlayCircleOutline />
               </Avatar>
             }
+            onClick={this.handleClickSimulation}
           />
         </div>
 
@@ -453,8 +480,14 @@ class Planner extends React.Component<IProps> {
                         <header className={classes.cardHeader}>
                           <div style={{ width: '100%' }}>
                             {course.name}
-                            <span style={{ fontSize: 12 }}>
-                              {course.label ? course.label : ''}
+                            <span
+                              style={{
+                                color: 'steelblue',
+                                fontSize: 12,
+                                marginLeft: 6,
+                              }}
+                            >
+                              {course.myGrade ? course.myGrade : ''}
                             </span>
                           </div>
                           <div style={{ height: 20 }}>
@@ -467,14 +500,16 @@ class Planner extends React.Component<IProps> {
                             : 'Load:-.- Grade:-.-'}
                         </div>
                         <div className={classes.cardProfs}>
-                          <div
-                            style={{
-                              backgroundColor: profColorD,
-                              color: 'white',
-                            }}
-                          >
-                            {course.lectures[0].professor}
-                          </div>
+                          {course.lectures.map(lecture => (
+                            <div
+                              style={{
+                                backgroundColor: profColorD,
+                                color: 'white',
+                              }}
+                            >
+                              {lecture.professor}
+                            </div>
+                          ))}
                         </div>
                       </Draggable>
                     );
@@ -494,7 +529,7 @@ class Planner extends React.Component<IProps> {
                           {feedback.ok ? ' balanced' : ' error'}
                         </div>
                         <div className={classes.feedbackDetail}>
-                          {feedback.reason}
+                          {feedback.reason ? 'reason' : 'no reason'}
                         </div>
                       </div>
                     );
@@ -515,6 +550,8 @@ class Planner extends React.Component<IProps> {
 const mapStateToProps = (state: RootState) => ({
   ...state.planner,
   pinnedList: state.pinnedList,
+
+  location: state.router.location,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
@@ -524,6 +561,10 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
 
       onAddCourse: plannerActions.addCourse,
       onRemoveCourse: plannerActions.removeCourse,
+
+      onRemoveAllFeedback: plannerActions.removeAllFeedback,
+      onRemoveFeedback: plannerActions.removeFeedback,
+      onSetManyFeedbacks: plannerActions.setManyFeedbacks,
     },
     dispatch
   );

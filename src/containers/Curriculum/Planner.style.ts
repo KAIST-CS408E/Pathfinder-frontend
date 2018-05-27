@@ -16,9 +16,8 @@ const ourKaistBlueH = '#039BE5';
 const ourKaistBlueD = '#1A237E'; */
 const recommendColor = '#FFC107';
 const lightGrey1 = '#f8f8f8';
-const defaultGrey = "#757575";
+const defaultGrey = '#757575';
 const ourKaistBlue = '#E3F2FD';
-
 
 export default jss
   .createStyleSheet({
@@ -38,7 +37,7 @@ export default jss
 
     laneHeader: {
       backgroundColor: lightGrey1,
-      borderRadius: "4px 4px 0px 0px",
+      borderRadius: '4px 4px 0px 0px',
       display: 'flex',
       padding: 10,
       paddingBottom: 0,
@@ -69,10 +68,10 @@ export default jss
       marginRight: 340,
       paddingLeft: '10vw',
       textAlign: 'left',
-
     } as Style,
 
-    semesterBoard: { // lane
+    semesterBoard: {
+      // lane
       flex: '0 0 auto',
       margin: 10,
       marginTop: 0,
@@ -81,54 +80,55 @@ export default jss
         backgroundColor: lightGrey1,
         width: 320,
 
-        borderRadius: "0px 0px 4px 4px",
-        padding: "10px 10px",
+        borderRadius: '0px 0px 4px 4px',
+        padding: '10px 10px',
         paddingBottom: 30,
       },
     } as Style,
 
-    pinBoard: { // lane
+    pinBoard: {
+      // lane
       flex: '0 0 auto',
-      margin: "0px 0px 10px 0px",
+      margin: '0px 0px 10px 0px',
 
       position: 'fixed',
-      right: "10vw",
+      right: '10vw',
 
       '& > div.smooth-dnd-container': {
         backgroundColor: ourKaistBlue,
-        minHeight: "60vh",
+        minHeight: '60vh',
         width: 320,
 
-        borderRadius: "0px 0px 4px 4px",
-        padding: "10px 10px",
+        borderRadius: '0px 0px 4px 4px',
+        padding: '10px 10px',
         paddingBottom: 30,
 
-        overflow: "auto",
+        overflow: 'auto',
       },
     } as Style,
 
     feedback: {
       borderRadius: 4,
-      color: "white",
+      color: 'white',
       fontSize: 15,
       fontWeight: 500,
 
       marginTop: 10,
 
-      position: "relative",
+      position: 'relative',
       right: 0,
 
       maxWidth: 320,
 
       '& > div': {
-        padding: "10px 10px",
+        padding: '10px 10px',
 
         '&:first-child': {
-          borderRadius: "4px 4px 0px 0px",
+          borderRadius: '4px 4px 0px 0px',
           paddingTop: 10,
         },
         '&:last-child': {
-          borderRadius: "0px 0px 4px 4px",
+          borderRadius: '0px 0px 4px 4px',
           paddingBottom: 10,
         },
       },
@@ -138,25 +138,25 @@ export default jss
       fontSize: 12,
       fontWeight: 500,
 
-      padding: "6px 10px",
+      padding: '6px 10px',
       paddingBottom: 10,
     },
     feedbackTitle: {
       fontSize: 15,
       fontWeight: 500,
 
-      padding: "0px 10px",
+      padding: '0px 10px',
     },
 
     // default card css
     card: {
-      backgroundColor: "white",
+      backgroundColor: 'white',
       borderRadius: 4,
-      margin: "auto",
+      margin: 'auto',
       marginBottom: 8,
-      padding: "10px 6px",
+      padding: '10px 6px',
 
-      width: "100%",
+      width: '100%',
 
       '& > span': {
         '& > header': {
@@ -187,7 +187,7 @@ export default jss
     } as Style,
 
     cardHeader: {
-      display: "flex",
+      display: 'flex',
 
       '& svg': {
         height: 20,
@@ -200,8 +200,9 @@ export default jss
     },
 
     cardProfs: {
-      display: "flex",
-      textAlign: "right",
+      display: 'flex',
+      flexWrap: 'wrap',
+      textAlign: 'right',
 
       '& > div': {
         backgroundColor: defaultGrey,
@@ -211,7 +212,7 @@ export default jss
         height: 18,
 
         margin: 2,
-        padding: "2px 10px",
+        padding: '2px 10px',
 
         '&:hover': {
           backgroundColor: ourKaistBlueH,
@@ -219,21 +220,20 @@ export default jss
       },
     } as Style,
 
-
     // default card css
     recCard: {
-      backgroundColor: "rgb(255, 152, 0, 0.05)",
-      border: "1px solid rgb(255, 152, 0)",
+      backgroundColor: 'rgb(255, 152, 0, 0.05)',
+      border: '1px solid rgb(255, 152, 0)',
       borderRadius: 4,
-      shadows: "0 0 3 rgb(255, 152, 0)",
+      shadows: '0 0 3 rgb(255, 152, 0)',
 
-      color: "#424242",
+      color: '#424242',
 
-      margin: "auto",
+      margin: 'auto',
       marginBottom: 8,
-      padding: "10px 6px",
+      padding: '10px 6px',
 
-      width: "100%",
+      width: '100%',
 
       '& > span': {
         '& > header': {
@@ -264,7 +264,7 @@ export default jss
     } as Style,
 
     recCardHeader: {
-      display: "flex",
+      display: 'flex',
 
       '& svg': {
         height: 20,
@@ -272,11 +272,12 @@ export default jss
     } as Style,
 
     recCardTop: {
-      borderBottom: "1px solid " + recommendColor,
-       marginBottom: 6,
-      paddingBottom: 4,
+      borderBottom: '1px solid ' + recommendColor,
+
+      marginBottom: 6,
+      paddingBottom: 4,
     },
-      /*
+    /*
         '& > div': {
           zIndex: 0,
 
