@@ -1,7 +1,7 @@
 /* Data structures for pinning */
 
 export interface IPinnedTable {
-  [courseNumber: string]: IPinnedCourse;
+  [courseKey: string]: IPinnedCourse;
 }
 
 export interface IPinnedCourse {
@@ -98,7 +98,7 @@ export interface ILecture {
   grades: number;
 }
 
-type SpentTime = '< 1' | '1 to 3' | '3 to 5' | '5 to 7' | '> 7';
+export type SpentTime = '< 1' | '1 to 3' | '3 to 5' | '5 to 7' | '> 7';
 
 /* Data structures for the filter */
 export interface IFilterOptions {
