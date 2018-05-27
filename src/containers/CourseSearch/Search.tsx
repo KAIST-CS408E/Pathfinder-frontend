@@ -82,7 +82,9 @@ class Search extends React.Component<IProps> {
 
     onChangeFilter(filterOptions);
     onChangeQueryKeyword(queryKeyword);
-    setTimeout(() => this.fetchQueryResult(this.getSearchQuery()), 0);
+    if (!this.props.queryResult) {
+      setTimeout(() => this.fetchQueryResult(this.getSearchQuery()), 0);
+    }
   }
 
   public commaSeperated = (obj: object) =>

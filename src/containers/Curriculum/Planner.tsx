@@ -110,12 +110,12 @@ class Planner extends React.Component<IProps> {
   public addtionalBoards = (exclude: ICourseCard[]): ISemester[] => {
     const { pinnedList } = this.props;
     const excludeList = {};
-    console.group('Pin Exclusion');
+    // console.group('Pin Exclusion');
     exclude.forEach(card => {
       excludeList[buildCourseKey(card)] = true;
-      console.log('exclude %s', card.name);
+      // console.log('exclude %s', card.name);
     });
-    console.groupEnd();
+    // console.groupEnd();
 
     const courses = Object.entries(pinnedList)
       .filter(([_, pin]) => !excludeList[buildCourseKey(pin)])
@@ -385,6 +385,7 @@ class Planner extends React.Component<IProps> {
           <div className={classes.boardContainer}>
             {boardData.slice(1).map(semester => (
               <div
+                key={semester.id}
                 className={classNames(
                   classes.semesterBoard,
                   `semesterBoard-_${semester.id}`
