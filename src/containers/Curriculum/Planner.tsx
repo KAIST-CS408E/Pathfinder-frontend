@@ -5,20 +5,20 @@ import { bindActionCreators } from 'redux';
 import { Container, Draggable } from 'react-smooth-dnd';
 
 import * as classNames from 'classnames';
+import * as lodash from 'lodash';
 
 import { deleteCourse, getBoard, moveCourse } from '@src/api';
 import { RootState } from '@src/redux';
 import { actions as plannerActions } from '@src/redux/planner';
-import { range } from '@src/utils';
+import { buildCourseKey, range } from '@src/utils';
 
-import { ICourseCard, ISemester } from 'pathfinder';
+import { ICourseCard, IPinnedTable, ISemester } from 'pathfinder';
 
 import styles from './Planner.style';
 
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
-
 // icons
 import { MoreHoriz, PlayCircleOutline, ThumbUp } from '@material-ui/icons';
 
@@ -27,6 +27,8 @@ const { classes } = styles;
 interface IProps {
   boardData: ISemester[];
   currentSemester: number;
+
+  pinnedList: IPinnedTable;
 
   onInitBoard: typeof plannerActions.initBoard;
   onAddCourse: typeof plannerActions.addCourse;
@@ -44,7 +46,9 @@ const ourKaistBlue = '#E3F2FD';
 class Planner extends React.Component<IProps> {
   public dropQueue: Array<{
     from: string;
+    fromIndex: number;
     to: string;
+    toIndex: number;
     payload: ICourseCard;
   }> = [];
 
@@ -55,29 +59,82 @@ class Planner extends React.Component<IProps> {
   public componentDidMount() {
     getBoard().then(json => {
       const { boardData, currentSemester } = json;
+
       this.props.onInitBoard(
-        range(13).map((n: number) => {
-          const semesterId = String(n);
-          const basicData = { id: semesterId, semester: n };
-          const remoteData = boardData[semesterId];
-          if (remoteData) {
-            return {
-              ...basicData,
-              courses: remoteData.courses,
-              feedback: remoteData.feedback,
-            };
-          }
-          return { ...basicData, courses: [], feedback: [] };
-        }),
+        [
+          ...this.addtionalBoards(
+            lodash.flatMap(boardData, semester => semester.courses)
+          ),
+          ...range(13)
+            .slice(1)
+            .map((n: number) => {
+              const semesterId = String(n);
+              const basicData = { id: semesterId, semester: n };
+              const remoteData = boardData[semesterId];
+              if (remoteData) {
+                return {
+                  ...basicData,
+                  courses: remoteData.courses,
+                  feedback: remoteData.feedback,
+                };
+              }
+              return { ...basicData, courses: [], feedback: [] };
+            }),
+        ],
         currentSemester
       );
     });
   }
 
+  public addtionalBoards = (exclude: ICourseCard[]): ISemester[] => {
+    const { pinnedList } = this.props;
+    const excludeList = {};
+    console.group('Pin Exclusion');
+    exclude.forEach(card => {
+      excludeList[buildCourseKey(card)] = true;
+      console.log('exclude %s', card.name);
+    });
+    console.groupEnd();
+
+    const courses = Object.entries(pinnedList)
+      .filter(([_, pin]) => !excludeList[buildCourseKey(pin)])
+      .map(([key, pinnedCourse]): ICourseCard => ({
+        id: key,
+        type: 'pinned' as 'pinned',
+
+        courseNumber: pinnedCourse.courseNumber,
+        name: pinnedCourse.courseName,
+        subtitle: pinnedCourse.subtitle,
+
+        lectures: [
+          {
+            classTime: [],
+            division: undefined,
+            grades: 1,
+            limit: null,
+            load: '< 1',
+            professor: 'no!',
+          },
+        ],
+      }));
+
+    return [
+      {
+        id: 'side_pinnedList',
+        semester: 0,
+
+        courses,
+        feedback: [],
+      },
+    ];
+  };
+
   public onCardDrop = (semesterId: string) => (dropResult: any) => {
-    const { onAddCourse, onRemoveCourse } = this.props;
+    // const { onAddCourse, onRemoveCourse } = this.props;
     const { removedIndex, addedIndex, payload } = dropResult;
-    console.log(semesterId, dropResult, this.dropQueue[0]);
+    console.group('onCardDrop');
+    console.log(semesterId, dropResult);
+    console.groupEnd();
 
     if (removedIndex !== null) {
       const dropEventIndex = this.dropQueue.findIndex(
@@ -85,23 +142,21 @@ class Planner extends React.Component<IProps> {
       );
       const from = semesterId;
       if (dropEventIndex !== -1) {
-        const { to } = this.dropQueue[dropEventIndex];
+        const { to, toIndex } = this.dropQueue[dropEventIndex];
         if (to === 'none') {
           console.error('hum..');
         }
         this.dropQueue.splice(dropEventIndex, 1);
-        (to === '0'
-          ? deleteCourse(payload.courseNumber, payload.subtitle)
-          : moveCourse(payload.courseNumber, payload.subtitle, to)
-        ).then(json => {
-          if (json.success) {
-            onRemoveCourse(from, removedIndex);
-            onAddCourse(to, addedIndex, payload);
-            console.log('success');
-          }
-        });
+        this.moveCard(from, removedIndex, to, toIndex, payload);
       } else {
-        this.dropQueue.push({ from, to: 'none', payload });
+        this.dropQueue.push({
+          from,
+          fromIndex: removedIndex,
+          to: 'none',
+          toIndex: 0,
+
+          payload,
+        });
       }
     }
     if (addedIndex !== null) {
@@ -110,23 +165,41 @@ class Planner extends React.Component<IProps> {
       );
       const to = semesterId;
       if (dropEventIndex !== -1) {
-        const { from } = this.dropQueue[dropEventIndex];
+        const { from, fromIndex } = this.dropQueue[dropEventIndex];
         this.dropQueue.splice(dropEventIndex, 1);
-        (to === '0'
-          ? deleteCourse(payload.courseNumber, payload.subtitle)
-          : moveCourse(payload.courseNumber, payload.subtitle, to)
-        ).then(json => {
-          if (json.success) {
-            onRemoveCourse(from, removedIndex);
-            onAddCourse(to, addedIndex, payload);
-            console.log('success');
-          }
-        });
+        this.moveCard(from, fromIndex, to, addedIndex, payload);
       } else {
-        this.dropQueue.push({ from: 'none', to, payload });
+        this.dropQueue.push({
+          from: 'none',
+          fromIndex: 0,
+          to,
+          toIndex: addedIndex,
+
+          payload,
+        });
       }
     }
   };
+
+  public moveCard(
+    from: string,
+    fromIndex: number,
+    to: string,
+    toIndex: number,
+    payload: ICourseCard
+  ) {
+    const { onAddCourse, onRemoveCourse } = this.props;
+    (to.startsWith('side')
+      ? deleteCourse(payload.courseNumber, payload.subtitle)
+      : moveCourse(payload.courseNumber, payload.subtitle, to)
+    ).then(json => {
+      if (json.success) {
+        onRemoveCourse(from, fromIndex);
+        onAddCourse(to, toIndex, payload);
+        console.log('success');
+      }
+    });
+  }
 
   public getChildPayload = (semsterId: string) => (courseIndex: number) => {
     return this.props.boardData.filter(
@@ -287,7 +360,7 @@ class Planner extends React.Component<IProps> {
         </div>
 
         {/* the kanban board */}
-        <div style={{ display:"flex"}}>
+        <div style={{ display: 'flex' }}>
           <div className={classes.boardContainer}>
             {boardData.slice(1).map(semester => (
               <div
@@ -392,14 +465,18 @@ class Planner extends React.Component<IProps> {
             {/* 여기가 핀해놓은 강의 리스트 있는 곳임 !!*/}
             {this.renderPinnedCourse()}
           </div>
-          <div style={{flex: "0 0 auto", width: "10vw" }}>-</div>
+          <div style={{ flex: '0 0 auto', width: '10vw' }}>-</div>
         </div>
       </div>
     );
   }
 }
 
-const mapStateToProps = (state: RootState) => state.planner;
+const mapStateToProps = (state: RootState) => ({
+  ...state.planner,
+  pinnedList: state.pinnedList,
+});
+
 const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     {

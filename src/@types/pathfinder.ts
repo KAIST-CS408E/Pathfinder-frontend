@@ -54,11 +54,11 @@ export interface ICourseCard {
   subtitle: string;
 
   lectures: ILecture[];
-  selectedDivision: string;
+  selectedDivision?: string;
 
   myGrade?: string; // undefined if not taken
 
-  special: string; // Use for colored feedback on cards
+  special?: string; // Use for colored feedback on cards
 }
 
 export interface ISemesterFeedback {
@@ -91,7 +91,7 @@ export interface ICourse {
 export interface ILecture {
   professor: string;
 
-  division: string | '';
+  division: string | '' | undefined;
   classTime: string[];
   limit: number | null;
   load: SpentTime;
@@ -119,8 +119,8 @@ export const defaultValues: IFilterOptions = {
   },
   department: { cs: true },
   semester: 'Fall',
-  sortOrder: 'courseName',
-  year: '2017',
+  sortOrder: 'courseNumber',
+  year: '2018',
 };
 
 export type FilterKey = keyof IFilterOptions;
