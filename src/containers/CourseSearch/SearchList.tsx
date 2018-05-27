@@ -407,7 +407,7 @@ function CustomizedTable(props: ITableProps) {
                           color: 'white',
                           marginTop: 1,
                           position: 'absolute',
-                          zIndex: 10,
+                          zIndex: 1,
                         }}
                       >
                         {n.grades ? n.grades : '-.-'}
