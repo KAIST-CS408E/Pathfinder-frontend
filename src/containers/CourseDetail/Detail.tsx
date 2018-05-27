@@ -132,6 +132,10 @@ const themeStyle = () => ({
     marginLeft: '1rem',
     marginTop: '1rem',
     maxWidth: 345,
+
+    '& > div': {
+      zIndex: 2,
+    },
   },
 
   media: {
