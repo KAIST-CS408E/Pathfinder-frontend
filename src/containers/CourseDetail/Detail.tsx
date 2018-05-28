@@ -622,17 +622,20 @@ class Detail extends React.Component<
                     }
                   >
                     {/* TODO:: Prerequisite by college -> star_rate */}
-                    {data.before.map(([courseNumber, courseName, subtitle]) => (
-                      <PeerCourseListItem
-                        key={courseNumber}
-                        className={customClass.listItems}
-                        courseName={courseName}
-                        courseNumber={courseNumber}
-                        icon="equalizer"
-                        onClick={this.handlePeerCourseClick}
-                        subtitle={subtitle}
-                      />
-                    ))}
+                    {data.before.map(
+                      ([courseNumber, courseName, subtitle, percentage]) => (
+                        <PeerCourseListItem
+                          key={courseNumber}
+                          className={customClass.listItems}
+                          courseName={courseName}
+                          courseNumber={courseNumber}
+                          icon="equalizer"
+                          onClick={this.handlePeerCourseClick}
+                          subtitle={subtitle}
+                          percentage={percentage}
+                        />
+                      )
+                    )}
                     {/* TODO:: Prerequisite done -> done */}
                   </List>
                 </Paper>
@@ -674,17 +677,20 @@ class Detail extends React.Component<
                       </RcmSubHeader>
                     }
                   >
-                    {data.with.map(([courseNumber, courseName, subtitle]) => (
-                      <PeerCourseListItem
-                        key={courseName}
-                        className={customClass.listItems}
-                        courseName={courseName}
-                        courseNumber={courseNumber}
-                        icon="equalizer"
-                        onClick={this.handlePeerCourseClick}
-                        subtitle={subtitle}
-                      />
-                    ))}
+                    {data.with.map(
+                      ([courseNumber, courseName, subtitle, percentage]) => (
+                        <PeerCourseListItem
+                          key={courseName}
+                          className={customClass.listItems}
+                          courseName={courseName}
+                          courseNumber={courseNumber}
+                          icon="equalizer"
+                          onClick={this.handlePeerCourseClick}
+                          subtitle={subtitle}
+                          percentage={percentage}
+                        />
+                      )
+                    )}
                     {/* TODO:: Taken with done -> done */}
                   </List>
                 </Paper>
@@ -718,17 +724,20 @@ class Detail extends React.Component<
                       </RcmSubHeader>
                     }
                   >
-                    {data.after.map(([courseNumber, courseName, subtitle]) => (
-                      <PeerCourseListItem
-                        key={courseName}
-                        className={customClass.listItems}
-                        courseName={courseName}
-                        courseNumber={courseNumber}
-                        icon="equalizer"
-                        onClick={this.handlePeerCourseClick}
-                        subtitle={subtitle}
-                      />
-                    ))}
+                    {data.after.map(
+                      ([courseNumber, courseName, subtitle, percentage]) => (
+                        <PeerCourseListItem
+                          key={courseName}
+                          className={customClass.listItems}
+                          courseName={courseName}
+                          courseNumber={courseNumber}
+                          icon="equalizer"
+                          onClick={this.handlePeerCourseClick}
+                          subtitle={subtitle}
+                          percentage={percentage}
+                        />
+                      )
+                    )}
                     {/* TODO:: Taken with done -> done */}
                   </List>
                 </Paper>

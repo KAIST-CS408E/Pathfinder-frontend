@@ -12,7 +12,6 @@ import styles from "./Detail.style";
 
 const { classes } = styles;
 
-const relPercent = 87;
 const ourKaistBlue = "#E8EAF6";
 
 
@@ -32,6 +31,7 @@ interface IPeerCourseItemProps {
   icon: string;
   onClick: (courseNumber: string, subtitle: string) => void;
   subtitle: string;
+  percentage: number;
 }
 
 export default class PeerCourseListItem extends React.Component<
@@ -43,14 +43,14 @@ export default class PeerCourseListItem extends React.Component<
   };
 
   public render() {
-    const { className, courseName } = this.props;
+    const { className, courseName, percentage } = this.props;
     return (
       <ListItem button className={className} onClick={this.handleClick} style={{border: "1px solid " + ourKaistBlue}}>
         <ListItemIcon>
-          <Avatar style={{backgroundColor: ourKaistBlue, fontSize: 10, marginRight:0, height: 26, width:26 }}>{relPercent}%</Avatar>
+          <Avatar style={{backgroundColor: ourKaistBlue, fontSize: 10, marginRight:0, height: 26, width:26 }}>{percentage}%</Avatar>
         </ListItemIcon>
         <RcmListItemText inset className={classes.recCourseList}>
-          <div style={{ zIndex: -1, width: relPercent / 100 * 50}} className={classes.percentBar}>{/* give percentage bar width */}</div>
+          <div style={{ zIndex: -1, width: percentage / 100 * 200}} className={classes.percentBar}>{/* give percentage bar width */}</div>
           {courseName}
         </RcmListItemText>
       </ListItem>
