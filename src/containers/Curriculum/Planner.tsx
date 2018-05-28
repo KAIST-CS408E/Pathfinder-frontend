@@ -112,7 +112,10 @@ class Planner extends React.Component<IProps> {
       this.alignToNextSemester();
     }
 
-    if (prevProps.pinnedList !== this.props.pinnedList) {
+    if (
+      this.props.boardData.length > 0 &&
+      prevProps.pinnedList !== this.props.pinnedList
+    ) {
       this.props.onSetManyCourseCards(
         'side_pinnedList',
         this.pinnedCourseBoard(
@@ -333,7 +336,9 @@ class Planner extends React.Component<IProps> {
     division: string
   ) => () => {
     this.props.onSelectDivision(semesterId, course.id, division);
-    moveCourse(course.courseNumber, course.subtitle, semesterId, division);
+    if (!semesterId.startsWith('side')) {
+      moveCourse(course.courseNumber, course.subtitle, semesterId, division);
+    }
   };
 
   public renderPinnedCourse() {
