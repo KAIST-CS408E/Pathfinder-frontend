@@ -5,6 +5,10 @@ import { Style } from 'jss/css';
 jss.setup(preset());
 
 const lightGrey1 = '#f5f5f5';
+const ourKaistBlueD = "#1A237E";
+const ourKaistBlue = "#E8EAF6";
+
+
 
 export default jss
   .createStyleSheet({
@@ -102,5 +106,28 @@ export default jss
       textAlign: 'left',
       width: '16em',
     },
+
+    percentBar: {
+      margin:"auto",
+      marginLeft: 0,
+
+      position: "absolute",
+
+      left:0,
+      top: -4,
+
+      backgroundColor: ourKaistBlue,
+      height: 28,
+      width: 30,
+    },
+
+    recCourseList: {
+      padding: "0px 12px",
+
+      '& h3': {
+        color: ourKaistBlueD,
+        zIndex: 4
+      },
+    } as Style,
   })
   .attach();

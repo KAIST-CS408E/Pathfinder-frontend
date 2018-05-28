@@ -120,7 +120,7 @@ const themeStyle = () => ({
   },
 
   listItems: {
-    padding: '8px 18px' + doFirst,
+    padding: '8px 12px' + doFirst,
   },
 
   iconOfList: {
