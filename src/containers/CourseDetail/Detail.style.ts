@@ -4,7 +4,6 @@ import { Style } from 'jss/css';
 
 jss.setup(preset());
 
-const lightGrey1 = '#f5f5f5';
 const ourKaistBlueD = "#1A237E";
 const ourKaistBlue = "#E8EAF6";
 
@@ -28,13 +27,14 @@ export default jss
 
     semesterDiv: {
       backgroundColor: 'white',
-      borderLeft: '5px solid ' + lightGrey1,
+      borderLeft: '5px solid ' + ourKaistBlue,
       display: 'flex',
       flex: '0 0 auto',
       minHeight: '19vh',
       minWidth: '10vw',
       position: 'relative',
-      // marginRight: 12,
+
+      marginRight: 24,
       // paddingLeft: 12,
     },
 
@@ -47,6 +47,7 @@ export default jss
 
     tableContainer: {
       margin: '0.8rem 0rem',
+      marginTop: "0.6rem",
     },
 
     subtitleContainer: {},
@@ -150,7 +151,7 @@ export default jss
     },
 
     profSelect: {
-      backgroundColor: "#E8EAF6",
+      backgroundColor: "white",
       display: 'flex',
       overflow: "auto",
       padding: "12px 24px",

@@ -54,8 +54,8 @@ const doFirst = ' !important';
 const CustomTableCellD = withStyles(theme => ({
   root: {
     borderBottom: '0px' + doFirst,
-    borderRight: '1px solid ' + ourKaistBlue,
-    padding: '4px 0px 4px 12px !important',
+    borderRight: '2px solid ' + ourKaistBlue,
+    padding: '4px 12px 4px !important',
 
     fontSize: "15px !important",
   },
@@ -73,7 +73,7 @@ const CustomTableRow = withStyles(theme => ({
   },
 }))(TableRow as React.ComponentType<
   TableRowProps & WithStyles<'root' | 'paddingDense' | 'numeric'>
->);
+  >);
 
 const StatusChip = withStyles(theme => ({
   root: {
@@ -516,7 +516,7 @@ class Detail extends React.Component<
             </div>
             {/* give detail information with table */}
             <div className={classes.tableContainer}>
-              <Table style={{ margin: "0px 24px"}} className={classes.descriptionTable}>
+              <Table style={{ margin: "0px 24px", width: "auto", padding: "4px 12px"}} className={classes.descriptionTable}>
                 <TableBody>
                   <CustomTableRow>
                     <CustomTableCellD>
