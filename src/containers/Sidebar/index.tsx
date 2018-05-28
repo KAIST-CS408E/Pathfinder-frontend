@@ -135,7 +135,7 @@ class Sidebar extends React.Component<IProps, IState> {
           onChange={this.handleTabChange}
         >
           <Tab label="new in 2018" icon={<Equalizer />} />
-          <Tab label="relevance" icon={<Person />} />
+          <Tab label="Recommend" icon={<Person />} />
         </Tabs>
         <CardContent style={{ height: '90%', overflowY: 'scroll', padding: 0 }}>
           {tabValue === 0 && (

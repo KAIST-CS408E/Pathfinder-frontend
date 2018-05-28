@@ -230,26 +230,26 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
             {`${course.name}`}
           </Typography>
           <div>
-            <Chip
-              style={{
-                backgroundColor: 'transparent',
-                border: '1px solid',
-                borderRadius: 4,
-                height: 20,
-                marginRight: 12,
-              }}
-              label="NEW"
-            />
-            <Chip
-              style={{
-                backgroundColor: 'transparent',
-                border: '1px solid',
-                borderRadius: 4,
-                height: 20,
-                marginRight: 12,
-              }}
-              label="RECOMMENDED"
-            />
+            {/*<Chip*/}
+              {/*style={{*/}
+                {/*backgroundColor: 'transparent',*/}
+                {/*border: '1px solid',*/}
+                {/*borderRadius: 4,*/}
+                {/*height: 20,*/}
+                {/*marginRight: 12,*/}
+              {/*}}*/}
+              {/*label="NEW"*/}
+            {/*/>*/}
+            {/*<Chip*/}
+              {/*style={{*/}
+                {/*backgroundColor: 'transparent',*/}
+                {/*border: '1px solid',*/}
+                {/*borderRadius: 4,*/}
+                {/*height: 20,*/}
+                {/*marginRight: 12,*/}
+              {/*}}*/}
+              {/*label="RECOMMENDED"*/}
+            {/*/>*/}
             <IconButton
               className={classes.btn}
               color="inherit"
