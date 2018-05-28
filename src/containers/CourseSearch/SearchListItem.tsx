@@ -12,7 +12,6 @@ import {
   Table,
   TableBody,
   TableHead,
-
   Typography,
 } from '@material-ui/core';
 
@@ -20,7 +19,7 @@ import { ICourse } from 'pathfinder';
 
 import { convertSpentTime } from '@src/utils';
 
-import ClassTime from "./ClassTime";
+import ClassTime from './ClassTime';
 
 const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueD = '#1A237E';
@@ -230,15 +229,37 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
             />
             {`${course.name}`}
           </Typography>
-          <IconButton
-            className={classes.btn}
-            color="inherit"
-            onClick={taken ? undefined : clickPinHandlerBuilder(course)}
-          >
-            <Icon>
-              {taken ? 'done' : pinned ? 'turned_in' : 'turned_in_not'}
-            </Icon>
-          </IconButton>
+          <div>
+            <Chip
+              style={{
+                backgroundColor: 'transparent',
+                border: '1px solid',
+                borderRadius: 4,
+                height: 20,
+                marginRight: 12,
+              }}
+              label="NEW"
+            />
+            <Chip
+              style={{
+                backgroundColor: 'transparent',
+                border: '1px solid',
+                borderRadius: 4,
+                height: 20,
+                marginRight: 12,
+              }}
+              label="RECOMMENDED"
+            />
+            <IconButton
+              className={classes.btn}
+              color="inherit"
+              onClick={taken ? undefined : clickPinHandlerBuilder(course)}
+            >
+              <Icon>
+                {taken ? 'done' : pinned ? 'turned_in' : 'turned_in_not'}
+              </Icon>
+            </IconButton>
+          </div>
         </div>
         <Table className={classes.table}>
           <TableHead>
