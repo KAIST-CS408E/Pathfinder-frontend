@@ -37,6 +37,12 @@ const actions = {
     'planner/removeFeedback',
     resolve => (semesterId: string) => resolve(semesterId)
   ),
+
+  selectDivision: createAction(
+    'planner/selectDivision',
+    resolve => (semesterId: string, courseId: string, division: string) =>
+      resolve({ semesterId, courseId, division })
+  ),
 };
 
 export type Action = ActionType<typeof actions>;

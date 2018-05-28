@@ -40,10 +40,12 @@ interface IProps extends RouteComponentProps<{}> {
   onSetManyFeedbacks: typeof plannerActions.setManyFeedbacks;
   onRemoveAllFeedback: typeof plannerActions.removeAllFeedback;
   onRemoveFeedback: typeof plannerActions.removeFeedback;
+
+  onSelectDivision: typeof plannerActions.selectDivision;
 }
 
 const profColorD = '#9E9E9E';
-// const profColorS = '#536DFE';
+const profColorS = '#536DFE';
 
 const warnColor = 'rgb(232, 113, 151)';
 const passColor = 'rgb(153, 190, 221)';
@@ -81,7 +83,14 @@ class Planner extends React.Component<IProps> {
               if (remoteData) {
                 return {
                   ...basicData,
-                  courses: remoteData.courses,
+                  courses: remoteData.courses.map((course: any) => ({
+                    ...course,
+                    id: buildCourseKey(course),
+                    selectedDivision:
+                      course.selectedDivision !== null
+                        ? course.selectedDivision
+                        : undefined,
+                  })),
                   feedback: remoteData.feedback,
                 };
               }
@@ -140,7 +149,7 @@ class Planner extends React.Component<IProps> {
         lectures: [
           {
             classTime: [],
-            division: undefined,
+            division: '',
             grades: 1,
             limit: null,
             load: '< 1',
@@ -226,7 +235,12 @@ class Planner extends React.Component<IProps> {
     onRemoveFeedback(to);
     (to.startsWith('side')
       ? deleteCourse(payload.courseNumber, payload.subtitle)
-      : moveCourse(payload.courseNumber, payload.subtitle, to)
+      : moveCourse(
+          payload.courseNumber,
+          payload.subtitle,
+          to,
+          payload.selectedDivision
+        )
     ).then(json => {
       if (json.success) {
         console.log('board update success');
@@ -243,9 +257,9 @@ class Planner extends React.Component<IProps> {
     });
   }
 
-  public getChildPayload = (semsterId: string) => (courseIndex: number) => {
+  public getChildPayload = (semesterId: string) => (courseIndex: number) => {
     return this.props.boardData.filter(
-      courseList => courseList.id === semsterId
+      courseList => courseList.id === semesterId
     )[0].courses[courseIndex];
   };
 
@@ -305,6 +319,15 @@ class Planner extends React.Component<IProps> {
       .catch(e => {
         console.error(e);
       });
+  };
+
+  public handleClickCourseDivision = (
+    semesterId: string,
+    course: ICourseCard,
+    division: string
+  ) => () => {
+    this.props.onSelectDivision(semesterId, course.id, division);
+    moveCourse(course.courseNumber, course.subtitle, semesterId, division);
   };
 
   public renderPinnedCourse() {
@@ -482,7 +505,7 @@ class Planner extends React.Component<IProps> {
                             {course.name}
                             <span
                               style={{
-                                color: 'steelblue',
+                                color: profColorS,
                                 fontSize: 12,
                                 marginLeft: 6,
                               }}
@@ -503,9 +526,18 @@ class Planner extends React.Component<IProps> {
                           {course.lectures.map(lecture => (
                             <div
                               style={{
-                                backgroundColor: profColorD,
+                                backgroundColor:
+                                  course.selectedDivision !== undefined &&
+                                  lecture.division === course.selectedDivision
+                                    ? profColorS
+                                    : profColorD,
                                 color: 'white',
                               }}
+                              onClick={this.handleClickCourseDivision(
+                                semester.id,
+                                course,
+                                lecture.division || ''
+                              )}
                             >
                               {lecture.professor}
                             </div>
@@ -565,6 +597,8 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       onRemoveAllFeedback: plannerActions.removeAllFeedback,
       onRemoveFeedback: plannerActions.removeFeedback,
       onSetManyFeedbacks: plannerActions.setManyFeedbacks,
+
+      onSelectDivision: plannerActions.selectDivision,
     },
     dispatch
   );

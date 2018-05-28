@@ -101,7 +101,23 @@ export default (state: State = initialState, action: Action): State => {
         }
       );
     }
-
+    case getType(actions.selectDivision): {
+      const { semesterId, courseId, division } = action.payload;
+      const semesterIndex = state.boardData.findIndex(
+        semester => semester.id === semesterId
+      );
+      const courseIndex = state.boardData[semesterIndex].courses.findIndex(
+        course => course.id === courseId
+      );
+      return iassign(
+        state,
+        prevState => prevState.boardData[semesterIndex].courses[courseIndex],
+        course => {
+          course.selectedDivision = division;
+          return course;
+        }
+      );
+    }
     default:
       return state;
   }

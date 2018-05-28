@@ -91,7 +91,7 @@ export interface ICourse {
 export interface ILecture {
   professor: string;
 
-  division: string | '' | undefined;
+  division: string;
   classTime: string[];
   limit: number | null;
   load: SpentTime;

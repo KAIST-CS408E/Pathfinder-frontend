@@ -36,7 +36,7 @@ export const moveCourse = (
   fetch(
     API_URL +
       `/plan/${courseNumber}?subtitle=${subtitle}&to=${boardId}${
-        division ? `&division=${division}` : ''
+        division !== undefined ? `&division=${division}` : ''
       }`,
     { method: 'POST' }
   ).then(r => r.json());
