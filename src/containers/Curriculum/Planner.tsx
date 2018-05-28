@@ -361,33 +361,13 @@ class Planner extends React.Component<IProps> {
         >
           {pinnedCourseLane.courses.map(course => {
             return (
-              <Draggable
-                onClick={this.preventDragging}
+              <CourseCard
                 key={course.id}
-                className={classes.card}
-              >
-                <header className={classes.cardHeader}>
-                  <div style={{ width: '100%' }}>
-                    {course.name}
-                    <span style={{ fontSize: 12 }}>
-                      {course.label ? course.label : ''}
-                    </span>
-                  </div>
-                  <div style={{ height: 20 }}>
-                    <MoreHoriz />
-                  </div>
-                </header>
-                <div className={classes.cardMiddle}>
-                  {course.description
-                    ? course.description
-                    : 'Load:-.- Grade:-.-'}
-                </div>
-                <div className={classes.cardProfs}>
-                  <div style={{ backgroundColor: profColorD, color: 'white' }}>
-                    {course.lectures[0].professor}
-                  </div>
-                </div>
-              </Draggable>
+                semesterId={pinnedCourseLane.id}
+                course={course}
+                preventDragging={this.preventDragging}
+                onClickCourseDivision={this.handleClickCourseDivision}
+              />
             );
           })}
         </Container>
@@ -476,74 +456,13 @@ class Planner extends React.Component<IProps> {
                 >
                   {semester.courses.map(course => {
                     return (
-                      <Draggable
-                        onClick={this.preventDragging}
+                      <CourseCard
                         key={course.id}
-                        className={
-                          course.type === 'recommended'
-                            ? classes.recCard
-                            : classes.card
-                        }
-                      >
-                        {course.type === 'recommended' ? (
-                          <div className={classes.recCardTop}>
-                            <Chip
-                              label={course.subtitle}
-                              style={{
-                                backgroundColor: recommendColor,
-                                color: 'white',
-                                fontSize: 12,
-                                height: 18,
-                              }}
-                            />
-                          </div>
-                        ) : (
-                          ''
-                        )}
-                        <header className={classes.cardHeader}>
-                          <div style={{ width: '100%' }}>
-                            {course.name}
-                            <span
-                              style={{
-                                color: profColorS,
-                                fontSize: 12,
-                                marginLeft: 6,
-                              }}
-                            >
-                              {course.myGrade ? course.myGrade : ''}
-                            </span>
-                          </div>
-                          <div style={{ height: 20 }}>
-                            <MoreHoriz />
-                          </div>
-                        </header>
-                        <div className={classes.cardMiddle}>
-                          {course.description
-                            ? course.description
-                            : 'Load:-.- Grade:-.-'}
-                        </div>
-                        <div className={classes.cardProfs}>
-                          {course.lectures.map(lecture => (
-                            <div
-                              style={{
-                                backgroundColor:
-                                  course.selectedDivision !== undefined &&
-                                  lecture.division === course.selectedDivision
-                                    ? profColorS
-                                    : profColorD,
-                                color: 'white',
-                              }}
-                              onClick={this.handleClickCourseDivision(
-                                semester.id,
-                                course,
-                                lecture.division || ''
-                              )}
-                            >
-                              {lecture.professor}
-                            </div>
-                          ))}
-                        </div>
-                      </Draggable>
+                        semesterId={semester.id}
+                        course={course}
+                        preventDragging={this.preventDragging}
+                        onClickCourseDivision={this.handleClickCourseDivision}
+                      />
                     );
                   })}
                 </Container>
@@ -604,3 +523,85 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
   );
 
 export default connect(mapStateToProps, mapDispatchToProps)(Planner);
+
+interface ICourseCardProps {
+  semesterId: string;
+  course: ICourseCard;
+  preventDragging: (e: React.MouseEvent<HTMLElement>) => void;
+  onClickCourseDivision: (
+    semesterId: string,
+    course: ICourseCard,
+    division: string
+  ) => () => void;
+}
+
+const CourseCard: React.SFC<ICourseCardProps> = ({
+  semesterId,
+  course,
+  preventDragging,
+  onClickCourseDivision,
+}) => {
+  return (
+    <Draggable
+      onClick={preventDragging}
+      className={course.type === 'recommended' ? classes.recCard : classes.card}
+    >
+      {course.type === 'recommended' ? (
+        <div className={classes.recCardTop}>
+          <Chip
+            label={course.subtitle}
+            style={{
+              backgroundColor: recommendColor,
+              color: 'white',
+              fontSize: 12,
+              height: 18,
+            }}
+          />
+        </div>
+      ) : (
+        ''
+      )}
+      <header className={classes.cardHeader}>
+        <div style={{ width: '100%' }}>
+          {course.name}
+          <span
+            style={{
+              color: profColorS,
+              fontSize: 12,
+              marginLeft: 6,
+            }}
+          >
+            {course.myGrade ? course.myGrade : ''}
+          </span>
+        </div>
+        <div style={{ height: 20 }}>
+          <MoreHoriz />
+        </div>
+      </header>
+      <div className={classes.cardMiddle}>
+        {course.description ? course.description : 'Load:-.- Grade:-.-'}
+      </div>
+      <div className={classes.cardProfs}>
+        {course.lectures.map(lecture => (
+          <div
+            style={{
+              backgroundColor:
+                course.selectedDivision !== undefined &&
+                lecture.division === course.selectedDivision
+                  ? profColorS
+                  : profColorD,
+              color: 'white',
+            }}
+            onClick={onClickCourseDivision(
+              semesterId,
+              course,
+              lecture.division || ''
+            )}
+          >
+            {lecture.professor}
+          </div>
+        ))}
+      </div>
+    </Draggable>
+  );
+};
