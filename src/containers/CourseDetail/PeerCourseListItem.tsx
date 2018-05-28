@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import Icon from '@material-ui/core/Icon';
+import Avatar from "@material-ui/core/Avatar";
 import ListItem /*, {ListItemProps}*/ from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText, {
@@ -8,9 +8,18 @@ import ListItemText, {
 } from '@material-ui/core/ListItemText';
 import withStyles, { WithStyles } from 'material-ui/es/styles/withStyles';
 
+import styles from "./Detail.style";
+
+const { classes } = styles;
+
+const relPercent = 87;
+const ourKaistBlue = "#E8EAF6";
+
+
 const RcmListItemText = withStyles(theme => ({
   primary: {
     fontSize: '0.875em !important',
+    position: "relative" as "relative",
   },
 }))(ListItemText as React.ComponentType<
   ListItemTextProps & WithStyles<'primary'>
@@ -34,14 +43,21 @@ export default class PeerCourseListItem extends React.Component<
   };
 
   public render() {
-    const { className, courseName, icon } = this.props;
+    const { className, courseName } = this.props;
     return (
-      <ListItem button className={className} onClick={this.handleClick}>
+      <ListItem button className={className} onClick={this.handleClick} style={{border: "1px solid " + ourKaistBlue}}>
         <ListItemIcon>
-          <Icon style={{ fontSize: 18, marginRight: 0 }}>{icon}</Icon>
+          <Avatar style={{backgroundColor: ourKaistBlue, fontSize: 10, marginRight:0, height: 26, width:26 }}>{relPercent}%</Avatar>
         </ListItemIcon>
-        <RcmListItemText inset>{courseName}</RcmListItemText>
+        <RcmListItemText inset className={classes.recCourseList}>
+          <div style={{ zIndex: -1, width: relPercent / 100 * 50}} className={classes.percentBar}>{/* give percentage bar width */}</div>
+          {courseName}
+        </RcmListItemText>
       </ListItem>
     );
   }
 }
+
+
+
+
