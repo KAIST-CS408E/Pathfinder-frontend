@@ -109,7 +109,7 @@ export type SpentTime = '< 1' | '1 to 3' | '3 to 5' | '5 to 7' | '> 7';
 
 export interface IClassTime {
   timeType: 'Class' | 'Lab';
-  day: 'Mon'| 'Tue'| 'Wed'| 'Thu'| 'Fri';
+  day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri';
   startTime: string;
   endTime: string;
 }
@@ -166,16 +166,14 @@ export interface ICourseDetail {
 }
 
 export interface ICourseKeys {
-  number: string;
+  courseNumber: string;
   subtitle: string;
 }
 
 export interface ICourseBasic extends ICourseKeys {
-  number: string;
   code: string;
-  subtitle: string;
   name: string;
-  type: string;
+  courseType: string;
 }
 
 export interface ILectureKeys {

@@ -51,11 +51,11 @@ export default function reducer(state: State = initialState, action: Action) {
       });
     }
     case getType(actions.initDetail): {
-      const { number: courseNumber, ...restData } = action.payload;
+      const { courseNumber, ...restData } = action.payload;
       return { ...state, ...restData, courseNumber };
     }
     case getType(actions.changeCourse): {
-      const { number: courseNumber, subtitle } = action.payload;
+      const { courseNumber, subtitle } = action.payload;
       return iassign(state, (prevState: IState) => {
         prevState.courseNumber = courseNumber;
         prevState.subtitle = subtitle;

@@ -13,7 +13,7 @@ import * as d3Coll from 'd3-collection';
 
 import Card from '@material-ui/core/Card';
 import CardContent, { CardContentProps } from '@material-ui/core/CardContent';
-// import CardMedia from '@material-ui/core/CardMedia';
+
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
@@ -32,17 +32,21 @@ import ListSubheader, {
   ListSubheaderProps,
 } from 'material-ui/List/ListSubheader';
 
-
 import withStyles, { WithStyles } from 'material-ui/es/styles/withStyles';
 import styles from './Detail.style';
 import GradeChart from './GradeChart';
 import PeerCourseListItem from './PeerCourseListItem';
 
 import { API_URL } from '@src/constants/api';
-import { RootState } from '@src/redux';
+import { rootActions as actions, RootState } from '@src/redux';
 import { actions as detailActions } from '@src/redux/courseDetail';
 
-import { ICourseDetail, ILectureDetail, ILectureKeys } from 'pathfinder';
+import {
+  ICourseDetail,
+  ILectureDetail,
+  ILectureKeys,
+  IPinnedTable,
+} from 'pathfinder';
 
 const { classes } = styles;
 
@@ -57,7 +61,7 @@ const CustomTableCellD = withStyles(theme => ({
     borderRight: '2px solid ' + ourKaistBlue,
     padding: '4px 12px 4px !important',
 
-    fontSize: "15px !important",
+    fontSize: '15px !important',
   },
 
   paddingDense: {
@@ -73,7 +77,7 @@ const CustomTableRow = withStyles(theme => ({
   },
 }))(TableRow as React.ComponentType<
   TableRowProps & WithStyles<'root' | 'paddingDense' | 'numeric'>
-  >);
+>);
 
 const StatusChip = withStyles(theme => ({
   root: {
@@ -134,8 +138,8 @@ const themeStyle = () => ({
   },
 
   card: {
-    backgroundColor: "#E3F2FD" + doFirst,
-    color: "#757575" + doFirst,
+    backgroundColor: '#E3F2FD' + doFirst,
+    color: '#757575' + doFirst,
     marginLeft: '1rem',
     maxWidth: 345,
 
@@ -145,24 +149,24 @@ const themeStyle = () => ({
   },
 
   historyCard: {
-    backgroundColor: "white" + doFirst,
-    color: "white" + doFirst,
+    backgroundColor: 'white' + doFirst,
+    color: 'white' + doFirst,
     marginLeft: '1rem',
     maxWidth: 345,
     zIndex: 10,
 
     '& h3': {
-      color: "black",
+      color: 'black',
     },
     '& p': {
-      color: "black",
+      color: 'black',
     },
 
     '& > div': {
       zIndex: 2,
 
       '&:last-child': {
-        backgroundColor: "white",
+        backgroundColor: 'white',
       },
     },
   },
@@ -171,8 +175,8 @@ const themeStyle = () => ({
     border: '1px solid black',
     borderRadius: 4,
 
-    backgroundColor: "#7986CB" + doFirst,
-    color: "white" + doFirst,
+    backgroundColor: '#7986CB' + doFirst,
+    color: 'white' + doFirst,
   },
 
   media: {
@@ -182,7 +186,7 @@ const themeStyle = () => ({
   },
 
   labelIcon: {
-    fontSize: "0.9em",
+    fontSize: '0.9em',
     paddingTop: 6,
   },
 });
@@ -205,6 +209,8 @@ export interface ICourseQuery {
 export interface IProps extends RouteComponentProps<ICourseQuery> {
   location: Location;
 
+  pinnedList: IPinnedTable;
+
   year: string;
   term: string;
   division: string;
@@ -221,6 +227,9 @@ export interface IProps extends RouteComponentProps<ICourseQuery> {
   onInitDetail: typeof detailActions.initDetail;
   onChangeLecture: typeof detailActions.changeLecture;
   onChangeCourse: typeof detailActions.changeCourse;
+
+  onPinnedCourse: typeof actions.pinCourse;
+  onUnpinCourse: typeof actions.unpinCourse;
 
   push: typeof push;
   replace: typeof replace;
@@ -262,7 +271,7 @@ class Detail extends React.Component<
     const { onInitDetail } = this.props;
     const routeState = this.getRouteState();
     onInitDetail(routeState);
-    this.fetchDetailedData(routeState.number, routeState.subtitle);
+    this.fetchDetailedData(routeState.courseNumber, routeState.subtitle);
   }
 
   public componentDidUpdate(prevProps: IProps) {
@@ -271,7 +280,7 @@ class Detail extends React.Component<
     }
     const { data, location } = this.props;
     const {
-      number: targetCourseNumber,
+      courseNumber: targetCourseNumber,
       subtitle: targetSubtitle,
       division,
       term,
@@ -279,7 +288,7 @@ class Detail extends React.Component<
     } = this.getRouteState();
 
     if (location !== prevProps.location) {
-      const { number: courseNumber, subtitle } = data.course;
+      const { courseNumber, subtitle } = data.course;
       if (
         !this.props.fetching &&
         (courseNumber !== targetCourseNumber || subtitle !== targetSubtitle)
@@ -310,8 +319,8 @@ class Detail extends React.Component<
     const { year, term, courseNumber, division = '' } = match.params;
     const subtitle = new URLSearchParams(location.search).get('subtitle') || '';
     return {
+      courseNumber,
       division,
-      number: courseNumber,
       subtitle,
       term,
       year: Number(year),
@@ -359,7 +368,7 @@ class Detail extends React.Component<
   };
 
   public handleLectureCardClick = (lecture: ILectureDetail) => () => {
-    const { number: courseNumber, subtitle } = this.getRouteState();
+    const { courseNumber, subtitle } = this.getRouteState();
     this.redirectTo(this.getAnotherLectureURL(courseNumber, subtitle, lecture));
     // this.props.onChangeLecture(lecture);
   };
@@ -436,7 +445,9 @@ class Detail extends React.Component<
               </Typography>
               {/* right shifting */}
               <div className={classes.stickRight}>
-                <Typography component="p"><span>Intoduction of.....</span></Typography>
+                <Typography component="p">
+                  <span>Intoduction of.....</span>
+                </Typography>
               </div>
             </CardContent>
 
@@ -482,7 +493,10 @@ class Detail extends React.Component<
               </Typography>
             </div>
             {/* 가장 최근 학기에 강의를 개설한 교수님들 */}
-            <Typography variant="caption" style={{ display: 'flex', marginLeft: 24 }}>
+            <Typography
+              variant="caption"
+              style={{ display: 'flex', marginLeft: 24 }}
+            >
               Lecturer of the latest semester ({latestSemester.year}{' '}
               {latestSemester.term})
             </Typography>
@@ -516,12 +530,19 @@ class Detail extends React.Component<
             </div>
             {/* give detail information with table */}
             <div className={classes.tableContainer}>
-              <Table style={{ margin: "0px 24px", width: "auto", padding: "4px 12px"}} className={classes.descriptionTable}>
+              <Table
+                style={{
+                  margin: '0px 24px',
+                  padding: '4px 12px',
+                  width: 'auto',
+                }}
+                className={classes.descriptionTable}
+              >
                 <TableBody>
                   <CustomTableRow>
                     <CustomTableCellD>
                       School of computing<br />
-                      {course.type}
+                      {course.courseType}
                     </CustomTableCellD>
                     <CustomTableCellD>
                       {([] as React.ReactNode[])
@@ -536,7 +557,7 @@ class Detail extends React.Component<
                         .slice(1)}
                     </CustomTableCellD>
                     <CustomTableCellD>
-                      Course Number: {course.number} <br />Course Code:{' '}
+                      Course Number: {course.courseNumber} <br />Course Code:{' '}
                       {course.code}
                     </CustomTableCellD>
                     <CustomTableCellD
@@ -574,8 +595,15 @@ class Detail extends React.Component<
             >
               <div className={classes.besideSankyGraph}>
                 <div className={classes.courseStepContainer}>
-                  <Chip label="before" className={classes.courseStep}
-                        avatar={<Avatar className={classes.courseStepAva}><Icon>keyboard_arrow_left</Icon></Avatar>}/>
+                  <Chip
+                    label="before"
+                    className={classes.courseStep}
+                    avatar={
+                      <Avatar className={classes.courseStepAva}>
+                        <Icon>keyboard_arrow_left</Icon>
+                      </Avatar>
+                    }
+                  />
                 </div>
                 <Paper>
                   <List
@@ -584,7 +612,7 @@ class Detail extends React.Component<
                       <ListSubheader
                         component="div"
                         style={{
-                          backgroundColor: "#E8EAF6",
+                          backgroundColor: '#E8EAF6',
                           height: 12,
                           position: 'relative',
                         }}
@@ -619,8 +647,15 @@ class Detail extends React.Component<
               {/*</CardMedia>*/}
               <div className={classes.besideSankyGraph}>
                 <div className={classes.courseStepContainer}>
-                  <Chip label="with" className={classes.courseStep}
-                        avatar={<Avatar className={classes.courseStepAva}><Icon>keyboard_arrow_down</Icon></Avatar>}/>
+                  <Chip
+                    label="with"
+                    className={classes.courseStep}
+                    avatar={
+                      <Avatar className={classes.courseStepAva}>
+                        <Icon>keyboard_arrow_down</Icon>
+                      </Avatar>
+                    }
+                  />
                 </div>
                 <Paper>
                   <List
@@ -629,9 +664,9 @@ class Detail extends React.Component<
                       <RcmSubHeader
                         component="div"
                         style={{
-                          backgroundColor: "#E8EAF6",
+                          backgroundColor: '#E8EAF6',
                           height: 12,
-                          padding: "0px 24px",
+                          padding: '0px 24px',
                           position: 'relative',
                         }}
                       >
@@ -656,8 +691,15 @@ class Detail extends React.Component<
               </div>
               <div className={classes.besideSankyGraph}>
                 <div className={classes.courseStepContainer}>
-                  <Chip label="after" className={classes.courseStep}
-                        avatar={<Avatar className={classes.courseStepAva}><Icon>keyboard_arrow_right</Icon></Avatar>}/>
+                  <Chip
+                    label="after"
+                    className={classes.courseStep}
+                    avatar={
+                      <Avatar className={classes.courseStepAva}>
+                        <Icon>keyboard_arrow_right</Icon>
+                      </Avatar>
+                    }
+                  />
                 </div>
                 <Paper>
                   <List
@@ -666,9 +708,9 @@ class Detail extends React.Component<
                       <RcmSubHeader
                         component="div"
                         style={{
-                          backgroundColor: "#E8EAF6",
+                          backgroundColor: '#E8EAF6',
                           height: 12,
-                          padding: "0px 24px",
+                          padding: '0px 24px',
                           position: 'relative',
                         }}
                       >
@@ -728,7 +770,7 @@ class Detail extends React.Component<
                       >
                         <Chip
                           className={classes.historyStep}
-                          label={lecturesInYear.key + " " + lecturesInTerm.key}
+                          label={lecturesInYear.key + ' ' + lecturesInTerm.key}
                         >
                           {lecturesInYear.key} {lecturesInTerm.key}
                         </Chip>
@@ -741,7 +783,7 @@ class Detail extends React.Component<
                             <Card
                               key={lecture.division}
                               className={customClass.historyCard}
-                              style={{marginTop: 32,}}
+                              style={{ marginTop: 32 }}
                             >
                               <ProfCardContent>
                                 <Typography
@@ -784,7 +826,10 @@ class Detail extends React.Component<
   }
 }
 
-const mapStateToProps = (state: RootState) => state.courseDetail;
+const mapStateToProps = (state: RootState) => ({
+  ...state.courseDetail,
+  pinnedList: state.pinnedList,
+});
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
