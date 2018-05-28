@@ -12,13 +12,15 @@ import {
   Table,
   TableBody,
   TableHead,
-  Tooltip,
+
   Typography,
 } from '@material-ui/core';
 
 import { ICourse } from 'pathfinder';
 
 import { convertSpentTime } from '@src/utils';
+
+import ClassTime from "./ClassTime";
 
 const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueD = '#1A237E';
@@ -384,58 +386,59 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                       width: '17.4%',
                     }}
                   >
-                    <Tooltip
-                      id="tooltip-icon"
-                      title={n.classTime}
-                      placement="bottom"
-                    >
-                      <table className={classes.timeTable}>
-                        <tbody>
-                          <tr>
-                            <th className={classes.classTimeCell}>-</th>
-                            <th>-</th>
-                            <th className={classes.classTimeCell}>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                          <tr>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                          <tr>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                          <tr>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                          <tr>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                          <tr>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </Tooltip>
+                    <ClassTime classTimes={n.classTime} />
+                    {/*<Tooltip*/}
+                      {/*id="tooltip-icon"*/}
+                      {/*title={"TEMP"}*/}
+                      {/*placement="bottom"*/}
+                    {/*>*/}
+                      {/*<table className={classes.timeTable}>*/}
+                        {/*<tbody>*/}
+                          {/*<tr>*/}
+                            {/*<th className={classes.classTimeCell}>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th className={classes.classTimeCell}>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                          {/*</tr>*/}
+                          {/*<tr>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                          {/*</tr>*/}
+                          {/*<tr>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                          {/*</tr>*/}
+                          {/*<tr>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                          {/*</tr>*/}
+                          {/*<tr>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                          {/*</tr>*/}
+                          {/*<tr>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                            {/*<th>-</th>*/}
+                          {/*</tr>*/}
+                        {/*</tbody>*/}
+                      {/*</table>*/}
+                    {/*</Tooltip>*/}
                   </CustomTableCell>
                 </CustomTableRow>
               );

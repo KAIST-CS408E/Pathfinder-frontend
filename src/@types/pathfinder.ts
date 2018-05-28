@@ -99,13 +99,20 @@ export interface ILecture {
   professor: string;
 
   division: string;
-  classTime: string[];
+  classTime: IClassTime[];
   limit: number | null;
   load: SpentTime;
   grades: number;
 }
 
 export type SpentTime = '< 1' | '1 to 3' | '3 to 5' | '5 to 7' | '> 7';
+
+export interface IClassTime {
+  timeType: 'Class' | 'Lab';
+  day: 'Mon'| 'Tue'| 'Wed'| 'Thu'| 'Fri';
+  startTime: string;
+  endTime: string;
+}
 
 /* Data structures for the filter */
 export interface IFilterOptions {
