@@ -163,6 +163,7 @@ export interface ICourseDetail {
   before: PeerCourse[];
   with: PeerCourse[];
   after: PeerCourse[];
+  taken_lecture: ILectureDetail | null;
 }
 
 export interface ICourseKeys {

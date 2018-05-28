@@ -37,9 +37,11 @@ import styles from './Detail.style';
 import GradeChart from './GradeChart';
 import PeerCourseListItem from './PeerCourseListItem';
 
+import { pinCourse, unpinCourse } from '@src/api';
 import { API_URL } from '@src/constants/api';
 import { rootActions as actions, RootState } from '@src/redux';
 import { actions as detailActions } from '@src/redux/courseDetail';
+import { buildCourseKey } from '@src/utils';
 
 import {
   ICourseDetail,
@@ -386,10 +388,54 @@ class Detail extends React.Component<
     // this.props.onChangeCourse({ subtitle, number: courseNumber });
   };
 
+  public handlePinClick = () => {
+    if (!this.props.data) {
+      return;
+    }
+
+    const { course, lectures } = this.props.data;
+
+    const latestYear = lectures[0].year;
+    const latestTerm = lectures[0].term;
+    // TODO:: data conversion은 서버에 맡겨야 할 텐데..
+    const datum = {
+      ...course,
+      courseName: course.name,
+      lectures: lectures
+        .filter(
+          lecture => lecture.year === latestYear && lecture.term === latestTerm
+        )
+        .map(lecture => ({
+          classTime: lecture.classTime,
+          division: lecture.division,
+          grades: 3,
+          limit: null,
+          load: lecture.spendTime || '< 1',
+          professor: lecture.professor,
+        })),
+    };
+
+    if (!this.props.pinnedList[buildCourseKey(datum)]) {
+      this.props.onPinnedCourse(datum);
+      pinCourse(datum).then(response => {
+        if (!response.success) {
+          console.error('Failed to update pin', datum);
+        }
+      });
+    } else {
+      this.props.onUnpinCourse(datum);
+      unpinCourse(datum).then(response => {
+        if (!response.success) {
+          console.error('Failed to update pin', datum);
+        }
+      });
+    }
+  };
+
   public render() {
     const customClass = this.props.classes;
 
-    const { data, fetching } = this.props;
+    const { data, fetching, pinnedList } = this.props;
     const { division, year, term } = this.getRouteState();
     if (fetching) {
       return <>Fetching data</>;
@@ -432,7 +478,7 @@ class Detail extends React.Component<
               {/* left shifting */}
               <div className={classes.stickLeft}>
                 <Typography component="p">
-                  <span>opera......</span>
+                  {/*<span>opera......</span>*/}
                 </Typography>
               </div>
               {/* title */}
@@ -446,7 +492,7 @@ class Detail extends React.Component<
               {/* right shifting */}
               <div className={classes.stickRight}>
                 <Typography component="p">
-                  <span>Intoduction of.....</span>
+                  {/*<span>Intoduction of.....</span>*/}
                 </Typography>
               </div>
             </CardContent>
@@ -474,21 +520,28 @@ class Detail extends React.Component<
                     width: '40%',
                   }}
                 >
-                  <StatusChip label="attended" />
-                  <StatusChip
-                    label="recommanded"
-                    className={customClass.chipRcm}
-                  />
+                  {data.taken_lecture !== null ? (
+                    <StatusChip label="already taken" />
+                  ) : (
+                    <Button
+                      variant="raised"
+                      color="default"
+                      className={customClass.buttonPin}
+                      onClick={this.handlePinClick}
+                    >
+                      {pinnedList[buildCourseKey(course)] ? 'Unpin' : 'Pin'}
+                      <Icon className={customClass.pinIcon}>
+                        {pinnedList[buildCourseKey(course)]
+                          ? 'turned_in'
+                          : 'turned_in_not'}
+                      </Icon>
+                    </Button>
+                  )}
+                  {/*<StatusChip*/}
+                  {/*label="recommanded"*/}
+                  {/*className={customClass.chipRcm}*/}
+                  {/*/>*/}
                   {/* check pinnind or not */}
-                  <Button
-                    variant="raised"
-                    color="default"
-                    className={customClass.buttonPin}
-                  >
-                    Pin
-                    <Icon className={customClass.pinIcon}>turned_in_not</Icon>
-                  </Button>
-                  {/* turned_in 은 꽉찬 깃발, turned_in_not을 입력하면 빗 깃발 출력 */}
                 </div>
               </Typography>
             </div>
@@ -853,6 +906,9 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       onFetchDetailSuccess: detailActions.fetchDetailSuccess,
 
       onFetchDetailFailure: detailActions.fetchDetailFailure,
+
+      onPinnedCourse: actions.pinCourse,
+      onUnpinCourse: actions.unpinCourse,
 
       push,
       replace,

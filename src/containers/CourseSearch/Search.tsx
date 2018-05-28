@@ -199,8 +199,6 @@ class Search extends React.Component<IProps> {
   };
 
   public handleClickPin: ClickPinHandler = course => {
-    // TODO:: DO API POST
-    console.log(course);
     const datum = {
       ...course,
       courseName: course.name,
