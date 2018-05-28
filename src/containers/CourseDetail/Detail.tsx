@@ -17,6 +17,7 @@ import CardContent, { CardContentProps } from '@material-ui/core/CardContent';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
+import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Chip, { ChipProps } from '@material-ui/core/Chip';
 import Icon from '@material-ui/core/Icon';
@@ -30,6 +31,7 @@ import List from '@material-ui/core/List';
 import ListSubheader, {
   ListSubheaderProps,
 } from 'material-ui/List/ListSubheader';
+
 
 import withStyles, { WithStyles } from 'material-ui/es/styles/withStyles';
 import styles from './Detail.style';
@@ -46,15 +48,16 @@ const { classes } = styles;
 
 const ourKaistBlue = '#E3F2FD';
 const recommendColor = '#FFC107';
-const lightGrey1 = '#f5f5f5';
 
 const doFirst = ' !important';
 
 const CustomTableCellD = withStyles(theme => ({
   root: {
     borderBottom: '0px' + doFirst,
-    borderRight: '1px solid ' + ourKaistBlue,
-    padding: '4px 0px 4px 12px !important',
+    borderRight: '2px solid ' + ourKaistBlue,
+    padding: '4px 12px 4px !important',
+
+    fontSize: "15px !important",
   },
 
   paddingDense: {
@@ -70,7 +73,7 @@ const CustomTableRow = withStyles(theme => ({
   },
 }))(TableRow as React.ComponentType<
   TableRowProps & WithStyles<'root' | 'paddingDense' | 'numeric'>
->);
+  >);
 
 const StatusChip = withStyles(theme => ({
   root: {
@@ -114,9 +117,11 @@ const themeStyle = () => ({
   },
 
   graphCard: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'white',
     display: 'flex',
+    marginBottom: 12,
     padding: 0,
+    paddingLeft: 24,
   },
 
   listItems: {
@@ -129,13 +134,45 @@ const themeStyle = () => ({
   },
 
   card: {
+    backgroundColor: "#E3F2FD" + doFirst,
+    color: "#757575" + doFirst,
     marginLeft: '1rem',
-    marginTop: '1rem',
     maxWidth: 345,
 
     '& > div': {
       zIndex: 2,
     },
+  },
+
+  historyCard: {
+    backgroundColor: "white" + doFirst,
+    color: "white" + doFirst,
+    marginLeft: '1rem',
+    maxWidth: 345,
+    zIndex: 10,
+
+    '& h3': {
+      color: "black",
+    },
+    '& p': {
+      color: "black",
+    },
+
+    '& > div': {
+      zIndex: 2,
+
+      '&:last-child': {
+        backgroundColor: "white",
+      },
+    },
+  },
+
+  selectedCard: {
+    border: '1px solid black',
+    borderRadius: 4,
+
+    backgroundColor: "#7986CB" + doFirst,
+    color: "white" + doFirst,
   },
 
   media: {
@@ -144,9 +181,9 @@ const themeStyle = () => ({
     paddingTop: '56.25%', // 16:9
   },
 
-  selectedCard: {
-    border: '1px solid black',
-    borderRadius: 4,
+  labelIcon: {
+    fontSize: "0.9em",
+    paddingTop: 6,
   },
 });
 
@@ -206,9 +243,11 @@ class Detail extends React.Component<
       | 'listItems'
       | 'iconOfList'
       | 'card'
+      | 'historyCard'
       | 'media'
       | 'typo'
       | 'selectedCard'
+      | 'labelIcon'
     >,
   IState
 > {
@@ -397,7 +436,7 @@ class Detail extends React.Component<
               </Typography>
               {/* right shifting */}
               <div className={classes.stickRight}>
-                <Typography component="p">Intoduction of.....</Typography>
+                <Typography component="p"><span>Intoduction of.....</span></Typography>
               </div>
             </CardContent>
 
@@ -412,9 +451,9 @@ class Detail extends React.Component<
                   textAlign: 'left',
                 }}
               >
-                <div style={{ width: '60%' }}>
+                <div className={classes.sectionTitle}>
+                  <Icon className={classes.labelIcon}>label</Icon>
                   Course Decription
-                  <span style={{ fontSize: '0.7em' }}>(Syllabus)</span>
                 </div>
                 {/* recommandation or student status */}
                 <div
@@ -443,14 +482,11 @@ class Detail extends React.Component<
               </Typography>
             </div>
             {/* 가장 최근 학기에 강의를 개설한 교수님들 */}
-            <Typography
-              variant="caption"
-              style={{ display: 'flex', marginLeft: 12 }}
-            >
+            <Typography variant="caption" style={{ display: 'flex', marginLeft: 24 }}>
               Lecturer of the latest semester ({latestSemester.year}{' '}
               {latestSemester.term})
             </Typography>
-            <div style={{ display: 'flex' }}>
+            <div className={classes.profSelect}>
               {data.lectures
                 .concat()
                 .filter(
@@ -480,7 +516,7 @@ class Detail extends React.Component<
             </div>
             {/* give detail information with table */}
             <div className={classes.tableContainer}>
-              <Table style={{ marginRight: 100 }}>
+              <Table style={{ margin: "0px 24px", width: "auto", padding: "4px 12px"}} className={classes.descriptionTable}>
                 <TableBody>
                   <CustomTableRow>
                     <CustomTableCellD>
@@ -516,40 +552,62 @@ class Detail extends React.Component<
                 </TableBody>
               </Table>
             </div>
+            {/* section title "The subjects" */}
+            <Typography
+              variant="headline"
+              component="h3"
+              style={{
+                display: 'flex',
+                padding: '12px 0px 12px 12px',
+                textAlign: 'left',
+              }}
+            >
+              <div className={classes.sectionTitle}>
+                <Icon className={classes.labelIcon}>label</Icon>
+                The subjects that other students have taken
+              </div>
+            </Typography>
             {/* sanky graph with related courses */}
             <CardContent
               className={customClass.graphCard}
               style={{ padding: 0 }}
             >
               <div className={classes.besideSankyGraph}>
-                <List
-                  component="nav"
-                  subheader={
-                    <ListSubheader
-                      component="div"
-                      style={{
-                        backgroundColor: lightGrey1,
-                        position: 'relative',
-                      }}
-                    >
-                      Prerequisites
-                    </ListSubheader>
-                  }
-                >
-                  {/* TODO:: Prerequisite by college -> star_rate */}
-                  {data.before.map(([courseNumber, courseName, subtitle]) => (
-                    <PeerCourseListItem
-                      key={courseNumber}
-                      className={customClass.listItems}
-                      courseName={courseName}
-                      courseNumber={courseNumber}
-                      icon="equalizer"
-                      onClick={this.handlePeerCourseClick}
-                      subtitle={subtitle}
-                    />
-                  ))}
-                  {/* TODO:: Prerequisite done -> done */}
-                </List>
+                <div className={classes.courseStepContainer}>
+                  <Chip label="before" className={classes.courseStep}
+                        avatar={<Avatar className={classes.courseStepAva}><Icon>keyboard_arrow_left</Icon></Avatar>}/>
+                </div>
+                <Paper>
+                  <List
+                    component="nav"
+                    subheader={
+                      <ListSubheader
+                        component="div"
+                        style={{
+                          backgroundColor: "#E8EAF6",
+                          height: 12,
+                          position: 'relative',
+                        }}
+                      >
+                        {/* */}
+                      </ListSubheader>
+                    }
+                  >
+                    {/* TODO:: Prerequisite by college -> star_rate */}
+                    {data.before.map(([courseNumber, courseName, subtitle]) => (
+                      <PeerCourseListItem
+                        key={courseNumber}
+                        className={customClass.listItems}
+                        courseName={courseName}
+                        courseNumber={courseNumber}
+                        icon="equalizer"
+                        onClick={this.handlePeerCourseClick}
+                        subtitle={subtitle}
+                      />
+                    ))}
+                    {/* TODO:: Prerequisite done -> done */}
+                  </List>
+                </Paper>
               </div>
               {/*<CardMedia className={classes.sankyGraphDiv}>*/}
               {/*<img*/}
@@ -560,67 +618,95 @@ class Detail extends React.Component<
               {/*/>*/}
               {/*</CardMedia>*/}
               <div className={classes.besideSankyGraph}>
-                <List
-                  component="nav"
-                  subheader={
-                    <RcmSubHeader
-                      component="div"
-                      style={{
-                        backgroundColor: lightGrey1,
-                        position: 'relative',
-                      }}
-                    >
-                      Other students takes<br />
-                      <strong>Operation systems and labs</strong> with...
-                    </RcmSubHeader>
-                  }
-                >
-                  {data.with.map(([courseNumber, courseName, subtitle]) => (
-                    <PeerCourseListItem
-                      key={courseName}
-                      className={customClass.listItems}
-                      courseName={courseName}
-                      courseNumber={courseNumber}
-                      icon="equalizer"
-                      onClick={this.handlePeerCourseClick}
-                      subtitle={subtitle}
-                    />
-                  ))}
-                  {/* TODO:: Taken with done -> done */}
-                </List>
+                <div className={classes.courseStepContainer}>
+                  <Chip label="with" className={classes.courseStep}
+                        avatar={<Avatar className={classes.courseStepAva}><Icon>keyboard_arrow_down</Icon></Avatar>}/>
+                </div>
+                <Paper>
+                  <List
+                    component="nav"
+                    subheader={
+                      <RcmSubHeader
+                        component="div"
+                        style={{
+                          backgroundColor: "#E8EAF6",
+                          height: 12,
+                          padding: "0px 24px",
+                          position: 'relative',
+                        }}
+                      >
+                        {/* */}
+                      </RcmSubHeader>
+                    }
+                  >
+                    {data.with.map(([courseNumber, courseName, subtitle]) => (
+                      <PeerCourseListItem
+                        key={courseName}
+                        className={customClass.listItems}
+                        courseName={courseName}
+                        courseNumber={courseNumber}
+                        icon="equalizer"
+                        onClick={this.handlePeerCourseClick}
+                        subtitle={subtitle}
+                      />
+                    ))}
+                    {/* TODO:: Taken with done -> done */}
+                  </List>
+                </Paper>
               </div>
               <div className={classes.besideSankyGraph}>
-                <List
-                  component="nav"
-                  subheader={
-                    <RcmSubHeader
-                      component="div"
-                      style={{
-                        backgroundColor: lightGrey1,
-                        position: 'relative',
-                      }}
-                    >
-                      Other students takes<br />
-                      <strong>those</strong> after OS...
-                    </RcmSubHeader>
-                  }
-                >
-                  {data.after.map(([courseNumber, courseName, subtitle]) => (
-                    <PeerCourseListItem
-                      key={courseName}
-                      className={customClass.listItems}
-                      courseName={courseName}
-                      courseNumber={courseNumber}
-                      icon="equalizer"
-                      onClick={this.handlePeerCourseClick}
-                      subtitle={subtitle}
-                    />
-                  ))}
-                  {/* TODO:: Taken with done -> done */}
-                </List>
+                <div className={classes.courseStepContainer}>
+                  <Chip label="after" className={classes.courseStep}
+                        avatar={<Avatar className={classes.courseStepAva}><Icon>keyboard_arrow_right</Icon></Avatar>}/>
+                </div>
+                <Paper>
+                  <List
+                    component="nav"
+                    subheader={
+                      <RcmSubHeader
+                        component="div"
+                        style={{
+                          backgroundColor: "#E8EAF6",
+                          height: 12,
+                          padding: "0px 24px",
+                          position: 'relative',
+                        }}
+                      >
+                        {/* */}
+                      </RcmSubHeader>
+                    }
+                  >
+                    {data.after.map(([courseNumber, courseName, subtitle]) => (
+                      <PeerCourseListItem
+                        key={courseName}
+                        className={customClass.listItems}
+                        courseName={courseName}
+                        courseNumber={courseNumber}
+                        icon="equalizer"
+                        onClick={this.handlePeerCourseClick}
+                        subtitle={subtitle}
+                      />
+                    ))}
+                    {/* TODO:: Taken with done -> done */}
+                  </List>
+                </Paper>
               </div>
             </CardContent>
             {/* information for each semester with professor */}
+            <Typography
+              variant="headline"
+              component="h3"
+              style={{
+                display: 'flex',
+                padding: '12px 0px 12px 12px',
+                textAlign: 'left',
+              }}
+            >
+              <div className={classes.sectionTitle}>
+                <Icon className={classes.labelIcon}>label</Icon>
+                Lecture history
+              </div>
+            </Typography>
             <CardContent className={classes.profContainer}>
               {d3Coll
                 .nest()
@@ -640,15 +726,12 @@ class Detail extends React.Component<
                         key={lecturesInYear.key + lecturesInTerm.key}
                         className={classes.semesterDiv}
                       >
-                        <Typography
-                          gutterBottom
-                          variant="subheading"
-                          component="h3"
-                          align="left"
-                          className={classes.semesterTypo}
+                        <Chip
+                          className={classes.historyStep}
+                          label={lecturesInYear.key + " " + lecturesInTerm.key}
                         >
                           {lecturesInYear.key} {lecturesInTerm.key}
-                        </Typography>
+                        </Chip>
                         {lecturesInTerm.values
                           .concat()
                           .sort((a: ILectureDetail, b: ILectureDetail) =>
@@ -657,7 +740,8 @@ class Detail extends React.Component<
                           .map((lecture: ILectureDetail) => (
                             <Card
                               key={lecture.division}
-                              className={customClass.card}
+                              className={customClass.historyCard}
+                              style={{marginTop: 32,}}
                             >
                               <ProfCardContent>
                                 <Typography
