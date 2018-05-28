@@ -9,6 +9,8 @@ export interface IPinnedCourse {
 
   courseName: string;
   subtitle: string;
+
+  lectures: ILecture[];
 }
 
 export interface IPinComponentProps {
@@ -23,7 +25,12 @@ type CourseNumber = string;
 type CourseName = string;
 type CourseSubtitle = string;
 
-export type PinEntryAPI = [CourseNumber, CourseName, CourseSubtitle];
+export interface IPinnedCourseAPI {
+  courseNumber: string;
+  name: string;
+  subtitle: string;
+  lectures: ILecture[];
+}
 
 /* Data structures for kanban */
 
