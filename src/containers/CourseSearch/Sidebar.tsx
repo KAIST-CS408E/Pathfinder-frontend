@@ -14,6 +14,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Equalizer from '@material-ui/icons/Equalizer';
 import Person from '@material-ui/icons/Person';
 
+
+
 import styles from './Search.style';
 
 const { classes } = styles;

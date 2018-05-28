@@ -386,10 +386,17 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                   >
                     <Tooltip
                       id="tooltip-icon"
-                      title={n.classTime}
+                      title="{/* n.classTime */}"
                       placement="bottom"
                     >
-                      <table className={classes.timeTable}>
+                      <table className={classes.timeTable} style={{position: "relative"}}>
+                        <div style={{position: "absolute", left: 0, top:0, width: "100%", display:"flex"}}>
+                          <p style={{position: "relative", opacity: 0.3, fontWeight: 500, width:"20%", textAlign:"center" }}>M</p>
+                          <p style={{position: "relative", opacity: 0.3, fontWeight: 500, width:"20%", textAlign:"center"}}>T</p>
+                          <p style={{position: "relative", opacity: 0.3, fontWeight: 500, width:"20%", textAlign:"center"}}>W</p>
+                          <p style={{position: "relative", opacity: 0.3, fontWeight: 500, width:"20%", textAlign:"center"}}>T</p>
+                          <p style={{position: "relative", opacity: 0.3, fontWeight: 500, width:"20%", textAlign:"center"}}>F</p>
+                        </div>
                         <tbody>
                           <tr>
                             <th className={classes.classTimeCell}>-</th>
