@@ -9,7 +9,10 @@ import { bindActionCreators } from 'redux';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
+
+import { Search as SearchIcon } from '@material-ui/icons';
 
 import { IFilterOptions, IPinComponentProps, IQueryResult } from 'pathfinder';
 
@@ -222,6 +225,12 @@ class Search extends React.Component<IProps> {
     }
   };
 
+  public handleKeyPressInput = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.keyCode === 13) {
+      this.handleClickSearch();
+    }
+  };
+
   public renderHeader() {
     const { filterOptions, queryKeyword } = this.props;
 
@@ -235,6 +244,16 @@ class Search extends React.Component<IProps> {
                 className={classes.searchInput}
                 value={queryKeyword}
                 onChange={this.handleChangeKeyword}
+                inputProps={{
+                  onKeyDown: this.handleKeyPressInput,
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
               />
               <Filter
                 filterOptions={filterOptions}
