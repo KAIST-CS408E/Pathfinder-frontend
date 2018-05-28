@@ -38,6 +38,16 @@ export default class ClassTime extends React.Component<IProps> {
   public render() {
     const { classTimes } = this.props;
     const timeInWeek: IClassTimesInWeek = {};
+
+    const tooltipString = classTimes
+      .map(
+        classTime =>
+          `${classTime.timeType} ${classTime.day} ${classTime.startTime} ${
+            classTime.endTime
+            }`
+      )
+      .join(',\n');
+
     classTimes.forEach(classTime => {
       timeInWeek[classTime.day] = (timeInWeek[classTime.day] || []).concat([
         {
@@ -47,14 +57,6 @@ export default class ClassTime extends React.Component<IProps> {
       ]);
     });
 
-    const tooltipString = classTimes
-      .map(
-        classTime =>
-          `${classTime.timeType} ${classTime.day} ${classTime.startTime} ${
-            classTime.endTime
-          }`
-      )
-      .join(',\n');
 
     const weekMatrix = {};
 

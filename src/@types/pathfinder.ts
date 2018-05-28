@@ -186,7 +186,7 @@ export interface ILectureKeys {
 
 export interface ILectureDetail extends ILectureKeys {
   professor: string;
-  classTime: string[];
+  classTime: IClassTime[];
   isEnglish: string;
 
   // Statistics

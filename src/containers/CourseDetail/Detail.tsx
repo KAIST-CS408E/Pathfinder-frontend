@@ -443,7 +443,10 @@ class Detail extends React.Component<
               </Typography>
             </div>
             {/* 가장 최근 학기에 강의를 개설한 교수님들 */}
-            <Typography variant="caption" style={{ display: 'flex', marginLeft: 12 }}>
+            <Typography
+              variant="caption"
+              style={{ display: 'flex', marginLeft: 12 }}
+            >
               Lecturer of the latest semester ({latestSemester.year}{' '}
               {latestSemester.term})
             </Typography>
@@ -485,14 +488,16 @@ class Detail extends React.Component<
                       {course.type}
                     </CustomTableCellD>
                     <CustomTableCellD>
-                      {/*{thisLecture.classTime.map((text, i) => (*/}
-                        {/*<span key={i}>*/}
-                          {/*{' '}*/}
-                          {/*{text}*/}
-                          {/*<br />*/}
-                        {/*</span>*/}
-                      {/*))}*/}
-                      {/*Tue: 10:30-12:00<br />Tue: 10:30-12:00*/}
+                      {([] as React.ReactNode[])
+                        .concat(
+                          ...thisLecture.classTime.map(classTime => [
+                            <br key={1} />,
+                            `${classTime.timeType} ${classTime.day} ${
+                              classTime.startTime
+                            } ${classTime.endTime}`,
+                          ])
+                        )
+                        .slice(1)}
                     </CustomTableCellD>
                     <CustomTableCellD>
                       Course Number: {course.number} <br />Course Code:{' '}
