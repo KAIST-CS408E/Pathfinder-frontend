@@ -34,10 +34,11 @@ const sheet = jss
 
         position: 'absolute',
 
+        height: '84vh',
         width: '70vw',
 
         left: '15vw',
-        top: '12vh',
+        top: '8vh',
       },
     },
     { link: true }
