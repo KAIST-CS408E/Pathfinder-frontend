@@ -60,12 +60,19 @@ export interface ICourseCard {
   courseNumber: string;
   subtitle: string;
 
-  lectures: ILecture[];
+  lectures: ISimpleLecture[];
   selectedDivision?: string;
 
   myGrade?: string; // undefined if not taken
 
   special?: string; // Use for colored feedback on cards
+}
+
+export interface ISimpleLecture {
+  professor: string;
+  division: string;
+  load?: SpentTime;
+  grades?: number;
 }
 
 export interface ISemesterFeedback {

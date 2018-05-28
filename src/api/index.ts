@@ -62,6 +62,38 @@ export const deleteCourse = (courseNumber: string, subtitle: string) =>
     method: 'DELETE',
   }).then(r => r.json());
 
+export interface IRecommendResponse {
+  area: any;
+  cf: Array<{
+    course: {
+      code: string;
+      subtitle: string;
+      name: string;
+      courseNumber: string;
+      courseType: string;
+    };
+    lectures: Array<{
+      professor: string;
+      division: string;
+    }>;
+  }>;
+}
+
+export const doRecommendation = () =>
+  fetch(API_URL + '/board/recommend')
+    .then<IRecommendResponse>(r => r.json())
+    .then(json => {
+      return {
+        area: json.area,
+        cf: json.cf.map(recommend => {
+          return {
+            ...recommend.course,
+            lectures: recommend.lectures,
+          };
+        }),
+      };
+    });
+
 export interface ISimulateResponse {
   [semesterId: string]: ISemesterFeedback[];
 }
@@ -81,10 +113,12 @@ export const getStatistics = () =>
   fetch(API_URL + '/statistics').then<StatisticsResponse>(r => r.json());
 
 export type RelevantResponse = RelevantCourse[];
-export type RelevantCourse = INavigatableCourse & { name: string; count: number };
+export type RelevantCourse = INavigatableCourse & {
+  name: string;
+  count: number;
+};
 
 // type RelevantEntry = [string, string, string, string, number];
 
 export const getRelevant = () =>
-  fetch(API_URL + '/relevance')
-    .then<RelevantResponse>(r => r.json())
+  fetch(API_URL + '/relevance').then<RelevantResponse>(r => r.json());

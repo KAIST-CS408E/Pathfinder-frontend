@@ -9,10 +9,16 @@ import * as classNames from 'classnames';
 import { Location } from 'history';
 import * as lodash from 'lodash';
 
-import { deleteCourse, doSimulation, getBoard, moveCourse } from '@src/api';
+import {
+  deleteCourse,
+  doRecommendation,
+  doSimulation,
+  getBoard,
+  moveCourse,
+} from '@src/api';
 import { RootState } from '@src/redux';
 import { actions as plannerActions } from '@src/redux/planner';
-import { buildCourseKey, range } from '@src/utils';
+import { buildCourseKey, convertSpentTime, range } from '@src/utils';
 
 import { ICourseCard, IPinnedTable, ISemester } from 'pathfinder';
 
@@ -116,15 +122,19 @@ class Planner extends React.Component<IProps> {
       this.props.boardData.length > 0 &&
       prevProps.pinnedList !== this.props.pinnedList
     ) {
-      this.props.onSetManyCourseCards(
-        'side_pinnedList',
-        this.pinnedCourseBoard(
-          this.getExcludeList(
-            lodash.flatMap(this.props.boardData, semester => semester.courses)
-          )
-        ).courses
-      );
+      this.updatePinnedList();
     }
+  }
+
+  public updatePinnedList() {
+    this.props.onSetManyCourseCards(
+      'side_pinnedList',
+      this.pinnedCourseBoard(
+        this.getExcludeList(
+          lodash.flatMap(this.props.boardData, semester => semester.courses)
+        )
+      ).courses
+    );
   }
 
   public alignToNextSemester() {
@@ -177,6 +187,46 @@ class Planner extends React.Component<IProps> {
       feedback: [],
     };
   };
+
+  public calcLoadSum(courses: ICourseCard[]) {
+    return courses
+      .map(course => {
+        if (course.selectedDivision !== undefined) {
+          const selectedLecture = course.lectures.find(
+            lecture => lecture.division === course.selectedDivision
+          );
+          if (!selectedLecture) {
+            return 0;
+          }
+          const load = selectedLecture.load;
+          return convertSpentTime(load !== undefined ? load : '3 to 5');
+        } else {
+          return 0;
+        }
+      })
+      .reduce((a, b) => a + b, 0);
+  }
+
+  public calcGradeAverage(courses: ICourseCard[]) {
+    return (
+      courses
+        .map(course => {
+          if (course.selectedDivision !== undefined) {
+            const selectedLecture = course.lectures.find(
+              lecture => lecture.division === course.selectedDivision
+            );
+            if (!selectedLecture) {
+              return 0;
+            }
+            const grades = selectedLecture.grades;
+            return Number(grades);
+          } else {
+            return 0;
+          }
+        })
+        .reduce((a, b) => a + b, 0) / courses.length
+    );
+  }
 
   public onCardDrop = (semesterId: string) => (dropResult: any) => {
     // const { onAddCourse, onRemoveCourse } = this.props;
@@ -318,7 +368,46 @@ class Planner extends React.Component<IProps> {
   };
 
   public handleClickRecommendation = () => {
-    console.log('TODO: recommendation');
+    doRecommendation().then(response => {
+      const { boardData, currentSemester } = this.props;
+      const nextSemester = String(currentSemester + 1);
+      const currentLane = boardData.find(
+        semester => semester.id === nextSemester
+      );
+      if (!currentLane) {
+        return;
+      }
+      // drop every cards
+      currentLane.courses.forEach(course => {
+        this.moveCard(nextSemester, 0, 'side_pinnedList', 0, course);
+      });
+
+      response.cf.forEach(recommend => {
+        let found = false;
+        boardData.forEach(semester => {
+          const index = semester.courses.findIndex(
+            course => buildCourseKey(course) === buildCourseKey(recommend)
+          );
+          if (index !== -1) {
+            found = true;
+            this.moveCard(semester.id, index, nextSemester, 0, {
+              ...semester.courses[index],
+              type: 'recommended' as 'recommended',
+            });
+          }
+        });
+        if (!found) {
+          const card = {
+            ...recommend,
+            id: buildCourseKey(recommend),
+            type: 'recommended' as 'recommended',
+          };
+          this.props.onAddCourse(nextSemester, 0, card);
+          this.moveCard(nextSemester, 0, nextSemester, 0, card);
+        }
+      });
+      setTimeout(() => this.updatePinnedList(), 0);
+    });
   };
 
   public handleClickSimulation = () => {
@@ -454,7 +543,11 @@ class Planner extends React.Component<IProps> {
                 <header className={classes.laneHeader}>
                   <div className={classes.laneTitle}>{semester.id}</div>
                   <div className={classes.laneLabel}>
-                    {semester.label ? semester.label : 'Load: -.- Grade: -.-'}
+                    {semester.label
+                      ? semester.label
+                      : `Load: ${this.calcLoadSum(
+                          semester.courses
+                        )} Grade: ${this.calcGradeAverage(semester.courses)}`}
                   </div>
                 </header>
                 <Container
@@ -479,6 +572,26 @@ class Planner extends React.Component<IProps> {
                 </Container>
                 <div className={classes.feedback}>
                   {semester.feedback.map(feedback => {
+                    let reason = '';
+                    if (!feedback.ok) {
+                      if (feedback.type === 'time') {
+                        const errorCourses = Object.entries(feedback.reason)[0];
+                        const a = errorCourses[0];
+                        const b = errorCourses[1];
+                        const aC = semester.courses.find(
+                          course => course.courseNumber === a
+                        );
+                        const bC = semester.courses.find(
+                          course => course.courseNumber === b
+                        );
+                        if (aC && bC) {
+                          reason = `the class time of "${aC.name}" and "${
+                            bC.name
+                          }" overlap`;
+                        }
+                      }
+                    }
+
                     return (
                       <div
                         key={feedback.type}
@@ -490,9 +603,7 @@ class Planner extends React.Component<IProps> {
                           {feedback.type}
                           {feedback.ok ? ' balanced' : ' error'}
                         </div>
-                        <div className={classes.feedbackDetail}>
-                          {feedback.reason ? 'reason' : 'no reason'}
-                        </div>
+                        <div className={classes.feedbackDetail}>{reason}</div>
                       </div>
                     );
                   })}
