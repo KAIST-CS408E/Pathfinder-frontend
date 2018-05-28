@@ -485,13 +485,13 @@ class Detail extends React.Component<
                       {course.type}
                     </CustomTableCellD>
                     <CustomTableCellD>
-                      {thisLecture.classTime.map((text, i) => (
-                        <span key={i}>
-                          {' '}
-                          {text}
-                          <br />
-                        </span>
-                      ))}
+                      {/*{thisLecture.classTime.map((text, i) => (*/}
+                        {/*<span key={i}>*/}
+                          {/*{' '}*/}
+                          {/*{text}*/}
+                          {/*<br />*/}
+                        {/*</span>*/}
+                      {/*))}*/}
                       {/*Tue: 10:30-12:00<br />Tue: 10:30-12:00*/}
                     </CustomTableCellD>
                     <CustomTableCellD>

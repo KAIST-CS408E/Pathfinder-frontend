@@ -5,9 +5,15 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Stepper from '@material-ui/core/Stepper';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
+
+// import Step from '@material-ui/core/Step';
+// import StepLabel from '@material-ui/core/StepLabel';
+// import Stepper from '@material-ui/core/Stepper';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 
@@ -55,32 +61,22 @@ export default class Sidebar extends React.Component<{}, IState> {
         <CardContent style={{ padding: 0 }}>
           {value === 0 && (
             <div className={classes.sideBarStepBoard}>
-              <p
-                style={{
-                  fontSize: '1.1rem',
-                  paddingLeft: 12,
-                  textAlign: 'left',
-                }}
+              <List
+                subheader={
+                  <ListSubheader style={{ textAlign: 'left' }}>
+                    New lectures
+                  </ListSubheader>
+                }
               >
-                New courses
-              </p>
-              <Stepper orientation="vertical" activeStep={0}>
                 {this.state.statistics.map(course => (
-                  <Step>
-                    <StepLabel
-                      style={{ position: 'relative', left: 0, top: 0 }}
-                      className={classes.stepLabel}
-                    >
-                      <CourseStep
-                        key={buildCourseKey(course)}
-                        courseNumber={course.courseNumber}
-                        subtitle={course.subtitle}
-                        name={course.name}
-                      />
-                    </StepLabel>
-                  </Step>
+                  <CourseStep
+                    key={buildCourseKey(course)}
+                    courseNumber={course.courseNumber}
+                    subtitle={course.subtitle}
+                    name={course.name}
+                  />
                 ))}
-              </Stepper>
+              </List>
             </div>
           )}
         </CardContent>
@@ -101,20 +97,9 @@ const CourseStep: React.SFC<ICourseStepProps> = ({
   name,
 }) => {
   return (
-    <div>
-      <Chip
-        label={courseNumber}
-        style={{
-          height: 26,
-
-          left: 0,
-          top: -13,
-
-          position: 'absolute',
-          textAlign: 'left',
-        }}
-      />
-      <div className={classes.stepContent}>{name}</div>
-    </div>
+    <ListItem button>
+      <Chip label={courseNumber} />
+      <ListItemText>{name}</ListItemText>
+    </ListItem>
   );
 };
