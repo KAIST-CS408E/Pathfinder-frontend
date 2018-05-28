@@ -1,4 +1,9 @@
-import { IPinnedCourse, IPinnedCourseAPI, ISemesterFeedback } from 'pathfinder';
+import {
+  INavigatableCourse,
+  IPinnedCourse,
+  IPinnedCourseAPI,
+  ISemesterFeedback,
+} from 'pathfinder';
 
 import { API_URL } from '@src/constants/api';
 
@@ -74,3 +79,12 @@ export type StatisticsResponse = Array<{
 
 export const getStatistics = () =>
   fetch(API_URL + '/statistics').then<StatisticsResponse>(r => r.json());
+
+export type RelevantResponse = RelevantCourse[];
+export type RelevantCourse = INavigatableCourse & { name: string; count: number };
+
+// type RelevantEntry = [string, string, string, string, number];
+
+export const getRelevant = () =>
+  fetch(API_URL + '/relevance')
+    .then<RelevantResponse>(r => r.json())

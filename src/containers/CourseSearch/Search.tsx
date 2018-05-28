@@ -18,13 +18,12 @@ import { IFilterOptions, IPinComponentProps, IQueryResult } from 'pathfinder';
 
 import { pinCourse, unpinCourse } from '@src/api';
 import { API_URL } from '@src/constants/api';
-import { RootState } from '@src/redux';
-import { rootActions as actions } from '@src/redux';
+import { rootActions as actions, RootState } from '@src/redux';
 import { buildCourseKey } from '@src/utils';
 
+import Sidebar from '../Sidebar';
 import Filter, { defaultValues, OnChangeOptionFunc } from './Filter';
 import SearchList, { ClickEntryHandler, ClickPinHandler } from './SearchList';
-import Sidebar from './Sidebar';
 
 import styles from './Search.style';
 

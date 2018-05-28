@@ -197,5 +197,16 @@ export interface ILectureDetail extends ILectureKeys {
   spendTime?: SpentTime;
 }
 
+export interface INavigatableCourse {
+  courseNumber: string;
+  subtitle: string;
+}
+
+export interface IDisplayableCourse {
+  name: string;
+  professor: string;
+}
+
+
 /* CourseNumber CourseName NumOfTaken */
 type PeerCourse = [CourseNumber, CourseName, CourseSubtitle, number];
