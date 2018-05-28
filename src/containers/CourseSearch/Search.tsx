@@ -203,9 +203,9 @@ class Search extends React.Component<IProps> {
     // TODO:: DO API POST
     console.log(course);
     const datum = {
+      ...course,
       courseName: course.name,
       courseNumber: course.number,
-      subtitle: course.subtitle,
     };
 
     if (!this.props.pinnedList[buildCourseKey(datum)]) {

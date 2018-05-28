@@ -27,6 +27,20 @@ export default (state: State = initialState, action: Action): State => {
         return prevState;
       });
     }
+    case getType(actions.setManyCourseCards): {
+      const { semesterId, courses } = action.payload;
+      const semesterIndex = state.boardData.findIndex(
+        semester => semester.id === semesterId
+      );
+      return iassign(
+        state,
+        prevState => prevState.boardData[semesterIndex],
+        (semester: ISemester) => {
+          semester.courses = courses;
+          return semester;
+        }
+      );
+    }
     case getType(actions.addCourse): {
       const { semesterId, courseIndex, courseCard } = action.payload;
       const semesterIndex = state.boardData.findIndex(

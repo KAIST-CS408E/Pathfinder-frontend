@@ -12,13 +12,15 @@ import {
   Table,
   TableBody,
   TableHead,
-  Tooltip,
+
   Typography,
 } from '@material-ui/core';
 
 import { ICourse } from 'pathfinder';
 
 import { convertSpentTime } from '@src/utils';
+
+import ClassTime from "./ClassTime";
 
 const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueD = '#1A237E';
@@ -384,65 +386,7 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                       width: '17.4%',
                     }}
                   >
-                    <Tooltip
-                      id="tooltip-icon"
-                      title="{/* n.classTime */}"
-                      placement="bottom"
-                    >
-                      <table className={classes.timeTable} style={{position: "relative"}}>
-                        <div style={{position: "absolute", left: 0, top:0, width: "100%", display:"flex"}}>
-                          <p style={{position: "relative", opacity: 0.3, fontWeight: 500, width:"20%", textAlign:"center" }}>M</p>
-                          <p style={{position: "relative", opacity: 0.3, fontWeight: 500, width:"20%", textAlign:"center"}}>T</p>
-                          <p style={{position: "relative", opacity: 0.3, fontWeight: 500, width:"20%", textAlign:"center"}}>W</p>
-                          <p style={{position: "relative", opacity: 0.3, fontWeight: 500, width:"20%", textAlign:"center"}}>T</p>
-                          <p style={{position: "relative", opacity: 0.3, fontWeight: 500, width:"20%", textAlign:"center"}}>F</p>
-                        </div>
-                        <tbody>
-                          <tr>
-                            <th className={classes.classTimeCell}>-</th>
-                            <th>-</th>
-                            <th className={classes.classTimeCell}>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                          <tr>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                          <tr>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                          <tr>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                          <tr>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                          <tr>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                            <th>-</th>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </Tooltip>
+                    <ClassTime classTimes={n.classTime} />
                   </CustomTableCell>
                 </CustomTableRow>
               );

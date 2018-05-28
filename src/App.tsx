@@ -27,7 +27,7 @@ import Dashboard from './containers/Dashboard';
 
 import './App.css';
 
-import { IPinnedCourse, IPinnedTable, PinEntryAPI } from 'pathfinder';
+import { IPinnedCourse, IPinnedTable } from 'pathfinder';
 
 import { getAllPin, pinCourse, unpinCourse } from '@src/api';
 import { RootState } from '@src/redux';
@@ -58,10 +58,10 @@ interface IProps {
   location: Location;
   pinnedList: IPinnedTable;
 
-  onPinMultipleCourses: (entries: PinEntryAPI[]) => any;
+  onPinMultipleCourses: typeof pinActions.pinMultipleCourses;
 
-  onPinCourse: (course: IPinnedCourse) => any;
-  onUnpinCourse: (course: IPinnedCourse) => any;
+  onPinCourse: typeof pinActions.pinCourse;
+  onUnpinCourse: typeof pinActions.unpinCourse;
 
   push: typeof push;
 }

@@ -35,6 +35,7 @@ interface IProps extends RouteComponentProps<{}> {
   location: Location;
 
   onInitBoard: typeof plannerActions.initBoard;
+  onSetManyCourseCards: typeof plannerActions.setManyCourseCards;
   onAddCourse: typeof plannerActions.addCourse;
   onRemoveCourse: typeof plannerActions.removeCourse;
   onSetManyFeedbacks: typeof plannerActions.setManyFeedbacks;
@@ -71,7 +72,7 @@ class Planner extends React.Component<IProps> {
 
       this.props.onInitBoard(
         [
-          ...this.addtionalBoards(
+          ...this.additionalBoards(
             lodash.flatMap(boardData, semester => semester.courses)
           ),
           ...range(13)
@@ -110,6 +111,17 @@ class Planner extends React.Component<IProps> {
     if (prevProps.boardData.length === 0 && this.props.boardData.length !== 0) {
       this.alignToNextSemester();
     }
+
+    if (prevProps.pinnedList !== this.props.pinnedList) {
+      this.props.onSetManyCourseCards(
+        'side_pinnedList',
+        this.pinnedCourseBoard(
+          this.getExcludeList(
+            lodash.flatMap(this.props.boardData, semester => semester.courses)
+          )
+        ).courses
+      );
+    }
   }
 
   public alignToNextSemester() {
@@ -126,15 +138,20 @@ class Planner extends React.Component<IProps> {
     }
   }
 
-  public addtionalBoards = (exclude: ICourseCard[]): ISemester[] => {
-    const { pinnedList } = this.props;
+  public getExcludeList = (exclude: ICourseCard[]) => {
     const excludeList = {};
-    // console.group('Pin Exclusion');
     exclude.forEach(card => {
       excludeList[buildCourseKey(card)] = true;
-      // console.log('exclude %s', card.name);
     });
-    // console.groupEnd();
+    return excludeList;
+  };
+
+  public additionalBoards = (exclude: ICourseCard[]): ISemester[] => {
+    return [this.pinnedCourseBoard(this.getExcludeList(exclude))];
+  };
+
+  public pinnedCourseBoard = (excludeList: { [key: string]: boolean }) => {
+    const { pinnedList } = this.props;
 
     const courses = Object.entries(pinnedList)
       .filter(([_, pin]) => !excludeList[buildCourseKey(pin)])
@@ -146,27 +163,16 @@ class Planner extends React.Component<IProps> {
         name: pinnedCourse.courseName,
         subtitle: pinnedCourse.subtitle,
 
-        lectures: [
-          {
-            classTime: [],
-            division: '',
-            grades: 1,
-            limit: null,
-            load: '< 1',
-            professor: 'no!',
-          },
-        ],
+        lectures: pinnedCourse.lectures,
       }));
 
-    return [
-      {
-        id: 'side_pinnedList',
-        semester: 0,
+    return {
+      id: 'side_pinnedList',
+      semester: 0,
 
-        courses,
-        feedback: [],
-      },
-    ];
+      courses,
+      feedback: [],
+    };
   };
 
   public onCardDrop = (semesterId: string) => (dropResult: any) => {
@@ -509,6 +515,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     {
       onInitBoard: plannerActions.initBoard,
+      onSetManyCourseCards: plannerActions.setManyCourseCards,
 
       onAddCourse: plannerActions.addCourse,
       onRemoveCourse: plannerActions.removeCourse,

@@ -9,6 +9,8 @@ export interface IPinnedCourse {
 
   courseName: string;
   subtitle: string;
+
+  lectures: ILecture[];
 }
 
 export interface IPinComponentProps {
@@ -23,7 +25,12 @@ type CourseNumber = string;
 type CourseName = string;
 type CourseSubtitle = string;
 
-export type PinEntryAPI = [CourseNumber, CourseName, CourseSubtitle];
+export interface IPinnedCourseAPI {
+  courseNumber: string;
+  name: string;
+  subtitle: string;
+  lectures: ILecture[];
+}
 
 /* Data structures for kanban */
 
@@ -92,13 +99,20 @@ export interface ILecture {
   professor: string;
 
   division: string;
-  classTime: string[];
+  classTime: IClassTime[];
   limit: number | null;
   load: SpentTime;
   grades: number;
 }
 
 export type SpentTime = '< 1' | '1 to 3' | '3 to 5' | '5 to 7' | '> 7';
+
+export interface IClassTime {
+  timeType: 'Class' | 'Lab';
+  day: 'Mon'| 'Tue'| 'Wed'| 'Thu'| 'Fri';
+  startTime: string;
+  endTime: string;
+}
 
 /* Data structures for the filter */
 export interface IFilterOptions {
@@ -172,7 +186,7 @@ export interface ILectureKeys {
 
 export interface ILectureDetail extends ILectureKeys {
   professor: string;
-  classTime: string[];
+  classTime: IClassTime[];
   isEnglish: string;
 
   // Statistics

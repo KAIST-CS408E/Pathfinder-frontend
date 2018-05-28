@@ -1,11 +1,11 @@
 import { ActionType, createAction } from 'typesafe-actions';
 
-import { IPinnedCourse, PinEntryAPI } from 'pathfinder';
+import { IPinnedCourse } from 'pathfinder';
 
 const actions = {
   pinMultipleCourses: createAction(
     'pin/pinMultipleCourses',
-    resolve => (entries: PinEntryAPI[]) => resolve(entries)
+    resolve => (entries: IPinnedCourse[]) => resolve(entries)
   ),
 
   pinCourse: createAction('pin/pinCourse', resolve => (course: IPinnedCourse) =>

@@ -1,4 +1,4 @@
-import { IPinnedCourse, ISemesterFeedback } from 'pathfinder';
+import { IPinnedCourse, IPinnedCourseAPI, ISemesterFeedback } from 'pathfinder';
 
 import { API_URL } from '@src/constants/api';
 
@@ -6,7 +6,18 @@ export interface IPinCourseResponse {
   success: boolean;
 }
 
-export const getAllPin = () => fetch(API_URL + '/pin').then(r => r.json());
+export const getAllPin = () =>
+  fetch(API_URL + '/pin')
+    .then<IPinnedCourseAPI[]>(r => r.json())
+    .then<IPinnedCourse[]>(json =>
+      json.map(course => {
+        const { name, ...rest } = course;
+        return {
+          ...rest,
+          courseName: name,
+        };
+      })
+    );
 
 export const pinCourse = (course: IPinnedCourse): Promise<IPinCourseResponse> =>
   // only if it does not exist in list
@@ -52,3 +63,14 @@ export interface ISimulateResponse {
 
 export const doSimulation = () =>
   fetch(API_URL + '/board/simulate').then<ISimulateResponse>(r => r.json());
+
+export type StatisticsResponse = Array<{
+  courseNumber: string;
+  subtitle: string;
+  name: string;
+  professor: string;
+  isNewCourse: boolean;
+}>;
+
+export const getStatistics = () =>
+  fetch(API_URL + '/statistics').then<StatisticsResponse>(r => r.json());

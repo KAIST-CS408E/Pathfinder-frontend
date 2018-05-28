@@ -10,6 +10,11 @@ const actions = {
     resolve => (boardData: ISemester[], currentSemester: number) =>
       resolve({ boardData, currentSemester })
   ),
+  setManyCourseCards: createAction(
+    'planner/setManyCourseCards',
+    resolve => (semesterId: string, courses: ICourseCard[]) =>
+      resolve({ semesterId, courses })
+  ),
 
   addCourse: createAction(
     'planner/addCourse',

@@ -524,14 +524,16 @@ class Detail extends React.Component<
                       {course.type}
                     </CustomTableCellD>
                     <CustomTableCellD>
-                      {/* thisLecture.classTime.map((text, i) => (
-                        <span key={i}>
-                          {' '}
-                          {text}
-                          <br />
-                        </span>
-                      ))}
-                      {*/ /*Tue: 10:30-12:00<br />Tue: 10:30-12:00*/}
+                      {([] as React.ReactNode[])
+                        .concat(
+                          ...thisLecture.classTime.map(classTime => [
+                            <br key={1} />,
+                            `${classTime.timeType} ${classTime.day} ${
+                              classTime.startTime
+                            } ${classTime.endTime}`,
+                          ])
+                        )
+                        .slice(1)}
                     </CustomTableCellD>
                     <CustomTableCellD>
                       Course Number: {course.number} <br />Course Code:{' '}
