@@ -25,4 +25,15 @@ export const convertSpentTime = (timeStr: SpentTime) => {
   }
 };
 
+export const convertSpentTimeToReadable = (timeStr: SpentTime) => {
+  switch (timeStr) {
+    case '< 1':
+      return 'less than 1 hour';
+    case '> 7':
+      return 'more than 7 hours';
+    default:
+      return `${timeStr} hours`;
+  }
+}
+
 export const range = (n: number) => [...Array(n)].map((_, i) => i);

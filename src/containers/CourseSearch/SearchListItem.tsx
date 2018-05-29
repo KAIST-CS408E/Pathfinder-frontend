@@ -15,9 +15,10 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { ICourse, INewCourse } from 'pathfinder';
+import { ICourse, INewCourse, SpentTime } from 'pathfinder';
+import * as ReactTooltip from 'react-tooltip';
 
-import { convertSpentTime } from '@src/utils';
+import { convertSpentTime, convertSpentTimeToReadable } from '@src/utils';
 
 import ClassTime from './ClassTime';
 
@@ -198,6 +199,27 @@ export type ClickHandler = () => void;
 export type ClickPinHandlerBuilder = (course: ICourse) => ClickHandler;
 
 class CustomizedTable extends React.PureComponent<ITableProps> {
+  public renderLoadTooltip = (load: string) => {
+    const readable = convertSpentTimeToReadable(load as SpentTime);
+
+    // TODO:: 2018일때만 지난 2년임
+    return (
+      <span>
+        Students took this course past 2 years <br />responded that it usually
+        took &nbsp;<b>{readable}</b>&nbsp;a week
+      </span>
+    );
+  };
+
+  public renderGradeTooltip = (grade: string) => {
+    return (
+      <span>
+        Students took this course past 2 years <br />
+        got the average grade of <b>{grade} of 4.3</b>
+      </span>
+    )
+  }
+
   public render() {
     const {
       classes,
@@ -214,6 +236,16 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
 
     return (
       <Paper className={classes.root}>
+        <ReactTooltip
+          id="courseLoad"
+          effect="solid"
+          getContent={this.renderLoadTooltip}
+        />
+        <ReactTooltip
+          id="courseGrade"
+          effect="solid"
+          getContent={this.renderGradeTooltip}
+        />
         <div className={classes.typo}>
           <Typography
             color="inherit"
@@ -308,54 +340,142 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                 ? newLecture.division === n.division
                 : false;
               const loadLevel = convertSpentTime(n.load);
-              return <CustomTableRow key={i} className={classes.row} onClick={clickHandlerBuilder(course, i)}>
-                  <CustomTableCell component="th" scope="row" style={{ color: ourKaistBlueD, overflow: 'hidden', paddingLeft: 18, width: '20.9%' }}>
-                    {isNewLecture ? <span style={{ border: '1px solid', borderRadius: 2, marginRight: 6, padding: 2 }}>
+              return (
+                <CustomTableRow
+                  key={i}
+                  className={classes.row}
+                  onClick={clickHandlerBuilder(course, i)}
+                >
+                  <CustomTableCell
+                    component="th"
+                    scope="row"
+                    style={{
+                      color: ourKaistBlueD,
+                      overflow: 'hidden',
+                      paddingLeft: 18,
+                      width: '20.9%',
+                    }}
+                  >
+                    {isNewLecture ? (
+                      <span
+                        style={{
+                          border: '1px solid',
+                          borderRadius: 2,
+                          marginRight: 6,
+                          padding: 2,
+                        }}
+                      >
                         NEW
-                      </span> : null}
+                      </span>
+                    ) : null}
                     {n.professor || 'None'}
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '14.5%' }}>
-                    {n.division !== ''
-                      ? `Class. ${n.division}`
-                      : 'No Class'}
+                    {n.division !== '' ? `Class. ${n.division}` : 'No Class'}
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '12.5%' }}>
                     {n.limit ? `0/${n.limit}` : '∞'}
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '18.8%' }}>
-                    <div className={classes.levelBar}>
-                      <div className={classes.levelTitle}>
-                        Load:
-                      </div>
-                      <div style={{ backgroundColor: loadLevel > 1 ? '#7986CB' : '' }} className={classes.levelBlock}>{`1hr`}</div>
-                      <div style={{ backgroundColor: loadLevel > 3 ? '#3F51B5' : '' }} className={classes.levelBlock}>{`3hr`}</div>
-                      <div style={{ backgroundColor: loadLevel > 5 ? '#303F9F' : '' }} className={classes.levelBlock}>{`5hr`}</div>
-                      <div style={{ backgroundColor: loadLevel > 7 ? '#1A237E' : '' }} className={classes.levelBlock}>{`7hr`}</div>
-                      <div className={classes.statNum} style={{ fontSize: 12, fontWeight: 500, marginLeft: 0, paddingBottom: 1 }}>
+                    <div
+                      data-for="courseLoad"
+                      data-tip={n.load}
+                      className={classes.levelBar}
+                    >
+                      <div className={classes.levelTitle}>Load:</div>
+                      <div
+                        style={{
+                          backgroundColor: loadLevel > 1 ? '#7986CB' : '',
+                        }}
+                        className={classes.levelBlock}
+                      >{`1hr`}</div>
+                      <div
+                        style={{
+                          backgroundColor: loadLevel > 3 ? '#3F51B5' : '',
+                        }}
+                        className={classes.levelBlock}
+                      >{`3hr`}</div>
+                      <div
+                        style={{
+                          backgroundColor: loadLevel > 5 ? '#303F9F' : '',
+                        }}
+                        className={classes.levelBlock}
+                      >{`5hr`}</div>
+                      <div
+                        style={{
+                          backgroundColor: loadLevel > 7 ? '#1A237E' : '',
+                        }}
+                        className={classes.levelBlock}
+                      >{`7hr`}</div>
+                      <div
+                        className={classes.statNum}
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 500,
+                          marginLeft: 0,
+                          paddingBottom: 1,
+                        }}
+                      >
                         {n.load}
                       </div>
                     </div>
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '16%' }}>
-                    <div className={classes.levelBar}>
-                      <div className={classes.levelTitle}>
-                        Grade:
-                      </div>
-                      <div style={{ background: ourKaistBlueD, position: 'relative', width: 64 }} className={classes.levelBlock}>
-                        <div style={{ color: 'white', marginTop: 1, position: 'absolute', zIndex: 10 }}>
+                    <div
+                      data-for="courseGrade"
+                      data-tip={n.grades}
+                      className={classes.levelBar}
+                    >
+                      <div className={classes.levelTitle}>Grade:</div>
+                      <div
+                        style={{
+                          background: ourKaistBlueD,
+                          position: 'relative',
+                          width: 64,
+                        }}
+                        className={classes.levelBlock}
+                      >
+                        <div
+                          style={{
+                            color: 'white',
+                            marginTop: 1,
+                            position: 'absolute',
+                            zIndex: 10,
+                          }}
+                        >
                           {n.grades ? n.grades : '-.-'}
                         </div>
-                        <div style={{ margin: 0, position: 'absolute', right: 0, top: 0, width: n.grades ? 64 - 64 * (n.grades - 2.5) / 1.8 : 64 }} className={classes.levelBlock}>
+                        <div
+                          style={{
+                            margin: 0,
+                            position: 'absolute',
+                            right: 0,
+                            top: 0,
+                            width: n.grades
+                              ? 64 - 64 * (n.grades - 2.5) / 1.8
+                              : 64,
+                          }}
+                          className={classes.levelBlock}
+                        >
                           {/* width: full grade - currunt grade */}
                         </div>
                       </div>
                     </div>
                   </CustomTableCell>
-                  <CustomTableCell numeric style={{ border: '1px solid ' + ourKaistBlue, borderRight: '0px solid', height: 30, padding: '1px 0px', width: '17.4%' }}>
+                  <CustomTableCell
+                    numeric
+                    style={{
+                      border: '1px solid ' + ourKaistBlue,
+                      borderRight: '0px solid',
+                      height: 30,
+                      padding: '1px 0px',
+                      width: '17.4%',
+                    }}
+                  >
                     <ClassTime classTimes={n.classTime} />
                   </CustomTableCell>
-                </CustomTableRow>;
+                </CustomTableRow>
+              );
             })}
           </TableBody>
         </Table>

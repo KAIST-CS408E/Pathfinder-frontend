@@ -286,6 +286,7 @@ class Search extends React.Component<IProps> {
 
     return (
       <div className={classes.resultContainer}>
+        <span data-for="courseLoad" data-tip />
         <SearchList
           data={queryResult ? queryResult.courses : undefined}
           newCourses={newCourses}
@@ -296,6 +297,7 @@ class Search extends React.Component<IProps> {
           onClickEntry={this.handleClickEntry}
           onClickPin={this.handleClickPin}
         />
+
         <div className="map">
           <Sidebar />
         </div>
