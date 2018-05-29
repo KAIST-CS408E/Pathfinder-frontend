@@ -382,7 +382,7 @@ class Planner extends React.Component<IProps> {
         this.moveCard(nextSemester, 0, 'side_pinnedList', 0, course);
       });
 
-      response.cf.forEach(recommend => {
+      response.cf.slice(0, 3).forEach(recommend => {
         let found = false;
         boardData.forEach(semester => {
           const index = semester.courses.findIndex(
@@ -672,7 +672,7 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
       {course.type === 'recommended' ? (
         <div className={classes.recCardTop}>
           <Chip
-            label={course.subtitle}
+            label="RECOMMENDED"
             style={{
               backgroundColor: recommendColor,
               color: 'white',

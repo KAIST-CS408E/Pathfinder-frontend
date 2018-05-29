@@ -41,7 +41,7 @@ export default class SearchList extends React.Component<IProps> {
     const { data, pinnedList, takenCourses } = this.props;
 
     let renderData: JSX.Element | JSX.Element[] = (
-      <span>{'Sorry! nothing to show... perhaps broken API again?'}</span>
+      <span>{'Data is not loaded yet'}</span>
     );
 
     if (data && takenCourses) {

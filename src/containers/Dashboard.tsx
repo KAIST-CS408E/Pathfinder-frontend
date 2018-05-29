@@ -28,7 +28,7 @@ class Dashboard extends React.Component<{ push: typeof push }> {
           <Card>
             <CardContent>
               <Typography variant="headline" component="h2">
-                2018년 새로 개설된 과목 검색하기
+                Search the courses open in 2018
               </Typography>
               <Typography color="textSecondary">adjective</Typography>
               <Typography component="p">
@@ -47,7 +47,7 @@ class Dashboard extends React.Component<{ push: typeof push }> {
           <Card>
             <CardContent>
               <Typography variant="headline" component="h2">
-                내 커리큘럼 짜러 가기
+                Plan your own curriculum
               </Typography>
               <Typography color="textSecondary">adjective</Typography>
               <Typography component="p">
