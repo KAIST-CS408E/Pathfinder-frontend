@@ -65,8 +65,8 @@ export default class ClassTime extends React.Component<IProps> {
       partition.forEach((area, areaIndex) => {
         const highlight = (timeInWeek[day] || []).some(
           classTime =>
-            area[0].isSameOrBefore(classTime.start) &&
-            area[1].isSameOrAfter(classTime.end)
+            area[0].isSameOrAfter(classTime.start) &&
+            area[1].isSameOrBefore(classTime.end)
         );
         weekMatrix[day][areaIndex] = highlight;
       });
