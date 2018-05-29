@@ -664,6 +664,17 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
   preventDragging,
   onClickCourseDivision,
 }) => {
+  let loadGrade = 'Load: -_- Grade -_-';
+  const { selectedDivision } = course;
+  if (selectedDivision !== undefined) {
+    const selLecture = course.lectures.find(
+      lecture => lecture.division === selectedDivision
+    );
+    if (selLecture) {
+      loadGrade = `Load: ${selLecture.load || "-_-"} Grade: ${selLecture.grades || "-_-"}`;
+    }
+  }
+
   return (
     <Draggable
       onClick={preventDragging}
@@ -701,12 +712,11 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
           <MoreHoriz />
         </div>
       </header>
-      <div className={classes.cardMiddle}>
-        {course.description ? course.description : 'Load:-.- Grade:-.-'}
-      </div>
+      <div className={classes.cardMiddle}>{loadGrade}</div>
       <div className={classes.cardProfs}>
         {course.lectures.map(lecture => (
           <div
+            key={lecture.division}
             style={{
               backgroundColor:
                 course.selectedDivision !== undefined &&
