@@ -215,6 +215,15 @@ export interface IDisplayableCourse {
   professor: string;
 }
 
+export interface INewCourse extends INavigatableCourse, IDisplayableCourse {
+  division: string;
+  isNewCourse: boolean;
+}
+
+export type RelevantCourse = INavigatableCourse & {
+  name: string;
+  count: number;
+};
 
 /* CourseNumber CourseName NumOfTaken */
 type PeerCourse = [CourseNumber, CourseName, CourseSubtitle, number];

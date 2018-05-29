@@ -1,8 +1,5 @@
 import {
-  INavigatableCourse,
-  IPinnedCourse,
-  IPinnedCourseAPI,
-  ISemesterFeedback,
+  INewCourse, IPinnedCourse, IPinnedCourseAPI, ISemesterFeedback, RelevantCourse,
 } from 'pathfinder';
 
 import { API_URL } from '@src/constants/api';
@@ -101,22 +98,13 @@ export interface ISimulateResponse {
 export const doSimulation = () =>
   fetch(API_URL + '/board/simulate').then<ISimulateResponse>(r => r.json());
 
-export type StatisticsResponse = Array<{
-  courseNumber: string;
-  subtitle: string;
-  name: string;
-  professor: string;
-  isNewCourse: boolean;
-}>;
+export type StatisticsResponse = INewCourse[];
 
 export const getStatistics = () =>
   fetch(API_URL + '/statistics').then<StatisticsResponse>(r => r.json());
 
 export type RelevantResponse = RelevantCourse[];
-export type RelevantCourse = INavigatableCourse & {
-  name: string;
-  count: number;
-};
+
 
 // type RelevantEntry = [string, string, string, string, number];
 

@@ -17,16 +17,16 @@ import Person from '@material-ui/icons/Person';
 
 import * as ReactTooltip from 'react-tooltip';
 
-import { IDisplayableCourse, INavigatableCourse } from 'pathfinder';
-
 import {
-  getRelevant,
-  getStatistics,
+  IDisplayableCourse,
+  INavigatableCourse,
   RelevantCourse,
-  RelevantResponse,
-  StatisticsResponse,
-} from '@src/api';
+} from 'pathfinder';
+
+import { getRelevant, getStatistics } from '@src/api';
 // import { buildCourseKey } from '@src/utils';
+import { RootState } from '@src/redux';
+import { actions, State } from '@src/redux/courseDiscovery';
 
 import CourseItem from './CourseItem';
 
@@ -35,29 +35,34 @@ import CourseItem from './CourseItem';
 // const { classes } = styles;
 
 interface IProps {
+  newCourses: State['newCourses'];
+  newLectures: State['newLectures'];
+  relevantCourses: State['relevantCourses'];
+
+  onSetNewCourses: typeof actions.setNewCourses;
+  onSetNewLectures: typeof actions.setNewLectures;
+  onSetRelevantCourses: typeof actions.setRelevantCourses;
+
   push: typeof push;
 }
 
 interface IState {
-  statistics: StatisticsResponse;
-  relevant: RelevantResponse;
   tabValue: number;
 }
 
 class Sidebar extends React.Component<IProps, IState> {
   constructor(props: any) {
     super(props);
-    this.state = { statistics: [], relevant: [], tabValue: 0 };
+    this.state = { tabValue: 0 };
   }
 
   public componentDidMount() {
     getStatistics().then(json => {
-      this.setState({ statistics: json });
+      this.props.onSetNewCourses(json.filter(course => course.isNewCourse));
+      this.props.onSetNewLectures(json.filter(course => !course.isNewCourse));
     });
     getRelevant().then(json => {
-      this.setState({
-        relevant: json,
-      });
+      this.props.onSetRelevantCourses(json);
     });
   }
 
@@ -115,12 +120,9 @@ class Sidebar extends React.Component<IProps, IState> {
   };
 
   public render() {
-    const newCourses = this.state.statistics.filter(
-      course => course.isNewCourse
-    );
-    const newProfessor = this.state.statistics.filter(
-      course => !course.isNewCourse
-    );
+    const newCourses = Object.values(this.props.newCourses);
+    const newProfessor = Object.values(this.props.newLectures);
+    const relevantCourses = Object.values(this.props.relevantCourses);
 
     const { tabValue } = this.state;
 
@@ -158,7 +160,7 @@ class Sidebar extends React.Component<IProps, IState> {
             <div>
               <CourseList
                 title="Courses people took in your semester"
-                data={this.state.relevant}
+                data={relevantCourses}
                 onClick={this.handleCourseClick}
                 render={this.renderRelevantItem}
               />
@@ -201,6 +203,18 @@ const CourseList: TCourseList = ({ title, data, onClick, render }) => (
   </List>
 );
 
-export default connect(null, (dispatch: Dispatch) =>
-  bindActionCreators({ push }, dispatch)
+export default connect(
+  (state: RootState) => ({
+    ...state.courseDiscovery,
+  }),
+  (dispatch: Dispatch) =>
+    bindActionCreators(
+      {
+        onSetNewCourses: actions.setNewCourses,
+        onSetNewLectures: actions.setNewLectures,
+        onSetRelevantCourses: actions.setRelevantCourses,
+        push,
+      },
+      dispatch
+    )
 )(Sidebar);
