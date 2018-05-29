@@ -205,8 +205,9 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
     // TODO:: 2018일때만 지난 2년임
     return (
       <span>
-        Students took this course past 2 years <br />responded that it usually
-        took &nbsp;<b>{readable}</b>&nbsp;a week
+        Students took this course over past 2 years <br />
+        responded that it usually took &nbsp;
+        <b>{readable}</b>&nbsp; a week
       </span>
     );
   };
@@ -214,11 +215,11 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
   public renderGradeTooltip = (grade: string) => {
     return (
       <span>
-        Students took this course past 2 years <br />
+        Students took this course over past 2 years <br />
         got the average grade of <b>{grade} of 4.3</b>
       </span>
-    )
-  }
+    );
+  };
 
   public render() {
     const {
