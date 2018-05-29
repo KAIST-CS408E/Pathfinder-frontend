@@ -36,6 +36,10 @@ export interface IProps extends RouteProps, IPinComponentProps {
   queryKeyword: string;
   queryResult?: IQueryResult;
 
+  newCourses: RootState['courseDiscovery']['newCourses'];
+  newLectures: RootState['courseDiscovery']['newLectures'];
+  relevantCourses: RootState['courseDiscovery']['relevantCourses'];
+
   onChangeFilter: typeof actions.changeFilter;
   onChangeFilterOption: typeof actions.changeFilterOption;
   onChangeQueryKeyword: typeof actions.changeQueryKeyword;
@@ -272,12 +276,21 @@ class Search extends React.Component<IProps> {
   }
 
   public renderResult() {
-    const { pinnedList, queryResult } = this.props;
+    const {
+      pinnedList,
+      queryResult,
+      newCourses,
+      newLectures,
+      relevantCourses,
+    } = this.props;
 
     return (
       <div className={classes.resultContainer}>
         <SearchList
           data={queryResult ? queryResult.courses : undefined}
+          newCourses={newCourses}
+          newLectures={newLectures}
+          relevantCourses={relevantCourses}
           takenCourses={queryResult ? queryResult.take : undefined}
           pinnedList={pinnedList || {}}
           onClickEntry={this.handleClickEntry}
@@ -301,7 +314,11 @@ class Search extends React.Component<IProps> {
 }
 
 function mapStateToProps(state: RootState) {
-  return { ...state.courseSearch, pinnedList: state.pinnedList };
+  return {
+    ...state.courseSearch,
+    ...state.courseDiscovery,
+    pinnedList: state.pinnedList,
+  };
 }
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
