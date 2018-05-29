@@ -30,9 +30,9 @@ import TableRow, { TableRowProps } from '@material-ui/core/TableRow';
 import List from '@material-ui/core/List';
 import ListSubheader, {
   ListSubheaderProps,
-} from 'material-ui/List/ListSubheader';
+} from '@material-ui/core/ListSubheader';
 
-import withStyles, { WithStyles } from 'material-ui/es/styles/withStyles';
+import { WithStyles, withStyles } from '@material-ui/core/styles';
 import styles from './Detail.style';
 import GradeChart from './GradeChart';
 import PeerCourseListItem from './PeerCourseListItem';

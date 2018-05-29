@@ -6,7 +6,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText, {
   ListItemTextProps,
 } from '@material-ui/core/ListItemText';
-import withStyles, { WithStyles } from 'material-ui/es/styles/withStyles';
+import { WithStyles, withStyles } from '@material-ui/core/styles';
 
 import styles from "./Detail.style";
 
