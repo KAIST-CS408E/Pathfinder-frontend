@@ -284,13 +284,16 @@ class Search extends React.Component<IProps> {
       relevantCourses,
     } = this.props;
 
+    const isUpcoming =
+      queryResult && queryResult.year === '2018' && queryResult.term === 'Fall';
+
     return (
       <div className={classes.resultContainer}>
         <span data-for="courseLoad" data-tip />
         <SearchList
           data={queryResult ? queryResult.courses : undefined}
-          newCourses={newCourses}
-          newLectures={newLectures}
+          newCourses={isUpcoming ? newCourses : {}}
+          newLectures={isUpcoming ? newLectures : {}}
           relevantCourses={relevantCourses}
           takenCourses={queryResult ? queryResult.take : undefined}
           pinnedList={pinnedList || {}}

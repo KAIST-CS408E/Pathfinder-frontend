@@ -10,6 +10,7 @@ import { Location } from 'history';
 import jss from 'jss';
 import preset from 'jss-preset-default';
 
+import { IconButton, ListItemSecondaryAction } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
@@ -19,7 +20,12 @@ import Popover from '@material-ui/core/Popover';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-import { AccountBox, Search, TurnedIn } from '@material-ui/icons';
+import {
+  AccountBox,
+  Close as CloseIcon,
+  Search,
+  TurnedIn,
+} from '@material-ui/icons';
 
 import Courses from './containers/Courses';
 import Curriculum from './containers/Curriculum';
@@ -128,6 +134,10 @@ class App extends React.Component<IProps, IState> {
     this.props.push('/courses/s/');
   };
 
+  public handleClickUnpinCourse = (course: IPinnedCourse) => () => {
+    this.unpinCourse(course);
+  };
+
   public renderGotoCurriculum = () => (
     <Button onClick={this.handleMyCurriculumClick}>
       <span className={classes.label}>My Curriculum</span>
@@ -221,6 +231,14 @@ class App extends React.Component<IProps, IState> {
                           ? `<${pinEntry.subtitle}>`
                           : ''}
                       </ListItemText>
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          aria-label="Delete"
+                          onClick={this.handleClickUnpinCourse(pinEntry)}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      </ListItemSecondaryAction>
                     </ListItem>
                   ))}
                 </List>

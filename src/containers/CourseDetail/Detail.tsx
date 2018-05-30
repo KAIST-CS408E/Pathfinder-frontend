@@ -469,6 +469,9 @@ class Detail extends React.Component<
       year: data.lectures[0].year,
     };
 
+    const isUpcomingCourse =
+      latestSemester.year === 2018 && latestSemester.term === 'Fall';
+
     return (
       <div className="courseDetail">
         <Paper className={classes.paperCutting} elevation={4}>
@@ -546,82 +549,40 @@ class Detail extends React.Component<
               </Typography>
             </div>
             {/* 가장 최근 학기에 강의를 개설한 교수님들 */}
-
-            <div style={{ display: "flex", overflow: "auto" }}>
-              <div  className={classes.profSelDes}>
-                <Typography
-                  variant="caption"
-                  style={{ marginLeft: 24, marginTop: -12, }}
-                >
-                  Lecturer of the upcoming semester ({latestSemester.year}{' '}
-                  {latestSemester.term})
-                </Typography>
-              </div>
-              <div className={classes.profSelect}>
-                {data.lectures
-                  .concat()
-                  .filter(
-                    lecture =>
-                      lecture.year === latestSemester.year &&
-                      lecture.term === latestSemester.term
-                  )
-                  .sort((a: ILectureDetail, b: ILectureDetail) =>
-                    d3Array.ascending(a.division, b.division)
-                  )
-                  .map((lecture: ILectureDetail) => (
-                    <Chip
-                      key={lecture.division}
-                      className={classNames({
-                        [customClass.card]: true,
-                        [customClass.selectedCard]: isSameLecture(
-                          lecture,
-                          thisLecture
-                        ),
-                      })}
-                      label={`${lecture.professor} ${
-                        lecture.division !== '' ? `(${lecture.division})` : ''
-                      }`}
-                      onClick={this.handleLectureCardClick(lecture)}
-                    />
-                  ))}
-              </div>
-              <div className={classes.profSelDes}>
-                <Typography
-                  variant="caption"
-                  style={{ display: 'flex', marginLeft: 24 }}
-                >
-                  Lecturer of the previous semester ({latestSemester.year}{' '}
-                  {latestSemester.term})
-                </Typography>
-              </div>
-              <div className={classes.profNonSelect}>
-                {data.lectures
-                  .concat()
-                  .filter(
-                    lecture =>
-                      lecture.year === latestSemester.year &&
-                      lecture.term === latestSemester.term
-                  )
-                  .sort((a: ILectureDetail, b: ILectureDetail) =>
-                    d3Array.ascending(a.division, b.division)
-                  )
-                  .map((lecture: ILectureDetail) => (
-                    <Chip
-                      key={lecture.division}
-                      className={classNames({
-                        [customClass.card]: true,
-                        [customClass.selectedCard]: isSameLecture(
-                          lecture,
-                          thisLecture
-                        ),
-                      })}
-                      label={`${lecture.professor} ${
-                        lecture.division !== '' ? `(${lecture.division})` : ''
-                        }`}
-                      onClick={this.handleLectureCardClick(lecture)}
-                    />
-                  ))}
-              </div>
+            <Typography
+              variant="caption"
+              style={{ display: 'flex', marginLeft: 24 }}
+            >
+              Lecturer of the {isUpcomingCourse ? 'upcoming' : 'latest'}
+              &nbsp;semester ({latestSemester.year} {latestSemester.term})
+            </Typography>
+            <div className={classes.profSelect}>
+              {data.lectures
+                .concat()
+                .filter(
+                  lecture =>
+                    lecture.year === latestSemester.year &&
+                    lecture.term === latestSemester.term
+                )
+                .sort((a: ILectureDetail, b: ILectureDetail) =>
+                  d3Array.ascending(a.division, b.division)
+                )
+                .map((lecture: ILectureDetail) => (
+                  <Chip
+                    key={lecture.division}
+                    className={classNames({
+                      [customClass.card]: true,
+                      [customClass.selectedCard]: isSameLecture(
+                        lecture,
+                        thisLecture
+                      ),
+                    })}
+                    label={`${lecture.professor} ${
+                      lecture.division !== '' ? `(${lecture.division})` : ''
+                    }`}
+                    onClick={this.handleLectureCardClick(lecture)}
+                  />
+                ))}
             </div>
             {/* give detail information with table */}
             <div className={classes.tableContainer}>
@@ -718,20 +679,22 @@ class Detail extends React.Component<
                     }
                   >
                     {/* TODO:: Prerequisite by college -> star_rate */}
-                    {data.before.map(
-                      ([courseNumber, courseName, subtitle, percentage]) => (
-                        <PeerCourseListItem
-                          key={courseNumber}
-                          className={customClass.listItems}
-                          courseName={courseName}
-                          courseNumber={courseNumber}
-                          icon="equalizer"
-                          onClick={this.handlePeerCourseClick}
-                          subtitle={subtitle}
-                          percentage={percentage}
-                        />
-                      )
-                    )}
+                    {data.before
+                      .filter(peerCourse => peerCourse[3] >= 5)
+                      .map(
+                        ([courseNumber, courseName, subtitle, percentage]) => (
+                          <PeerCourseListItem
+                            key={courseNumber}
+                            className={customClass.listItems}
+                            courseName={courseName}
+                            courseNumber={courseNumber}
+                            icon="equalizer"
+                            onClick={this.handlePeerCourseClick}
+                            subtitle={subtitle}
+                            percentage={percentage}
+                          />
+                        )
+                      )}
                     {/* TODO:: Prerequisite done -> done */}
                   </List>
                 </Paper>

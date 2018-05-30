@@ -135,7 +135,9 @@ export default class D3Chart extends React.Component<IProps> {
       .attr('fill', '#fff')
       .text(
         (d, index) =>
-          (data.length - index) <= 3 && d.data.value / total >= 0.1 ? d.data.label : ''
+          data.length - index <= 3 && d.data.value / total >= 0.1
+            ? d.data.label
+            : ''
       );
   }
 
@@ -220,6 +222,8 @@ export default class D3Chart extends React.Component<IProps> {
             color: 'black',
             display: 'flex',
             flexDirection: 'column',
+
+            alignItems: 'baseline',
             justifyContent: 'center',
           }}
         >
