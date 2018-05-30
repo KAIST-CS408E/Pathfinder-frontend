@@ -150,11 +150,22 @@ export default jss
       paddingTop: 6,
     },
 
+    profSelectContainer: {
+      display: "flex",
+
+      overflow: "auto",
+      padding: 24,
+      paddingBottom: 12,
+      paddingLeft: 12,
+    },
+
     profSelDes: {
       position: "relative",
 
       height: 0,
       width: 0,
+
+      paddingLeft: 12,
     },
 
     profNonSelect: {
@@ -170,12 +181,12 @@ export default jss
 
     profSelect: {
       backgroundColor: "white",
+      borderRight: "2px solid " + ourKaistBlue,
       display: 'flex',
       flex: "0 0 auto",
 
       overflow: "auto",
-      padding: 24,
-
+      padding: "24px 12px 12px 0px",
     },
 
     descriptionTable: {
@@ -222,6 +233,14 @@ export default jss
 
       left: 4,
       top: -14,
+    },
+
+    noReccomend: {
+      border: "1px solid " + ourKaistBlue,
+      borderTop: 0,
+      color: ourKaistBlueD,
+      padding: '12px',
+      paddingTop: 4,
     },
 
   })
