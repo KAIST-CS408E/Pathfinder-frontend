@@ -106,7 +106,7 @@ export default jss
       paddingTop: 0,
       width: '30%',
 
-      overflow: 'auto',
+      overflow: 'hidden',
 
       '&:first-child': {
         marginLeft: 12,
@@ -150,11 +150,32 @@ export default jss
       paddingTop: 6,
     },
 
+    profSelDes: {
+      position: "relative",
+
+      height: 0,
+      width: 0,
+    },
+
+    profNonSelect: {
+      backgroundColor: "white",
+      display: 'flex',
+      flex: "0 0 auto",
+
+      overflow: "visible",
+      padding: "12px 24px",
+
+      borderLeft: "2px solid " + ourKaistBlue
+    },
+
     profSelect: {
       backgroundColor: "white",
       display: 'flex',
+      flex: "0 0 auto",
+
       overflow: "auto",
-      padding: "12px 24px",
+      padding: 24,
+
     },
 
     descriptionTable: {

@@ -39,6 +39,7 @@ const sheet = jss
 
         left: '15vw',
         top: '8vh',
+        zIndex: 1,
       },
     },
     { link: true }

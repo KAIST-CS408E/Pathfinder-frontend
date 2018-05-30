@@ -664,6 +664,7 @@ class Detail extends React.Component<
                 <Paper>
                   <List
                     component="nav"
+                    style={{ paddingBottom: 0 }}
                     subheader={
                       <ListSubheader
                         component="div"
