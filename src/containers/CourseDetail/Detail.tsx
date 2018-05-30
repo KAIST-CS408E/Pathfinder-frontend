@@ -50,7 +50,7 @@ import {
   IPinnedTable,
 } from 'pathfinder';
 
-import { ourKaistBlueD } from "@src/constants";
+import { ourKaistBlueD } from '@src/constants';
 
 const { classes } = styles;
 
@@ -459,8 +459,7 @@ class Detail extends React.Component<
     const isUpcomingCourse =
       latestSemester.year === 2018 && latestSemester.term === 'Fall';
 
-    return (
-      <div className="courseDetail">
+    return <div className="courseDetail">
         <Paper className={classes.paperCutting} elevation={4}>
           <Card className={classes.courseDetailCard}>
             {/* title for detail page(top of pop-up) */}
@@ -472,11 +471,7 @@ class Detail extends React.Component<
                 </Typography>
               </div>
               {/* title */}
-              <Typography
-                className={classes.typoMiddleAlign}
-                variant="headline"
-                component="h3"
-              >
+              <Typography className={classes.typoMiddleAlign} variant="headline" component="h3">
                 {course.name}
               </Typography>
               {/* right shifting */}
@@ -489,44 +484,21 @@ class Detail extends React.Component<
 
             <div>
               {/* course description title, reccommandation, pinned */}
-              <Typography
-                variant="headline"
-                component="h3"
-                style={{
-                  display: 'flex',
-                  padding: '12px 0px 12px 12px',
-                  textAlign: 'left',
-                }}
-              >
+              <Typography variant="headline" component="h3" style={{ display: 'flex', padding: '12px 0px 12px 12px', textAlign: 'left' }}>
                 <div className={classes.sectionTitle}>
                   <Icon className={classes.labelIcon}>label</Icon>
                   Course Decription
                 </div>
                 {/* recommandation or student status */}
-                <div
-                  style={{
-                    textAlign: 'right',
-                    verticalAlign: 'bottom',
-                    width: '40%',
-                  }}
-                >
-                  {data.taken_lecture !== null ? (
-                    <StatusChip label="already taken" />
-                  ) : (
-                    <Button
-                      variant="raised"
-                      color="default"
-                      className={customClass.buttonPin}
-                      onClick={this.handlePinClick}
-                    >
+                <div style={{ textAlign: 'right', verticalAlign: 'bottom', width: '40%' }}>
+                  {data.taken_lecture !== null ? <StatusChip label="already taken" /> : <Button variant="raised" color="default" className={customClass.buttonPin} onClick={this.handlePinClick}>
                       {pinnedList[buildCourseKey(course)] ? 'Unpin' : 'Pin'}
                       <Icon className={customClass.pinIcon}>
                         {pinnedList[buildCourseKey(course)]
                           ? 'turned_in'
                           : 'turned_in_not'}
                       </Icon>
-                    </Button>
-                  )}
+                    </Button>}
                   {/*<StatusChip*/}
                   {/*label="recommanded"*/}
                   {/*className={customClass.chipRcm}*/}
@@ -538,10 +510,7 @@ class Detail extends React.Component<
             {/* 가장 최근 학기에 강의를 개설한 교수님들 */}
             <div className={classes.profSelectContainer}>
               <div className={classes.profSelDes}>
-                <Typography
-                  variant="caption"
-                  style={{ position: "absolute", width: "24em", textAlign: "left" }}
-                >
+                <Typography variant="caption" style={{ position: 'absolute', textAlign: 'left', width: '24em' }}>
                   Lecturer of the {isUpcomingCourse ? 'upcoming' : 'latest'}
                   &nbsp;semester ({latestSemester.year} {latestSemester.term})
                 </Typography>
@@ -549,11 +518,7 @@ class Detail extends React.Component<
               <div className={classes.profSelect}>
                 {data.lectures
                   .concat()
-                  .filter(
-                    lecture =>
-                      lecture.year === latestSemester.year &&
-                      lecture.term === latestSemester.term
-                  )
+                  .filter(lecture => lecture.year === latestSemester.year && lecture.term === latestSemester.term)
                   .sort((a: ILectureDetail, b: ILectureDetail) =>
                     d3Array.ascending(a.division, b.division)
                   )
@@ -568,28 +533,23 @@ class Detail extends React.Component<
                         ),
                       })}
                       label={`${lecture.professor} ${
-                        lecture.division !== '' ? `(${lecture.division})` : ''
+                        lecture.division !== ''
+                          ? `(${lecture.division})`
+                          : ''
                       }`}
                       onClick={this.handleLectureCardClick(lecture)}
                     />
                   ))}
               </div>
               <div className={classes.profSelDes}>
-                <Typography
-                  variant="caption"
-                  style={{ position: "absolute", width: "24em", textAlign: "left" }}
-                >
+                <Typography variant="caption" style={{ position: 'absolute', textAlign: 'left', width: '24em' }}>
                   Lecturer of the previous semester
                 </Typography>
               </div>
               <div className={classes.profSelect}>
                 {data.lectures
                   .concat()
-                  .filter(
-                    lecture =>
-                      lecture.year === latestSemester.year &&
-                      lecture.term === latestSemester.term
-                  )
+                  .filter(lecture => lecture.year === latestSemester.year && lecture.term === latestSemester.term)
                   .sort((a: ILectureDetail, b: ILectureDetail) =>
                     d3Array.ascending(a.division, b.division)
                   )
@@ -604,8 +564,10 @@ class Detail extends React.Component<
                         ),
                       })}
                       label={`${lecture.professor} ${
-                        lecture.division !== '' ? `(${lecture.division})` : ''
-                        }`}
+                        lecture.division !== ''
+                          ? `(${lecture.division})`
+                          : ''
+                      }`}
                       onClick={this.handleLectureCardClick(lecture)}
                     />
                   ))}
@@ -613,14 +575,7 @@ class Detail extends React.Component<
             </div>
             {/* give detail information with table */}
             <div className={classes.tableContainer}>
-              <Table
-                style={{
-                  margin: '0px 24px',
-                  padding: '4px 12px',
-                  width: 'auto',
-                }}
-                className={classes.descriptionTable}
-              >
+              <Table style={{ margin: '0px 24px', padding: '4px 12px', width: 'auto' }} className={classes.descriptionTable}>
                 <TableBody>
                   <CustomTableRow>
                     <CustomTableCellD>
@@ -640,15 +595,9 @@ class Detail extends React.Component<
                         .slice(1)}
                     </CustomTableCellD>
                     <CustomTableCellD>
-                      Course Number: {course.courseNumber} <br />Course Code:{' '}
-                      {course.code}
+                      Course Number: {course.courseNumber} <br />Course Code: {course.code}
                     </CustomTableCellD>
-                    <CustomTableCellD
-                      style={{
-                        borderBottom: '1px solid rgba(224, 224, 224, 1)',
-                        borderWidth: 0,
-                      }}
-                    >
+                    <CustomTableCellD style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderWidth: 0 }}>
                       <br />More information
                     </CustomTableCellD>
                     <CustomTableCellD style={{ width: '3%' }} />
@@ -657,15 +606,7 @@ class Detail extends React.Component<
               </Table>
             </div>
             {/* section title "The subjects" */}
-            <Typography
-              variant="headline"
-              component="h3"
-              style={{
-                display: 'flex',
-                padding: '12px 0px 12px 12px',
-                textAlign: 'left',
-              }}
-            >
+            <Typography variant="headline" component="h3" style={{ display: 'flex', padding: '12px 0px 12px 12px', textAlign: 'left' }}>
               <div className={classes.sectionTitle}>
                 <Icon className={classes.labelIcon}>label</Icon>
                 The subjects that other students have taken
@@ -673,70 +614,57 @@ class Detail extends React.Component<
             </Typography>
             {/* prerequisite 가 존재하는 경우에 한해서만 보여주는 줄입니다. */}
             <div className={classes.prereqContainer}>
-              <div style={{marginBottom: 12}}>prerequisite as department policy</div>
-              <Button variant="outlined" style={{color:"#000051", borderColor: "#000051"}}>prerequisite course name</Button>
+              <div style={{ marginBottom: 12 }}>
+                prerequisite as department policy
+              </div>
+              <Button variant="outlined" style={{ color: '#000051', borderColor: '#000051' }}>
+                prerequisite course name
+              </Button>
             </div>
             {/* sanky graph with related courses */}
-            <CardContent
-              className={customClass.graphCard}
-              style={{ padding: 0 }}
-            >
+            <CardContent className={customClass.graphCard} style={{ padding: 0 }}>
               <div className={classes.besideSankyGraph}>
                 <div className={classes.courseStepContainer}>
-                  <Chip
-                    label="before"
-                    className={classes.courseStep}
-                    avatar={
-                      <Avatar className={classes.courseStepAva}>
+                  <Chip label="before" className={classes.courseStep} avatar={<Avatar className={classes.courseStepAva}>
                         <Icon>keyboard_arrow_left</Icon>
-                      </Avatar>
-                    }
-                  />
+                      </Avatar>} />
                 </div>
                 <Paper>
-                  <List
-                    component="nav"
-                    style={{ paddingBottom: 0 }}
-                    subheader={
-                      <ListSubheader
-                        component="div"
-                        style={{
-                          backgroundColor: '#E8EAF6',
-                          height: 12,
-                          position: 'relative',
-                        }}
-                      >
+                  <List component="nav" style={{ paddingBottom: 0 }} subheader={<ListSubheader component="div" style={{ backgroundColor: '#E8EAF6', height: 12, position: 'relative' }}>
                         {/* */}
-                      </ListSubheader>
-                    }
-                  >
+                      </ListSubheader>}>
                     {/* TODO:: Prerequisite by college -> star_rate */}
-                    {data.before
-                      .filter(peerCourse => peerCourse[3] >= 5).length > 0 ?
-                      data.before
-                      .filter(peerCourse => peerCourse[3] >= 5)
-                      .map(
-                        ([courseNumber, courseName, subtitle, percentage]) => (
-                          <PeerCourseListItem
-                            key={courseNumber}
-                            className={customClass.listItems}
-                            courseName={courseName}
-                            courseNumber={courseNumber}
-                            icon="equalizer"
-                            onClick={this.handlePeerCourseClick}
-                            subtitle={subtitle}
-                            percentage={percentage}
-                          />
-                        )
-                      )
-                      :
-                      <div>
-                        <Icon style={{color: ourKaistBlueD, paddingTop: 12 }}>new_releases</Icon>
+                    {data.before.filter(peerCourse => peerCourse[3] >= 5).length > 0 ? data.before
+                        .filter(peerCourse => peerCourse[3] >= 5)
+                        .map(
+                          ([
+                            courseNumber,
+                            courseName,
+                            subtitle,
+                            percentage,
+                          ]) => (
+                            <PeerCourseListItem
+                              key={courseNumber}
+                              className={customClass.listItems}
+                              courseName={courseName}
+                              courseNumber={courseNumber}
+                              icon="equalizer"
+                              onClick={this.handlePeerCourseClick}
+                              subtitle={subtitle}
+                              percentage={percentage}
+                            />
+                          )
+                        ) : <div>
+                        <Icon
+                          style={{ color: ourKaistBlueD, paddingTop: 12 }}
+                        >
+                          new_releases
+                        </Icon>
                         <Typography className={classes.noReccomend}>
-                          No profer class, <br/>it's new class
+                          N/A<br />
+                          No previous lecture has opened or not enough data
                         </Typography>
-                      </div>
-                      }
+                      </div>}
                     {/* TODO:: Prerequisite done -> done */}
                   </List>
                 </Paper>
@@ -751,129 +679,91 @@ class Detail extends React.Component<
               {/*</CardMedia>*/}
               <div className={classes.besideSankyGraph}>
                 <div className={classes.courseStepContainer}>
-                  <Chip
-                    label="with"
-                    className={classes.courseStep}
-                    avatar={
-                      <Avatar className={classes.courseStepAva}>
+                  <Chip label="with" className={classes.courseStep} avatar={<Avatar className={classes.courseStepAva}>
                         <Icon>keyboard_arrow_down</Icon>
-                      </Avatar>
-                    }
-                  />
+                      </Avatar>} />
                 </div>
                 <Paper>
-                  <List
-                    component="nav"
-                    style={{ paddingBottom: 0 }}
-                    subheader={
-                      <RcmSubHeader
-                        component="div"
-                        style={{
-                          backgroundColor: '#E8EAF6',
-                          height: 12,
-                          padding: '0px 24px',
-                          position: 'relative',
-                        }}
-                      >
+                  <List component="nav" style={{ paddingBottom: 0 }} subheader={<RcmSubHeader component="div" style={{ backgroundColor: '#E8EAF6', height: 12, padding: '0px 24px', position: 'relative' }}>
                         {/* */}
-                      </RcmSubHeader>
-                    }
-                  >
-                    {data.with.length > 0 ?
-                      data.with.map(
-                      ([courseNumber, courseName, subtitle, percentage]) => (
-                        <PeerCourseListItem
-                          key={courseName}
-                          className={customClass.listItems}
-                          courseName={courseName}
-                          courseNumber={courseNumber}
-                          icon="equalizer"
-                          onClick={this.handlePeerCourseClick}
-                          subtitle={subtitle}
-                          percentage={percentage}
-                        />
-                      )
-                    )
-                      :
-                      <div>
-                        <Icon style={{color: ourKaistBlueD, paddingTop: 12 }}>new_releases</Icon>
+                      </RcmSubHeader>}>
+                    {data.with.length > 0 ? data.with.map(
+                        ([
+                          courseNumber,
+                          courseName,
+                          subtitle,
+                          percentage,
+                        ]) => (
+                          <PeerCourseListItem
+                            key={courseName}
+                            className={customClass.listItems}
+                            courseName={courseName}
+                            courseNumber={courseNumber}
+                            icon="equalizer"
+                            onClick={this.handlePeerCourseClick}
+                            subtitle={subtitle}
+                            percentage={percentage}
+                          />
+                        )
+                      ) : <div>
+                        <Icon
+                          style={{ color: ourKaistBlueD, paddingTop: 12 }}
+                        >
+                          new_releases
+                        </Icon>
                         <Typography className={classes.noReccomend}>
-                          No profer class, <br/>it's new class
+                          No profer class, <br />it's new class
                         </Typography>
-                      </div>
-                    }
+                      </div>}
                     {/* TODO:: Taken with done -> done */}
                   </List>
                 </Paper>
               </div>
               <div className={classes.besideSankyGraph}>
                 <div className={classes.courseStepContainer}>
-                  <Chip
-                    label="after"
-                    className={classes.courseStep}
-                    avatar={
-                      <Avatar className={classes.courseStepAva}>
+                  <Chip label="after" className={classes.courseStep} avatar={<Avatar className={classes.courseStepAva}>
                         <Icon>keyboard_arrow_right</Icon>
-                      </Avatar>
-                    }
-                  />
+                      </Avatar>} />
                 </div>
                 <Paper>
-                  <List
-                    component="nav"
-                    style={{ paddingBottom: 0 }}
-                    subheader={
-                      <RcmSubHeader
-                        component="div"
-                        style={{
-                          backgroundColor: '#E8EAF6',
-                          height: 12,
-                          padding: '0px 24px',
-                          position: 'relative',
-                        }}
-                      >
+                  <List component="nav" style={{ paddingBottom: 0 }} subheader={<RcmSubHeader component="div" style={{ backgroundColor: '#E8EAF6', height: 12, padding: '0px 24px', position: 'relative' }}>
                         {/* */}
-                      </RcmSubHeader>
-                    }
-                  >
-                    {data.after.length > 0 ?
-                      data.after.map(
-                      ([courseNumber, courseName, subtitle, percentage]) => (
-                        <PeerCourseListItem
-                          key={courseName}
-                          className={customClass.listItems}
-                          courseName={courseName}
-                          courseNumber={courseNumber}
-                          icon="equalizer"
-                          onClick={this.handlePeerCourseClick}
-                          subtitle={subtitle}
-                          percentage={percentage}
-                        />
-                      )
-                    )
-                      :
-                      <div>
-                        <Icon style={{ color: ourKaistBlueD, paddingTop: 12 }}>new_releases</Icon>
+                      </RcmSubHeader>}>
+                    {data.after.length > 0 ? data.after.map(
+                        ([
+                          courseNumber,
+                          courseName,
+                          subtitle,
+                          percentage,
+                        ]) => (
+                          <PeerCourseListItem
+                            key={courseName}
+                            className={customClass.listItems}
+                            courseName={courseName}
+                            courseNumber={courseNumber}
+                            icon="equalizer"
+                            onClick={this.handlePeerCourseClick}
+                            subtitle={subtitle}
+                            percentage={percentage}
+                          />
+                        )
+                      ) : <div>
+                        <Icon
+                          style={{ color: ourKaistBlueD, paddingTop: 12 }}
+                        >
+                          new_releases
+                        </Icon>
                         <Typography className={classes.noReccomend}>
-                          No profer class, <br/>it's new class
+                          No profer class, <br />it's new class
                         </Typography>
-                      </div>
-                    }
+                      </div>}
                     {/* TODO:: Taken with done -> done */}
                   </List>
                 </Paper>
               </div>
             </CardContent>
             {/* information for each semester with professor */}
-            <Typography
-              variant="headline"
-              component="h3"
-              style={{
-                display: 'flex',
-                padding: '12px 0px 12px 12px',
-                textAlign: 'left',
-              }}
-            >
+            <Typography variant="headline" component="h3" style={{ display: 'flex', padding: '12px 0px 12px 12px', textAlign: 'left' }}>
               <div className={classes.sectionTitle}>
                 <Icon className={classes.labelIcon}>label</Icon>
                 Lecture history
@@ -900,7 +790,9 @@ class Detail extends React.Component<
                       >
                         <Chip
                           className={classes.historyStep}
-                          label={lecturesInYear.key + ' ' + lecturesInTerm.key}
+                          label={
+                            lecturesInYear.key + ' ' + lecturesInTerm.key
+                          }
                         >
                           {lecturesInYear.key} {lecturesInTerm.key}
                         </Chip>
@@ -951,8 +843,7 @@ class Detail extends React.Component<
             </CardContent>
           </Card>
         </Paper>
-      </div>
-    );
+      </div>;
   }
 }
 
