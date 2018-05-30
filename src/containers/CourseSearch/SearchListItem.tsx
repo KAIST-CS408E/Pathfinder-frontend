@@ -20,7 +20,7 @@ import * as ReactTooltip from 'react-tooltip';
 
 import { convertSpentTime, convertSpentTimeToReadable } from '@src/utils';
 
-import ClassTime from './ClassTime';
+// import ClassTime from './ClassTime';
 
 const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueD = '#1A237E';
@@ -466,14 +466,15 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                   <CustomTableCell
                     numeric
                     style={{
-                      border: '1px solid ' + ourKaistBlue,
                       borderRight: '0px solid',
                       height: 30,
                       padding: '1px 0px',
                       width: '17.4%',
                     }}
                   >
-                    <ClassTime classTimes={n.classTime} />
+                    {/* <ClassTime classTimes={n.classTime} /> */}
+                    Mon.13:00~14:30<br/>
+                    Tue.13:00~14:30
                   </CustomTableCell>
                 </CustomTableRow>
               );
