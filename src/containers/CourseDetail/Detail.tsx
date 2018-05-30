@@ -685,24 +685,29 @@ class Detail extends React.Component<
                 The subjects that other students have taken
               </div>
             </Typography>
+            {/* prerequisite 가 존재하는 경우에 한해서만 보여주는 줄입니다. */}
+            <div className={classes.prereqContainer}>
+              <div style={{marginBottom: 12}}>prerequisite as department policy</div>
+              <Button variant="outlined" style={{color:"#000051", borderColor: "#000051"}}>prerequisite course name</Button>
+            </div>
             {/* sanky graph with related courses */}
             <CardContent
               className={customClass.graphCard}
               style={{ padding: 0 }}
             >
               <div className={classes.besideSankyGraph}>
+                <div className={classes.courseStepContainer}>
+                  <Chip
+                    label="before"
+                    className={classes.courseStep}
+                    avatar={
+                      <Avatar className={classes.courseStepAva}>
+                        <Icon>keyboard_arrow_left</Icon>
+                      </Avatar>
+                    }
+                  />
+                </div>
                 <Paper>
-                  <div className={classes.courseStepContainer}>
-                    <Chip
-                      label="before"
-                      className={classes.courseStep}
-                      avatar={
-                        <Avatar className={classes.courseStepAva}>
-                          <Icon>keyboard_arrow_left</Icon>
-                        </Avatar>
-                      }
-                    />
-                  </div>
                   <List
                     component="nav"
                     style={{ paddingBottom: 0 }}

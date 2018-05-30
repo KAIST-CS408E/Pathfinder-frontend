@@ -94,10 +94,16 @@ export default jss
       margin: 'auto',
     } as Style,
 
-    sankyGraphDiv: {
-      border: 'red',
-      width: '40%',
+    prereqContainer: {
+      backgroundColor: ourKaistBlue,
+      color: ourKaistBlueD,
+      fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+      marginBottom: 12,
+      padding: "12px 24px",
+      paddingBottom: 24,
+      textAlign: "left",
     },
+
 
     besideSankyGraph: {
       backgroundColor: 'white',
