@@ -372,7 +372,7 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                     {n.professor || 'None'}
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '14.5%' }}>
-                    {n.division !== '' ? `Class. ${n.division}` : 'No Class'}
+                    {n.division !== '' ? `Section. ${n.division}` : 'No Section'}
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '12.5%' }}>
                     {n.limit ? `0/${n.limit}` : '∞'}

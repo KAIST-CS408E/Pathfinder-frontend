@@ -114,7 +114,7 @@ class Sidebar extends React.Component<IProps, IState> {
   public renderRelevantTip = (data: string) => {
     return (
       <span>
-        <b>{data}</b> people took this course in your next semester
+        <b>{data}</b> people took this course in your upcoming semester
       </span>
     );
   };
