@@ -54,6 +54,15 @@ export default class D3Chart extends React.Component<IProps> {
     this.updatePie();
   }
 
+  public chartColor = (length: number) => (index: number) =>
+    d3.interpolateSpectral(index / length);
+
+  public chartColor2 = (length: number) => (index: number) =>
+    d3.interpolateSpectral(
+      (Math.floor((index + 2) / 3) * 7 + ((index + 2) % 3) * 2 + 1) /
+        (length * 3)
+    );
+
   public updatePie() {
     const { width, height, grades } = this.props;
 
@@ -65,7 +74,7 @@ export default class D3Chart extends React.Component<IProps> {
       }))
       .reverse();
 
-    const total = lodash.sum(data.map(d => d.value));
+    // const total = lodash.sum(data.map(d => d.value));
 
     const minLength = Math.min(width, height);
     const radius = minLength / 2 - pieMargin;
@@ -80,13 +89,12 @@ export default class D3Chart extends React.Component<IProps> {
       .arc<PieArcDatum<IDatum>>()
       .innerRadius(0)
       .outerRadius(radius);
-    const labelArc = d3
-      .arc<PieArcDatum<IDatum>>()
-      .innerRadius(radius - 10)
-      .outerRadius(radius - 10);
+    // const labelArc = d3
+    //   .arc<PieArcDatum<IDatum>>()
+    //   .innerRadius(radius - 10)
+    //   .outerRadius(radius - 10);
 
-    const color = (index: number) =>
-      d3.interpolateSpectral(index / data.length);
+    const color = this.chartColor2(data.length);
 
     const svg = d3
       .select(this.container.current)
@@ -128,17 +136,17 @@ export default class D3Chart extends React.Component<IProps> {
         d3.select(this.tooltip.current).style('display', 'none');
       });
 
-    fraction
-      .append('text')
-      .attr('transform', d => `translate(${labelArc.centroid(d)})`)
-      .attr('dy', '0.35em')
-      .attr('fill', '#fff')
-      .text(
-        (d, index) =>
-          data.length - index <= 3 && d.data.value / total >= 0.1
-            ? d.data.label
-            : ''
-      );
+    // fraction
+    //   .append('text')
+    //   .attr('transform', d => `translate(${labelArc.centroid(d)})`)
+    //   .attr('dy', '0.35em')
+    //   .attr('fill', '#fff')
+    //   .text(
+    //     (d, index) =>
+    //       data.length - index <= 3 && d.data.value / total >= 0.1
+    //         ? d.data.label
+    //         : ''
+    //   );
   }
 
   public updateHistogram() {
@@ -198,6 +206,8 @@ export default class D3Chart extends React.Component<IProps> {
       value: Math.floor(groupedGrades[index] / total * 100),
     }));
 
+    const color = this.chartColor2(normalGrades.length);
+
     return (
       <div
         ref={this.container}
@@ -227,8 +237,16 @@ export default class D3Chart extends React.Component<IProps> {
             justifyContent: 'center',
           }}
         >
-          {data.map(datum => (
-            <div key={datum.label} style={{ margin: 2 }}>
+          {data.map((datum, index) => (
+            <div
+              key={datum.label}
+              style={{
+                borderLeftColor: color(normalGrades.length - (index * 3 + 1) - 1),
+                borderLeftStyle: 'solid',
+                borderLeftWidth: 4,
+                margin: 2,
+              }}
+            >
               {datum.label} {datum.value}%
             </div>
           ))}
