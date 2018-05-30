@@ -98,7 +98,7 @@ export default jss
       backgroundColor: ourKaistBlue,
       color: ourKaistBlueD,
       fontFamily: "Roboto, Helvetica, Arial, sans-serif",
-      marginBottom: 12,
+      marginBottom: 24,
       padding: "12px 24px",
       paddingBottom: 24,
       textAlign: "left",
