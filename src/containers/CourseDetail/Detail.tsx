@@ -50,6 +50,8 @@ import {
   IPinnedTable,
 } from 'pathfinder';
 
+import { ourKaistBlueD } from "@src/constants";
+
 const { classes } = styles;
 
 const ourKaistBlue = '#E3F2FD';
@@ -150,6 +152,13 @@ const themeStyle = () => ({
     },
   },
 
+  selectedCard: {
+    border: '1px solid black',
+
+    backgroundColor: '#7986CB' + doFirst,
+    color: 'white' + doFirst,
+  },
+
   historyCard: {
     backgroundColor: 'white' + doFirst,
     color: 'white' + doFirst,
@@ -171,14 +180,6 @@ const themeStyle = () => ({
         backgroundColor: 'white',
       },
     },
-  },
-
-  selectedCard: {
-    border: '1px solid black',
-    borderRadius: 4,
-
-    backgroundColor: '#7986CB' + doFirst,
-    color: 'white' + doFirst,
   },
 
   media: {
@@ -535,40 +536,80 @@ class Detail extends React.Component<
               </Typography>
             </div>
             {/* 가장 최근 학기에 강의를 개설한 교수님들 */}
-            <Typography
-              variant="caption"
-              style={{ display: 'flex', marginLeft: 24 }}
-            >
-              Lecturer of the {isUpcomingCourse ? 'upcoming' : 'latest'}
-              &nbsp;semester ({latestSemester.year} {latestSemester.term})
-            </Typography>
-            <div className={classes.profSelect}>
-              {data.lectures
-                .concat()
-                .filter(
-                  lecture =>
-                    lecture.year === latestSemester.year &&
-                    lecture.term === latestSemester.term
-                )
-                .sort((a: ILectureDetail, b: ILectureDetail) =>
-                  d3Array.ascending(a.division, b.division)
-                )
-                .map((lecture: ILectureDetail) => (
-                  <Chip
-                    key={lecture.division}
-                    className={classNames({
-                      [customClass.card]: true,
-                      [customClass.selectedCard]: isSameLecture(
-                        lecture,
-                        thisLecture
-                      ),
-                    })}
-                    label={`${lecture.professor} ${
-                      lecture.division !== '' ? `(${lecture.division})` : ''
-                    }`}
-                    onClick={this.handleLectureCardClick(lecture)}
-                  />
-                ))}
+            <div className={classes.profSelectContainer}>
+              <div className={classes.profSelDes}>
+                <Typography
+                  variant="caption"
+                  style={{ position: "absolute", width: "24em", textAlign: "left" }}
+                >
+                  Lecturer of the {isUpcomingCourse ? 'upcoming' : 'latest'}
+                  &nbsp;semester ({latestSemester.year} {latestSemester.term})
+                </Typography>
+              </div>
+              <div className={classes.profSelect}>
+                {data.lectures
+                  .concat()
+                  .filter(
+                    lecture =>
+                      lecture.year === latestSemester.year &&
+                      lecture.term === latestSemester.term
+                  )
+                  .sort((a: ILectureDetail, b: ILectureDetail) =>
+                    d3Array.ascending(a.division, b.division)
+                  )
+                  .map((lecture: ILectureDetail) => (
+                    <Chip
+                      key={lecture.division}
+                      className={classNames({
+                        [customClass.card]: true,
+                        [customClass.selectedCard]: isSameLecture(
+                          lecture,
+                          thisLecture
+                        ),
+                      })}
+                      label={`${lecture.professor} ${
+                        lecture.division !== '' ? `(${lecture.division})` : ''
+                      }`}
+                      onClick={this.handleLectureCardClick(lecture)}
+                    />
+                  ))}
+              </div>
+              <div className={classes.profSelDes}>
+                <Typography
+                  variant="caption"
+                  style={{ position: "absolute", width: "24em", textAlign: "left" }}
+                >
+                  Lecturer of the previous semester
+                </Typography>
+              </div>
+              <div className={classes.profSelect}>
+                {data.lectures
+                  .concat()
+                  .filter(
+                    lecture =>
+                      lecture.year === latestSemester.year &&
+                      lecture.term === latestSemester.term
+                  )
+                  .sort((a: ILectureDetail, b: ILectureDetail) =>
+                    d3Array.ascending(a.division, b.division)
+                  )
+                  .map((lecture: ILectureDetail) => (
+                    <Chip
+                      key={lecture.division}
+                      className={classNames({
+                        [customClass.card]: true,
+                        [customClass.selectedCard]: isSameLecture(
+                          lecture,
+                          thisLecture
+                        ),
+                      })}
+                      label={`${lecture.professor} ${
+                        lecture.division !== '' ? `(${lecture.division})` : ''
+                        }`}
+                      onClick={this.handleLectureCardClick(lecture)}
+                    />
+                  ))}
+              </div>
             </div>
             {/* give detail information with table */}
             <div className={classes.tableContainer}>
@@ -630,6 +671,11 @@ class Detail extends React.Component<
                 The subjects that other students have taken
               </div>
             </Typography>
+            {/* prerequisite 가 존재하는 경우에 한해서만 보여주는 줄입니다. */}
+            <div className={classes.prereqContainer}>
+              <div style={{marginBottom: 12}}>prerequisite as department policy</div>
+              <Button variant="outlined" style={{color:"#000051", borderColor: "#000051"}}>prerequisite course name</Button>
+            </div>
             {/* sanky graph with related courses */}
             <CardContent
               className={customClass.graphCard}
@@ -650,6 +696,7 @@ class Detail extends React.Component<
                 <Paper>
                   <List
                     component="nav"
+                    style={{ paddingBottom: 0 }}
                     subheader={
                       <ListSubheader
                         component="div"
@@ -665,6 +712,8 @@ class Detail extends React.Component<
                   >
                     {/* TODO:: Prerequisite by college -> star_rate */}
                     {data.before
+                      .filter(peerCourse => peerCourse[3] >= 5).length > 0 ?
+                      data.before
                       .filter(peerCourse => peerCourse[3] >= 5)
                       .map(
                         ([courseNumber, courseName, subtitle, percentage]) => (
@@ -679,7 +728,15 @@ class Detail extends React.Component<
                             percentage={percentage}
                           />
                         )
-                      )}
+                      )
+                      :
+                      <div>
+                        <Icon style={{color: ourKaistBlueD, paddingTop: 12 }}>new_releases</Icon>
+                        <Typography className={classes.noReccomend}>
+                          No profer class, <br/>it's new class
+                        </Typography>
+                      </div>
+                      }
                     {/* TODO:: Prerequisite done -> done */}
                   </List>
                 </Paper>
@@ -707,6 +764,7 @@ class Detail extends React.Component<
                 <Paper>
                   <List
                     component="nav"
+                    style={{ paddingBottom: 0 }}
                     subheader={
                       <RcmSubHeader
                         component="div"
@@ -721,7 +779,8 @@ class Detail extends React.Component<
                       </RcmSubHeader>
                     }
                   >
-                    {data.with.map(
+                    {data.with.length > 0 ?
+                      data.with.map(
                       ([courseNumber, courseName, subtitle, percentage]) => (
                         <PeerCourseListItem
                           key={courseName}
@@ -734,7 +793,15 @@ class Detail extends React.Component<
                           percentage={percentage}
                         />
                       )
-                    )}
+                    )
+                      :
+                      <div>
+                        <Icon style={{color: ourKaistBlueD, paddingTop: 12 }}>new_releases</Icon>
+                        <Typography className={classes.noReccomend}>
+                          No profer class, <br/>it's new class
+                        </Typography>
+                      </div>
+                    }
                     {/* TODO:: Taken with done -> done */}
                   </List>
                 </Paper>
@@ -754,6 +821,7 @@ class Detail extends React.Component<
                 <Paper>
                   <List
                     component="nav"
+                    style={{ paddingBottom: 0 }}
                     subheader={
                       <RcmSubHeader
                         component="div"
@@ -768,7 +836,8 @@ class Detail extends React.Component<
                       </RcmSubHeader>
                     }
                   >
-                    {data.after.map(
+                    {data.after.length > 0 ?
+                      data.after.map(
                       ([courseNumber, courseName, subtitle, percentage]) => (
                         <PeerCourseListItem
                           key={courseName}
@@ -781,7 +850,15 @@ class Detail extends React.Component<
                           percentage={percentage}
                         />
                       )
-                    )}
+                    )
+                      :
+                      <div>
+                        <Icon style={{ color: ourKaistBlueD, paddingTop: 12 }}>new_releases</Icon>
+                        <Typography className={classes.noReccomend}>
+                          No profer class, <br/>it's new class
+                        </Typography>
+                      </div>
+                    }
                     {/* TODO:: Taken with done -> done */}
                   </List>
                 </Paper>

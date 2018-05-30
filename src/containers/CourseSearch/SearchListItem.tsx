@@ -20,7 +20,7 @@ import * as ReactTooltip from 'react-tooltip';
 
 import { convertSpentTime, convertSpentTimeToReadable } from '@src/utils';
 
-import ClassTime from './ClassTime';
+// import ClassTime from './ClassTime';
 
 const ourKaistBlue = '#E3F2FD';
 const ourKaistBlueD = '#1A237E';
@@ -124,17 +124,24 @@ const styles = (theme: Theme) => ({
   levelBlock: {
     backgroundColor: '#BDBDBD',
     color: 'white',
-    fontSize: 8,
+    fontSize: 14,
+    textAlign: "right" as "right",
+
     height: 16,
-    width: 16,
+    width: 20,
 
     margin: 1,
     marginTop: 8,
+
+    '& span': {
+    },
+
   },
 
-  levelTitle: {
+  levelUnit: {
     // level bar
-    color: ourKaistBlueD,
+    color: "#BDBDBD",
+    fontWeigth: 500,
     marginRight: 0,
     padding: 8,
     paddingLeft: 0,
@@ -177,7 +184,7 @@ interface ITableProps
       | 'timeTable'
       | 'classTimeCell'
       | 'statNum'
-      | 'levelTitle'
+      | 'levelUnit'
       | 'levelBar'
       | 'levelBlock'
     > {
@@ -357,19 +364,21 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                       width: '20.9%',
                     }}
                   >
+                    {n.professor || 'None'}
+
                     {isNewLecture ? (
                       <span
                         style={{
-                          border: '1px solid',
                           borderRadius: 2,
-                          marginRight: 6,
-                          padding: 2,
+                          color: "white",
+                          fontSize: 12,
+                          fontWeight: 500,
+                          padding: "1px 3px",
                         }}
                       >
                         NEW
                       </span>
                     ) : null}
-                    {n.professor || 'None'}
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '14.5%' }}>
                     {n.division !== '' ? `Section. ${n.division}` : 'No Section'}
@@ -383,42 +392,32 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                       data-tip={n.load}
                       className={classes.levelBar}
                     >
-                      <div className={classes.levelTitle}>Load:</div>
                       <div
                         style={{
                           backgroundColor: loadLevel > 1 ? '#7986CB' : '',
                         }}
                         className={classes.levelBlock}
-                      >{`1hr`}</div>
+                      ><span>1</span></div>
                       <div
                         style={{
                           backgroundColor: loadLevel > 3 ? '#3F51B5' : '',
                         }}
                         className={classes.levelBlock}
-                      >{`3hr`}</div>
+                      ><span>3</span></div>
                       <div
                         style={{
                           backgroundColor: loadLevel > 5 ? '#303F9F' : '',
                         }}
                         className={classes.levelBlock}
-                      >{`5hr`}</div>
+                      ><span>5</span></div>
                       <div
                         style={{
                           backgroundColor: loadLevel > 7 ? '#1A237E' : '',
                         }}
                         className={classes.levelBlock}
-                      >{`7hr`}</div>
-                      <div
-                        className={classes.statNum}
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 500,
-                          marginLeft: 0,
-                          paddingBottom: 1,
-                        }}
-                      >
-                        {n.load}
-                      </div>
+                      ><span>7</span></div>
+                      <div style={{color: loadLevel > 7 ? '#1A237E' : ''}}
+                        className={classes.levelUnit}>hrs</div>
                     </div>
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '16%' }}>
@@ -427,7 +426,6 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                       data-tip={n.grades}
                       className={classes.levelBar}
                     >
-                      <div className={classes.levelTitle}>Grade:</div>
                       <div
                         style={{
                           background: ourKaistBlueD,
@@ -441,7 +439,8 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                             color: 'white',
                             marginTop: 1,
                             position: 'absolute',
-                            zIndex: 10,
+                            right: 0,
+                            zIndex: 1,
                           }}
                         >
                           {n.grades ? n.grades : '-.-'}
@@ -461,19 +460,21 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                           {/* width: full grade - currunt grade */}
                         </div>
                       </div>
+                      <div className={classes.levelUnit}>GPA</div>
                     </div>
                   </CustomTableCell>
                   <CustomTableCell
                     numeric
                     style={{
-                      border: '1px solid ' + ourKaistBlue,
                       borderRight: '0px solid',
                       height: 30,
                       padding: '1px 0px',
                       width: '17.4%',
                     }}
                   >
-                    <ClassTime classTimes={n.classTime} />
+                    {/* <ClassTime classTimes={n.classTime} /> */}
+                    Mon.13:00~14:30<br/>
+                    Tue.13:00~14:30
                   </CustomTableCell>
                 </CustomTableRow>
               );

@@ -94,10 +94,16 @@ export default jss
       margin: 'auto',
     } as Style,
 
-    sankyGraphDiv: {
-      border: 'red',
-      width: '40%',
+    prereqContainer: {
+      backgroundColor: ourKaistBlue,
+      color: ourKaistBlueD,
+      fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+      marginBottom: 24,
+      padding: "12px 24px",
+      paddingBottom: 24,
+      textAlign: "left",
     },
+
 
     besideSankyGraph: {
       backgroundColor: 'white',
@@ -106,7 +112,7 @@ export default jss
       paddingTop: 0,
       width: '30%',
 
-      overflow: 'auto',
+      overflow: 'hidden',
 
       '&:first-child': {
         marginLeft: 12,
@@ -150,11 +156,43 @@ export default jss
       paddingTop: 6,
     },
 
-    profSelect: {
+    profSelectContainer: {
+      display: "flex",
+
+      overflow: "auto",
+      padding: 24,
+      paddingBottom: 12,
+      paddingLeft: 12,
+    },
+
+    profSelDes: {
+      position: "relative",
+
+      height: 0,
+      width: 0,
+
+      paddingLeft: 12,
+    },
+
+    profNonSelect: {
       backgroundColor: "white",
       display: 'flex',
-      overflow: "auto",
+      flex: "0 0 auto",
+
+      overflow: "visible",
       padding: "12px 24px",
+
+      borderLeft: "2px solid " + ourKaistBlue
+    },
+
+    profSelect: {
+      backgroundColor: "white",
+      borderRight: "2px solid " + ourKaistBlue,
+      display: 'flex',
+      flex: "0 0 auto",
+
+      overflow: "auto",
+      padding: "24px 12px 12px 0px",
     },
 
     descriptionTable: {
@@ -201,6 +239,14 @@ export default jss
 
       left: 4,
       top: -14,
+    },
+
+    noReccomend: {
+      border: "1px solid " + ourKaistBlue,
+      borderTop: 0,
+      color: ourKaistBlueD,
+      padding: '12px',
+      paddingTop: 4,
     },
 
   })
