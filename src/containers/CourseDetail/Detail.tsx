@@ -469,6 +469,9 @@ class Detail extends React.Component<
       year: data.lectures[0].year,
     };
 
+    const isUpcomingCourse =
+      latestSemester.year === 2018 && latestSemester.term === 'Fall';
+
     return (
       <div className="courseDetail">
         <Paper className={classes.paperCutting} elevation={4}>
@@ -550,8 +553,8 @@ class Detail extends React.Component<
               variant="caption"
               style={{ display: 'flex', marginLeft: 24 }}
             >
-              Lecturer of the latest semester ({latestSemester.year}{' '}
-              {latestSemester.term})
+              Lecturer of the {isUpcomingCourse ? 'upcoming' : 'latest'}
+              &nbsp;semester ({latestSemester.year} {latestSemester.term})
             </Typography>
             <div className={classes.profSelect}>
               {data.lectures
@@ -675,20 +678,22 @@ class Detail extends React.Component<
                     }
                   >
                     {/* TODO:: Prerequisite by college -> star_rate */}
-                    {data.before.map(
-                      ([courseNumber, courseName, subtitle, percentage]) => (
-                        <PeerCourseListItem
-                          key={courseNumber}
-                          className={customClass.listItems}
-                          courseName={courseName}
-                          courseNumber={courseNumber}
-                          icon="equalizer"
-                          onClick={this.handlePeerCourseClick}
-                          subtitle={subtitle}
-                          percentage={percentage}
-                        />
-                      )
-                    )}
+                    {data.before
+                      .filter(peerCourse => peerCourse[3] >= 5)
+                      .map(
+                        ([courseNumber, courseName, subtitle, percentage]) => (
+                          <PeerCourseListItem
+                            key={courseNumber}
+                            className={customClass.listItems}
+                            courseName={courseName}
+                            courseNumber={courseNumber}
+                            icon="equalizer"
+                            onClick={this.handlePeerCourseClick}
+                            subtitle={subtitle}
+                            percentage={percentage}
+                          />
+                        )
+                      )}
                     {/* TODO:: Prerequisite done -> done */}
                   </List>
                 </Paper>
