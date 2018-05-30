@@ -393,26 +393,12 @@ class Detail extends React.Component<
       return;
     }
 
-    const { course, lectures } = this.props.data;
+    const { course } = this.props.data;
 
-    const latestYear = lectures[0].year;
-    const latestTerm = lectures[0].term;
     // TODO:: data conversion은 서버에 맡겨야 할 텐데..
     const datum = {
       ...course,
       courseName: course.name,
-      lectures: lectures
-        .filter(
-          lecture => lecture.year === latestYear && lecture.term === latestTerm
-        )
-        .map(lecture => ({
-          classTime: lecture.classTime,
-          division: lecture.division,
-          grades: 3,
-          limit: null,
-          load: lecture.spendTime || '< 1',
-          professor: lecture.professor,
-        })),
     };
 
     if (!this.props.pinnedList[buildCourseKey(datum)]) {

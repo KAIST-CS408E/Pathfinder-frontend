@@ -1,6 +1,6 @@
 import { ActionType, createAction } from 'typesafe-actions';
 
-import { ICourseCard, ISemester } from 'pathfinder';
+import { ICourseCard, ICourseCardLecture, ISemester } from 'pathfinder';
 
 import { ISimulateResponse } from '@src/api';
 
@@ -28,6 +28,16 @@ const actions = {
     'planner/removeCourse',
     resolve => (semesterId: string, courseIndex: number) =>
       resolve({ semesterId, courseIndex })
+  ),
+
+  setCardLectures: createAction(
+    'planner/setCardLectures',
+    resolve => (cardLectures: ICourseCardLecture[]) => resolve(cardLectures)
+  ),
+
+  addCardLectures: createAction(
+    'planner/addCardLectures',
+    resolve => (cardLecture: ICourseCardLecture) => resolve(cardLecture)
   ),
 
   setManyFeedbacks: createAction(

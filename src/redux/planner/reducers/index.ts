@@ -1,7 +1,9 @@
 import iassign from 'immutable-assign';
 import { getType } from 'typesafe-actions';
 
-import { ICourseCard, ISemester } from 'pathfinder';
+import { ICourseCard, ICourseCardLectureTable, ISemester } from 'pathfinder';
+
+import { buildCourseKey } from '@src/utils';
 
 import actions, { Action } from '../actions';
 
@@ -9,11 +11,13 @@ export type State = Readonly<IState>;
 
 interface IState {
   boardData: ISemester[];
+  cardLectureTable: ICourseCardLectureTable;
   currentSemester: number;
 }
 
 export const initialState: IState = {
   boardData: [],
+  cardLectureTable: {},
   currentSemester: 1,
 };
 
@@ -69,6 +73,31 @@ export default (state: State = initialState, action: Action): State => {
         }
       );
     }
+    case getType(actions.setCardLectures): {
+      const cardLectures = action.payload;
+      return iassign(
+        state,
+        prevState => prevState.cardLectureTable,
+        (cardLectureTable: ICourseCardLectureTable) => {
+          cardLectures.forEach(cardLecture => {
+            cardLectureTable[buildCourseKey(cardLecture.course)] = cardLecture;
+          });
+          return cardLectureTable;
+        }
+      );
+    }
+    case getType(actions.addCardLectures): {
+      const cardLecture = action.payload;
+      return iassign(
+        state,
+        prevState => prevState.cardLectureTable,
+        (cardLectureTable: ICourseCardLectureTable) => {
+          cardLectureTable[buildCourseKey(cardLecture.course)] = cardLecture;
+          return cardLectureTable;
+        }
+      );
+    }
+
     case getType(actions.setManyFeedbacks): {
       const allFeedbacks = action.payload;
       let reduction = state;

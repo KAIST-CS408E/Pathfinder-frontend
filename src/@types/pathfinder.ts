@@ -9,8 +9,6 @@ export interface IPinnedCourse {
 
   courseName: string;
   subtitle: string;
-
-  lectures: ILecture[];
 }
 
 export interface IPinComponentProps {
@@ -39,6 +37,16 @@ export interface IPlannerGetAll {
   currentSemester: number;
 }
 
+export interface ICourseCardLectureTable {
+  [courseKey: string]: ICourseCardLecture;
+}
+
+export interface ICourseCardLecture {
+  course: ICourseKeys;
+  lectures: ISimpleLecture[];
+  previousLectures: ISimpleLecture[];
+};
+
 export interface ISemester {
   id: string;
   label?: string;
@@ -60,7 +68,6 @@ export interface ICourseCard {
   courseNumber: string;
   subtitle: string;
 
-  lectures: ISimpleLecture[];
   selectedDivision?: string;
 
   myGrade?: string; // undefined if not taken
@@ -69,10 +76,12 @@ export interface ICourseCard {
 }
 
 export interface ISimpleLecture {
+  year: string;
+  term: string;
   professor: string;
   division: string;
-  load?: SpentTime;
-  grades?: number;
+  load?: SpentTime; // past load
+  grades?: number; // past grade
 }
 
 export interface ISemesterFeedback {

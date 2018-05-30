@@ -20,7 +20,13 @@ import { RootState } from '@src/redux';
 import { actions as plannerActions } from '@src/redux/planner';
 import { buildCourseKey, convertSpentTime, range } from '@src/utils';
 
-import { ICourseCard, IPinnedTable, ISemester } from 'pathfinder';
+import {
+  ICourseCard,
+  ICourseCardLecture,
+  ICourseCardLectureTable,
+  IPinnedTable,
+  ISemester,
+} from 'pathfinder';
 
 import styles from './Planner.style';
 
@@ -34,6 +40,7 @@ const { classes } = styles;
 
 interface IProps extends RouteComponentProps<{}> {
   boardData: ISemester[];
+  cardLectureTable: ICourseCardLectureTable;
   currentSemester: number;
 
   pinnedList: IPinnedTable;
@@ -175,8 +182,6 @@ class Planner extends React.Component<IProps> {
         courseNumber: pinnedCourse.courseNumber,
         name: pinnedCourse.courseName,
         subtitle: pinnedCourse.subtitle,
-
-        lectures: pinnedCourse.lectures,
       }));
 
     return {
@@ -189,10 +194,16 @@ class Planner extends React.Component<IProps> {
   };
 
   public calcLoadSum(courses: ICourseCard[]) {
+    const { cardLectureTable } = this.props;
+
     return courses
       .map(course => {
-        if (course.selectedDivision !== undefined) {
-          const selectedLecture = course.lectures.find(
+        const courseKey = buildCourseKey(course);
+        if (
+          course.selectedDivision !== undefined &&
+          cardLectureTable[courseKey]
+        ) {
+          const selectedLecture = cardLectureTable[courseKey].lectures.find(
             lecture => lecture.division === course.selectedDivision
           );
           if (!selectedLecture) {
@@ -208,11 +219,17 @@ class Planner extends React.Component<IProps> {
   }
 
   public calcGradeAverage(courses: ICourseCard[]) {
+    const { cardLectureTable } = this.props;
+
     return (
       courses
         .map(course => {
-          if (course.selectedDivision !== undefined) {
-            const selectedLecture = course.lectures.find(
+          const courseKey = buildCourseKey(course);
+          if (
+            course.selectedDivision !== undefined &&
+            cardLectureTable[courseKey]
+          ) {
+            const selectedLecture = cardLectureTable[courseKey].lectures.find(
               lecture => lecture.division === course.selectedDivision
             );
             if (!selectedLecture) {
@@ -287,11 +304,11 @@ class Planner extends React.Component<IProps> {
     toIndex: number,
     payload: ICourseCard
   ) {
-    const { onAddCourse, onRemoveCourse, onRemoveFeedback } = this.props;
+    const { onAddCourse, onRemoveCourse } = this.props;
     onRemoveCourse(from, fromIndex);
     onAddCourse(to, toIndex, payload);
-    onRemoveFeedback(from);
-    onRemoveFeedback(to);
+    // onRemoveFeedback(from);
+    // onRemoveFeedback(to);
     (to.startsWith('side')
       ? deleteCourse(payload.courseNumber, payload.subtitle)
       : moveCourse(
@@ -650,6 +667,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(Planner);
 interface ICourseCardProps {
   semesterId: string;
   course: ICourseCard;
+  cardLecture?: ICourseCardLecture;
   preventDragging: (e: React.MouseEvent<HTMLElement>) => void;
   onClickCourseDivision: (
     semesterId: string,
@@ -661,17 +679,19 @@ interface ICourseCardProps {
 const CourseCard: React.SFC<ICourseCardProps> = ({
   semesterId,
   course,
+  cardLecture,
   preventDragging,
   onClickCourseDivision,
 }) => {
   let loadGrade = 'Load: -_- Grade -_-';
   const { selectedDivision } = course;
-  if (selectedDivision !== undefined) {
-    const selLecture = course.lectures.find(
+  if (selectedDivision !== undefined && cardLecture) {
+    const selLecture = cardLecture.lectures.find(
       lecture => lecture.division === selectedDivision
     );
     if (selLecture) {
-      loadGrade = `Load: ${selLecture.load || "-_-"} Grade: ${selLecture.grades || "-_-"}`;
+      loadGrade = `Load: ${selLecture.load ||
+        '-_-'} Grade: ${selLecture.grades || '-_-'}`;
     }
   }
 
@@ -714,26 +734,27 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
       </header>
       <div className={classes.cardMiddle}>{loadGrade}</div>
       <div className={classes.cardProfs}>
-        {course.lectures.map(lecture => (
-          <div
-            key={lecture.division}
-            style={{
-              backgroundColor:
-                course.selectedDivision !== undefined &&
-                lecture.division === course.selectedDivision
-                  ? profColorS
-                  : profColorD,
-              color: 'white',
-            }}
-            onClick={onClickCourseDivision(
-              semesterId,
-              course,
-              lecture.division || ''
-            )}
-          >
-            {lecture.professor}
-          </div>
-        ))}
+        {cardLecture &&
+          cardLecture.lectures.map(lecture => (
+            <div
+              key={lecture.division}
+              style={{
+                backgroundColor:
+                  course.selectedDivision !== undefined &&
+                  lecture.division === course.selectedDivision
+                    ? profColorS
+                    : profColorD,
+                color: 'white',
+              }}
+              onClick={onClickCourseDivision(
+                semesterId,
+                course,
+                lecture.division || ''
+              )}
+            >
+              {lecture.professor}
+            </div>
+          ))}
       </div>
     </Draggable>
   );

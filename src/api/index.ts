@@ -1,5 +1,5 @@
 import {
-  INewCourse, IPinnedCourse, IPinnedCourseAPI, ISemesterFeedback, RelevantCourse,
+  ICourseCardLecture, INewCourse, IPinnedCourse, IPinnedCourseAPI, ISemesterFeedback, RelevantCourse,
 } from 'pathfinder';
 
 import { API_URL } from '@src/constants/api';
@@ -110,3 +110,8 @@ export type RelevantResponse = RelevantCourse[];
 
 export const getRelevant = () =>
   fetch(API_URL + '/relevance').then<RelevantResponse>(r => r.json());
+
+export type CardLecturesResponse = ICourseCardLecture[]
+
+export const getCardLectures = () =>
+  fetch(API_URL + '/card/lectures').then<CardLecturesResponse>(r => r.json())
