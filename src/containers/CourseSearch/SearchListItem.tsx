@@ -409,8 +409,17 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                     }}
                   >
                     {/* <ClassTime classTimes={n.classTime} /> */}
-                    Mon.13:00~14:30<br />
-                    Tue.13:00~14:30
+                    {/* intersperse br tag throughout array*/}
+                    {([] as Array<string | JSX.Element>)
+                      .concat(
+                        ...n.classTime.map((classTime, index) => [
+                          <br key={index} />,
+                          `${classTime.day} ${classTime.startTime}~${
+                            classTime.endTime
+                          }`,
+                        ])
+                      )
+                      .slice(1)}
                   </CustomTableCell>
                 </CustomTableRow>
               );
