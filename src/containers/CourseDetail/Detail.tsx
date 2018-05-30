@@ -546,40 +546,82 @@ class Detail extends React.Component<
               </Typography>
             </div>
             {/* 가장 최근 학기에 강의를 개설한 교수님들 */}
-            <Typography
-              variant="caption"
-              style={{ display: 'flex', marginLeft: 24 }}
-            >
-              Lecturer of the latest semester ({latestSemester.year}{' '}
-              {latestSemester.term})
-            </Typography>
-            <div className={classes.profSelect}>
-              {data.lectures
-                .concat()
-                .filter(
-                  lecture =>
-                    lecture.year === latestSemester.year &&
-                    lecture.term === latestSemester.term
-                )
-                .sort((a: ILectureDetail, b: ILectureDetail) =>
-                  d3Array.ascending(a.division, b.division)
-                )
-                .map((lecture: ILectureDetail) => (
-                  <Chip
-                    key={lecture.division}
-                    className={classNames({
-                      [customClass.card]: true,
-                      [customClass.selectedCard]: isSameLecture(
-                        lecture,
-                        thisLecture
-                      ),
-                    })}
-                    label={`${lecture.professor} ${
-                      lecture.division !== '' ? `(${lecture.division})` : ''
-                    }`}
-                    onClick={this.handleLectureCardClick(lecture)}
-                  />
-                ))}
+
+            <div style={{ display: "flex", overflow: "auto" }}>
+              <div  className={classes.profSelDes}>
+                <Typography
+                  variant="caption"
+                  style={{ marginLeft: 24, marginTop: -12, }}
+                >
+                  Lecturer of the upcoming semester ({latestSemester.year}{' '}
+                  {latestSemester.term})
+                </Typography>
+              </div>
+              <div className={classes.profSelect}>
+                {data.lectures
+                  .concat()
+                  .filter(
+                    lecture =>
+                      lecture.year === latestSemester.year &&
+                      lecture.term === latestSemester.term
+                  )
+                  .sort((a: ILectureDetail, b: ILectureDetail) =>
+                    d3Array.ascending(a.division, b.division)
+                  )
+                  .map((lecture: ILectureDetail) => (
+                    <Chip
+                      key={lecture.division}
+                      className={classNames({
+                        [customClass.card]: true,
+                        [customClass.selectedCard]: isSameLecture(
+                          lecture,
+                          thisLecture
+                        ),
+                      })}
+                      label={`${lecture.professor} ${
+                        lecture.division !== '' ? `(${lecture.division})` : ''
+                      }`}
+                      onClick={this.handleLectureCardClick(lecture)}
+                    />
+                  ))}
+              </div>
+              <div className={classes.profSelDes}>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'flex', marginLeft: 24 }}
+                >
+                  Lecturer of the previous semester ({latestSemester.year}{' '}
+                  {latestSemester.term})
+                </Typography>
+              </div>
+              <div className={classes.profNonSelect}>
+                {data.lectures
+                  .concat()
+                  .filter(
+                    lecture =>
+                      lecture.year === latestSemester.year &&
+                      lecture.term === latestSemester.term
+                  )
+                  .sort((a: ILectureDetail, b: ILectureDetail) =>
+                    d3Array.ascending(a.division, b.division)
+                  )
+                  .map((lecture: ILectureDetail) => (
+                    <Chip
+                      key={lecture.division}
+                      className={classNames({
+                        [customClass.card]: true,
+                        [customClass.selectedCard]: isSameLecture(
+                          lecture,
+                          thisLecture
+                        ),
+                      })}
+                      label={`${lecture.professor} ${
+                        lecture.division !== '' ? `(${lecture.division})` : ''
+                        }`}
+                      onClick={this.handleLectureCardClick(lecture)}
+                    />
+                  ))}
+              </div>
             </div>
             {/* give detail information with table */}
             <div className={classes.tableContainer}>
@@ -661,6 +703,7 @@ class Detail extends React.Component<
                 <Paper>
                   <List
                     component="nav"
+                    style={{ paddingBottom: 0 }}
                     subheader={
                       <ListSubheader
                         component="div"
