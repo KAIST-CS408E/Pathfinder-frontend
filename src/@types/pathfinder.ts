@@ -117,8 +117,8 @@ export interface ILecture {
   division: string;
   classTime: IClassTime[];
   limit: number | null;
-  load: SpentTime;
-  grades: number;
+  load: SpentTime | null;
+  grades: number | null;
 }
 
 export type SpentTime = '< 1' | '1 to 3' | '3 to 5' | '5 to 7' | '> 7';

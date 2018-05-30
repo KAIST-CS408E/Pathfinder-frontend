@@ -125,7 +125,7 @@ const styles = (theme: Theme) => ({
     backgroundColor: '#BDBDBD',
     color: 'white',
     fontSize: 14,
-    textAlign: "right" as "right",
+    textAlign: 'right' as 'right',
 
     height: 16,
     width: 20,
@@ -133,14 +133,12 @@ const styles = (theme: Theme) => ({
     margin: 1,
     marginTop: 8,
 
-    '& span': {
-    },
-
+    '& span': {},
   },
 
   levelUnit: {
     // level bar
-    color: "#BDBDBD",
+    color: '#BDBDBD',
     fontWeigth: 500,
     marginRight: 0,
     padding: 8,
@@ -347,7 +345,6 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
               const isNewLecture = newLecture
                 ? newLecture.division === n.division
                 : false;
-              const loadLevel = convertSpentTime(n.load);
               return (
                 <CustomTableRow
                   key={i}
@@ -370,10 +367,10 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                       <span
                         style={{
                           borderRadius: 2,
-                          color: "white",
+                          color: 'white',
                           fontSize: 12,
                           fontWeight: 500,
-                          padding: "1px 3px",
+                          padding: '1px 3px',
                         }}
                       >
                         NEW
@@ -381,87 +378,26 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                     ) : null}
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '14.5%' }}>
-                    {n.division !== '' ? `Section. ${n.division}` : 'No Section'}
+                    {n.division !== ''
+                      ? `Section. ${n.division}`
+                      : 'No Section'}
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '12.5%' }}>
                     {n.limit ? `0/${n.limit}` : '∞'}
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '18.8%' }}>
-                    <div
-                      data-for="courseLoad"
-                      data-tip={n.load}
-                      className={classes.levelBar}
-                    >
-                      <div
-                        style={{
-                          backgroundColor: loadLevel > 1 ? '#7986CB' : '',
-                        }}
-                        className={classes.levelBlock}
-                      ><span>1</span></div>
-                      <div
-                        style={{
-                          backgroundColor: loadLevel > 3 ? '#3F51B5' : '',
-                        }}
-                        className={classes.levelBlock}
-                      ><span>3</span></div>
-                      <div
-                        style={{
-                          backgroundColor: loadLevel > 5 ? '#303F9F' : '',
-                        }}
-                        className={classes.levelBlock}
-                      ><span>5</span></div>
-                      <div
-                        style={{
-                          backgroundColor: loadLevel > 7 ? '#1A237E' : '',
-                        }}
-                        className={classes.levelBlock}
-                      ><span>7</span></div>
-                      <div style={{color: loadLevel > 7 ? '#1A237E' : ''}}
-                        className={classes.levelUnit}>hrs</div>
-                    </div>
+                    {n.load ? (
+                      <LoadLevelDisplay load={n.load} classes={classes} />
+                    ) : (
+                      <span>N/A</span>
+                    )}
                   </CustomTableCell>
                   <CustomTableCell style={{ width: '16%' }}>
-                    <div
-                      data-for="courseGrade"
-                      data-tip={n.grades}
-                      className={classes.levelBar}
-                    >
-                      <div
-                        style={{
-                          background: ourKaistBlueD,
-                          position: 'relative',
-                          width: 64,
-                        }}
-                        className={classes.levelBlock}
-                      >
-                        <div
-                          style={{
-                            color: 'white',
-                            marginTop: 1,
-                            position: 'absolute',
-                            right: 0,
-                            zIndex: 1,
-                          }}
-                        >
-                          {n.grades ? n.grades : '-.-'}
-                        </div>
-                        <div
-                          style={{
-                            margin: 0,
-                            position: 'absolute',
-                            right: 0,
-                            top: 0,
-                            width: n.grades
-                              ? 64 - 64 * (n.grades - 2.5) / 1.8
-                              : 64,
-                          }}
-                          className={classes.levelBlock}
-                        >
-                          {/* width: full grade - currunt grade */}
-                        </div>
-                      </div>
-                      <div className={classes.levelUnit}>GPA</div>
-                    </div>
+                    {n.grades ? (
+                      <GradeBar grades={n.grades} classes={classes} />
+                    ) : (
+                      <span>N/A</span>
+                    )}
                   </CustomTableCell>
                   <CustomTableCell
                     numeric
@@ -473,7 +409,7 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                     }}
                   >
                     {/* <ClassTime classTimes={n.classTime} /> */}
-                    Mon.13:00~14:30<br/>
+                    Mon.13:00~14:30<br />
                     Tue.13:00~14:30
                   </CustomTableCell>
                 </CustomTableRow>
@@ -487,3 +423,96 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
 }
 
 export default withStyles(styles)(CustomizedTable);
+
+const LoadLevelDisplay: React.SFC<{
+  load: SpentTime;
+  classes: any;
+}> = ({ load, classes }) => {
+  const loadLevel = convertSpentTime(load);
+
+  return (
+    <div data-for="courseLoad" data-tip={load} className={classes.levelBar}>
+      <div
+        style={{
+          backgroundColor: loadLevel > 1 ? '#7986CB' : '',
+        }}
+        className={classes.levelBlock}
+      >
+        <span>1</span>
+      </div>
+      <div
+        style={{
+          backgroundColor: loadLevel > 3 ? '#3F51B5' : '',
+        }}
+        className={classes.levelBlock}
+      >
+        <span>3</span>
+      </div>
+      <div
+        style={{
+          backgroundColor: loadLevel > 5 ? '#303F9F' : '',
+        }}
+        className={classes.levelBlock}
+      >
+        <span>5</span>
+      </div>
+      <div
+        style={{
+          backgroundColor: loadLevel > 7 ? '#1A237E' : '',
+        }}
+        className={classes.levelBlock}
+      >
+        <span>7</span>
+      </div>
+      <div
+        style={{ color: loadLevel > 7 ? '#1A237E' : '' }}
+        className={classes.levelUnit}
+      >
+        hrs
+      </div>
+    </div>
+  );
+};
+
+const GradeBar: React.SFC<{ grades: number; classes: any }> = ({
+  grades,
+  classes,
+}) => {
+  return (
+    <div data-for="courseGrade" data-tip={grades} className={classes.levelBar}>
+      <div
+        style={{
+          background: ourKaistBlueD,
+          position: 'relative',
+          width: 64,
+        }}
+        className={classes.levelBlock}
+      >
+        <div
+          style={{
+            color: 'white',
+            marginTop: 1,
+            position: 'absolute',
+            right: 0,
+            zIndex: 1,
+          }}
+        >
+          {grades}
+        </div>
+        <div
+          style={{
+            margin: 0,
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            width: grades ? 64 - 64 * (grades - 2.5) / 1.8 : 64,
+          }}
+          className={classes.levelBlock}
+        >
+          {/* width: full grade - currunt grade */}
+        </div>
+      </div>
+      <div className={classes.levelUnit}>GPA</div>
+    </div>
+  );
+};
