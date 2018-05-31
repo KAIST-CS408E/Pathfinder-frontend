@@ -90,7 +90,7 @@ export interface ISimpleLecture {
 }
 
 export interface ISemesterFeedback {
-  type: 'prerequisite' | 'time';
+  type: 'prerequisite' | 'time' | 'not_open';
   ok: boolean;
   reason: any; // may be course number of colliding
 }
@@ -174,7 +174,7 @@ export interface ICourseLevelSet {
   [key: string]: boolean;
 }
 
-export type CourseSortOrder = 'courseName' | 'courseNumber' | 'grade' | 'load';
+export type CourseSortOrder = 'relevance' | 'courseName' | 'courseNumber' | 'grade' | 'load';
 
 /* Course Detail */
 

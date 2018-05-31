@@ -227,9 +227,6 @@ class App extends React.Component<IProps, IState> {
                         {pinEntry.courseNumber}
                         {' - '}
                         {pinEntry.courseName}
-                        {pinEntry.subtitle !== ''
-                          ? `<${pinEntry.subtitle}>`
-                          : ''}
                       </ListItemText>
                       <ListItemSecondaryAction>
                         <IconButton

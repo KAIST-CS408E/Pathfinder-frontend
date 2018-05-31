@@ -61,7 +61,7 @@ export interface ICourseLevelSet {
   [key: string]: boolean;
 }
 
-export type SortOrder = 'courseName' | 'courseNumber' | 'grade' | 'load';
+export type SortOrder = 'relevance' | 'courseName' | 'courseNumber' | 'grade' | 'load';
 
 export type OnChangeOptionFunc = (
   key: FilterKey,
@@ -90,6 +90,7 @@ export default class Filter extends React.Component<IProps, IState> {
   ];
 
   public sortItems: ICustomSelection[] = [
+    { key: 'relevance', text: 'Sort by Relevance' },
     { key: 'courseNumber', text: 'Sort by Course Number' },
     { key: 'courseName', text: 'Sort by Course Name' },
     { key: 'grade', text: 'Sort by Course Grade' },

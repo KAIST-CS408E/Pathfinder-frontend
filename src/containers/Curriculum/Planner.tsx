@@ -110,9 +110,11 @@ class Planner extends React.Component<IProps> {
         semester => semester.courses
       );
 
-      getCardLectures(everyCourse).then(response =>
-        this.props.onSetCardLectures(response)
-      );
+      getCardLectures(everyCourse)
+        .then(response => this.props.onSetCardLectures(response))
+        .then(() => {
+          this.handleClickSimulation();
+        });
 
       let lastYear = 0;
       let lastTerm = 'Fall';
@@ -340,6 +342,8 @@ class Planner extends React.Component<IProps> {
         console.error('board update failed', from, fromIndex, payload);
       }
     });
+
+    this.handleClickSimulation();
   };
 
   public moveCard(
@@ -364,20 +368,24 @@ class Planner extends React.Component<IProps> {
           payload.selectedProfessor,
           payload.selectedDivision
         )
-    ).then(json => {
-      if (json.success) {
-        console.log('board update success');
-      } else {
-        console.error(
-          'board update failed',
-          from,
-          fromIndex,
-          to,
-          toIndex,
-          payload
-        );
-      }
-    });
+    )
+      .then(json => {
+        if (json.success) {
+          console.log('board update success');
+        } else {
+          console.error(
+            'board update failed',
+            from,
+            fromIndex,
+            to,
+            toIndex,
+            payload
+          );
+        }
+      })
+      .then(() => {
+        this.handleClickSimulation();
+      });
   }
 
   public getChildPayload = (semesterId: string) => (courseIndex: number) => {
@@ -542,11 +550,11 @@ class Planner extends React.Component<IProps> {
           style={{ backgroundColor: ourKaistBlue }}
         >
           <div className={classes.laneTitle}>Pinned Courses</div>
-          <div className={classes.laneLabel}>
-            {pinnedCourseLane.label
-              ? pinnedCourseLane.label
-              : 'Load: -.- Grade: -.-'}
-          </div>
+          {/*<div className={classes.laneLabel}>*/}
+          {/*{pinnedCourseLane.label*/}
+          {/*? pinnedCourseLane.label*/}
+          {/*: 'Load: -.- Grade: -.-'}*/}
+          {/*</div>*/}
         </header>
         <Container
           key={pinnedCourseLane.id}
@@ -629,9 +637,10 @@ class Planner extends React.Component<IProps> {
             My Academic Path Simulator
           </Typography>
           <Typography align="left" variant="subheading">
-            Plan my academic path, simulate, and get recommends based on real
-            data.
-            <br />* This system is helpful, but blind trust can be dangerous.
+            Plan my academic path, simulate, and get recommends based on course
+            registration history.
+            <br />* Use it as one of sources of information when you plan your
+            semester
           </Typography>
         </div>
         <div className={classes.division}>{/* give division */}</div>
@@ -690,6 +699,13 @@ class Planner extends React.Component<IProps> {
                 precisionRound(lodash.sum(allGrade) / allGrade.length, 2) ||
                 'N/A';
 
+              const hasBadFeedback = semester.feedback.some(
+                feedback => !feedback.ok
+              );
+              const displayFeedback = hasBadFeedback
+                ? semester.feedback.filter(feedback => !feedback.ok)
+                : semester.feedback;
+
               return (
                 <div
                   key={semester.id}
@@ -744,13 +760,27 @@ class Planner extends React.Component<IProps> {
                     })}
                   </Container>
                   <div className={classes.feedback}>
-                    {semester.feedback.map(feedback => {
+                    {displayFeedback.map(feedback => {
+                      let readableType: string = feedback.type;
+                      switch (feedback.type) {
+                        case 'time':
+                          readableType = 'Class time';
+                          break;
+                        case 'not_open':
+                          readableType = 'Offered course';
+                          break;
+                        case 'prerequisite':
+                          readableType = 'Prerequisite';
+                          break;
+                        default:
+                          break;
+                      }
+
                       let reason = '';
+
                       if (!feedback.ok) {
                         if (feedback.type === 'time') {
-                          const errorCourses = Object.entries(
-                            feedback.reason
-                          )[0];
+                          const errorCourses = feedback.reason[0];
                           const a = errorCourses[0];
                           const b = errorCourses[1];
                           const aC = semester.courses.find(
@@ -764,6 +794,23 @@ class Planner extends React.Component<IProps> {
                               bC.name
                             }" overlap`;
                           }
+                        } else if (feedback.type === 'not_open') {
+                          reason = feedback.reason
+                            .map((causeCourseNumber: string) => {
+                              const causeCourse = semester.courses.find(
+                                course =>
+                                  course.courseNumber === causeCourseNumber
+                              );
+                              if (causeCourse) {
+                                return `Selected lecture "${
+                                  causeCourse.name
+                                }" is not offered in this semester`;
+                              } else {
+                                return '';
+                              }
+                            })
+                            .filter((reasonLine: string) => Boolean(reasonLine))
+                            .join('\n');
                         }
                       }
 
@@ -777,8 +824,10 @@ class Planner extends React.Component<IProps> {
                           }}
                         >
                           <div className={classes.feedbackTitle}>
-                            {feedback.type}
-                            {feedback.ok ? ' balanced' : ' error'}
+                            {readableType}
+                            {feedback.ok
+                              ? ' condition is satisfied'
+                              : ' condition not satisfied'}
                           </div>
                           <div className={classes.feedbackDetail}>{reason}</div>
                         </div>

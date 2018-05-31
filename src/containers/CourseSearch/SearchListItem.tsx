@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import * as d3Coll from 'd3-collection';
+
 import { Theme, WithStyles, withStyles } from '@material-ui/core/styles';
 import TableCell, { TableCellProps } from '@material-ui/core/TableCell';
 import TableRow, { TableRowProps } from '@material-ui/core/TableRow';
@@ -15,7 +17,13 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { ICourse, INewCourse, RelevantCourse, SpentTime } from 'pathfinder';
+import {
+  IClassTime,
+  ICourse,
+  INewCourse,
+  RelevantCourse,
+  SpentTime,
+} from 'pathfinder';
 import * as ReactTooltip from 'react-tooltip';
 
 import { convertSpentTime, convertSpentTimeToReadable } from '@src/utils';
@@ -427,14 +435,28 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                     {/* intersperse br tag throughout array*/}
                     {([] as Array<string | JSX.Element>)
                       .concat(
-                        ...n.classTime.map((classTime, index) => [
-                          <br key={index} />,
-                          `${classTime.day} ${classTime.startTime}~${
-                            classTime.endTime
-                          }`,
-                        ])
+                        ...d3Coll
+                          .nest<IClassTime>()
+                          .key(datum => `${datum.startTime}~${datum.endTime}`)
+                          .entries(n.classTime)
+                          .map((obj, index) => [
+                            <br key={index} />,
+                            `${obj.values.map((c: any) => c.day).join(', ')} ${
+                              obj.key
+                            }`,
+                          ])
                       )
                       .slice(1)}
+                    {/*{([] as Array<string | JSX.Element>)*/}
+                    {/*.concat(*/}
+                    {/*...n.classTime.map((classTime, index) => [*/}
+                    {/*<br key={index} />,*/}
+                    {/*`${classTime.day} ${classTime.startTime}~${*/}
+                    {/*classTime.endTime*/}
+                    {/*}`,*/}
+                    {/*])*/}
+                    {/*)*/}
+                    {/*.slice(1)}*/}
                   </CustomTableCell>
                 </CustomTableRow>
               );
