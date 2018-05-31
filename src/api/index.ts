@@ -9,6 +9,7 @@ import {
 } from 'pathfinder';
 
 import { API_URL } from '@src/constants/api';
+import { buildCourseKey } from '@src/utils';
 
 export interface IPinCourseResponse {
   success: boolean;
@@ -92,7 +93,8 @@ export const doRecommendation = () =>
         cf: json.cf.map(recommend => {
           return {
             ...recommend.course,
-            lectures: recommend.lectures,
+            id: buildCourseKey(recommend.course),
+            type: 'recommended' as 'recommended',
           };
         }),
       };

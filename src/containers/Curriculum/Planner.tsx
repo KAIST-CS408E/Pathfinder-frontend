@@ -63,6 +63,7 @@ interface IProps extends RouteComponentProps<{}> {
   onSetManyFeedbacks: typeof plannerActions.setManyFeedbacks;
   onRemoveAllFeedback: typeof plannerActions.removeAllFeedback;
   onRemoveFeedback: typeof plannerActions.removeFeedback;
+  onSetRecommendedCourse: typeof plannerActions.setRecommendedCourse;
 
   onSelectDivision: typeof plannerActions.selectDivision;
 }
@@ -403,7 +404,15 @@ class Planner extends React.Component<IProps> {
   };
 
   public handleClickRecommendation = () => {
-    doRecommendation();
+    doRecommendation().then(json => {
+      this.props.onSetRecommendedCourse(
+        String(this.props.currentSemester + 1),
+        json.cf
+      );
+      getCardLectures(json.cf).then(response =>
+        this.props.onSetCardLectures(response)
+      );
+    });
   };
 
   public handleClickSimulation = () => {
@@ -715,6 +724,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       onRemoveCourse: plannerActions.removeCourse,
 
       onSetCardLectures: plannerActions.setCardLectures,
+      onSetRecommendedCourse: plannerActions.setRecommendedCourse,
 
       onRemoveAllFeedback: plannerActions.removeAllFeedback,
       onRemoveFeedback: plannerActions.removeFeedback,
