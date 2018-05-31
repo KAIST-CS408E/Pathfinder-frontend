@@ -268,9 +268,9 @@ class Planner extends React.Component<IProps> {
   public onCardDrop = (semesterId: string) => (dropResult: any) => {
     // const { onAddCourse, onRemoveCourse } = this.props;
     const { removedIndex, addedIndex, payload } = dropResult;
-    // console.group('onCardDrop');
-    // console.log(semesterId, dropResult);
-    // console.groupEnd();
+    console.group('onCardDrop');
+    console.log(semesterId, dropResult);
+    console.groupEnd();
 
     if (removedIndex !== null) {
       const dropEventIndex = this.dropQueue.findIndex(
@@ -402,9 +402,17 @@ class Planner extends React.Component<IProps> {
 
     // if the source container is not the future semester
     const sourceSelector = `.${sourceContainerOptions.groupName}`;
-    if (sourceContainerOptions.groupName.startsWith('semesterBoard')) {
-      if (Number(sourceSelector.split('-_')[1]) <= this.props.currentSemester) {
+    const sourceId = sourceContainerOptions.groupName.startsWith(
+      'semesterBoard'
+    )
+      ? sourceSelector.split('-_')[1]
+      : 'side_pinnedlist';
+
+    if (sourceId !== 'side_pinnedlist') {
+      if (Number(sourceId) <= this.props.currentSemester) {
         return false;
+      } else if (semester && sourceId === semester.id) {
+        return true;
       }
     }
 
@@ -658,7 +666,6 @@ class Planner extends React.Component<IProps> {
                 precisionRound(lodash.sum(allGrade) / allGrade.length, 2) ||
                 'N/A';
 
-              console.log(semester, courseLectureMap);
               return (
                 <div
                   key={semester.id}
