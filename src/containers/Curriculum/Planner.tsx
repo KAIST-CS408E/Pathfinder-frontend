@@ -685,6 +685,7 @@ class Planner extends React.Component<IProps> {
         <div style={{ display: 'flex' }}>
           <div className={classes.boardContainer}>
             {boardData.slice(1).map(semester => {
+              const isUpcomingSemester = currentSemester + 1 === semester.semester;
               const courseLectureMap = this.mapLecture(semester);
               const allLectures = courseLectureMap
                 .map(
@@ -718,9 +719,9 @@ class Planner extends React.Component<IProps> {
                     `semesterBoard-_${semester.id}`
                   )}
                 >
-                  <header className={classes.laneHeader}>
+                  <header className={classes.laneHeader} style={isUpcomingSemester ? { backgroundColor: '#f3f8ff'} : undefined}>
                     <div className={classes.laneTitle}>
-                      {semester.id} ({currentSemester + 1 === semester.semester
+                      {semester.id} ({isUpcomingSemester
                         ? ['Upcoming, ', <br key={1} />]
                         : ''}
                       {semester.term} {semester.year})
@@ -732,6 +733,7 @@ class Planner extends React.Component<IProps> {
                     </div>
                   </header>
                   <Container
+                    style={isUpcomingSemester ? { backgroundColor: '#f3f8ff'} : undefined}
                     key={semester.id}
                     groupName={`semesterBoard-_${semester.id}`}
                     orientation="vertical"
