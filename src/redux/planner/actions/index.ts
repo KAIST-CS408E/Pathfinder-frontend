@@ -35,6 +35,11 @@ const actions = {
     resolve => (semesterId: string, courses: ICourseCard[]) =>
       resolve({ semesterId, courses })
   ),
+  setToNormalCourse: createAction(
+    'planner/setToNormalCourse',
+    resolve => (semesterId: string, courseIndex: number) =>
+      resolve({ semesterId, courseIndex })
+  ),
 
   setCardLectures: createAction(
     'planner/setCardLectures',

@@ -54,7 +54,7 @@ export default (state: State = initialState, action: Action): State => {
         state,
         prevState => prevState.boardData[semesterIndex].courses,
         (courses: ICourseCard[]) => {
-          courses.splice(courseIndex, 0, courseCard);
+          courses.splice(courseIndex, 0, { ...courseCard, type: 'none' as 'none'});
           return courses;
         }
       );
@@ -136,6 +136,23 @@ export default (state: State = initialState, action: Action): State => {
         return prevState;
       });
     }
+
+    case getType(actions.setToNormalCourse): {
+      const { semesterId, courseIndex } = action.payload;
+      const semesterIndex = state.boardData.findIndex(
+        semester => semester.id === semesterId
+      );
+      return iassign(
+        state,
+        prevState => prevState.boardData[semesterIndex].courses[courseIndex],
+        (course: ICourseCard) => {
+          course.type = 'none' as 'none';
+          course.takenFrom = undefined;
+          return course;
+        }
+      );
+    }
+
 
     case getType(actions.setManyFeedbacks): {
       const allFeedbacks = action.payload;

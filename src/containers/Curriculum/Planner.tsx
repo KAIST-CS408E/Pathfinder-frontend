@@ -42,7 +42,13 @@ import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
 // icons
-import { MoreHoriz, PlayCircleOutline, ThumbUp } from '@material-ui/icons';
+import {
+  Check,
+  Close as CloseIcon,
+  MoreHoriz,
+  PlayCircleOutline,
+  ThumbUp,
+} from '@material-ui/icons';
 
 const { classes } = styles;
 
@@ -64,6 +70,7 @@ interface IProps extends RouteComponentProps<{}> {
   onRemoveAllFeedback: typeof plannerActions.removeAllFeedback;
   onRemoveFeedback: typeof plannerActions.removeFeedback;
   onSetRecommendedCourse: typeof plannerActions.setRecommendedCourse;
+  onSetToNormalCourse: typeof plannerActions.setToNormalCourse;
 
   onSelectDivision: typeof plannerActions.selectDivision;
 }
@@ -148,7 +155,7 @@ class Planner extends React.Component<IProps> {
                         ? course.selectedDivision
                         : undefined,
                   })),
-                  feedback: remoteData.feedback,
+                  feedback: [],
                   term: remoteData.term,
                   year: remoteData.year,
                 };
@@ -314,6 +321,22 @@ class Planner extends React.Component<IProps> {
     }
   };
 
+  public deleteCard = (
+    from: string,
+    fromIndex: number,
+    payload: ICourseCard
+  ) => {
+    const { onRemoveCourse } = this.props;
+    onRemoveCourse(from, fromIndex);
+    deleteCourse(payload.courseNumber, payload.subtitle).then(json => {
+      if (json.success) {
+        console.log('board update success');
+      } else {
+        console.error('board update failed', from, fromIndex, payload);
+      }
+    });
+  };
+
   public moveCard(
     from: string,
     fromIndex: number,
@@ -446,6 +469,36 @@ class Planner extends React.Component<IProps> {
     }
   };
 
+  public handleClickFixRecommend = (
+    semesterId: string,
+    course: ICourseCard,
+    fix: boolean
+  ) => () => {
+    const { boardData } = this.props;
+    const semesterIndex = boardData.findIndex(
+      semester => semester.id === semesterId
+    );
+    const courseKey = buildCourseKey(course);
+    const fromIndex = boardData[semesterIndex].courses.findIndex(
+      card => buildCourseKey(card) === courseKey
+    );
+    if (fix) {
+      // TODO: DELETE type and takenFrom
+      this.moveCard(semesterId, fromIndex, semesterId, fromIndex, course);
+    } else {
+      // TODO: move to Pin or delete
+
+      if (course.takenFrom && course.takenFrom !== semesterId) {
+        if (semesterIndex !== -1) {
+          this.moveCard(semesterId, fromIndex, course.takenFrom, 0, course);
+        }
+      } else {
+        this.deleteCard(semesterId, fromIndex, course);
+      }
+    }
+    // console.log('123')
+  };
+
   public renderPinnedCourse() {
     const { boardData, cardLectureTable } = this.props;
 
@@ -487,6 +540,7 @@ class Planner extends React.Component<IProps> {
                 }
                 preventDragging={this.preventDragging}
                 onClickCourseDivision={this.handleClickCourseDivision}
+                onClickFixRecommend={this.handleClickFixRecommend}
               />
             );
           })}
@@ -648,6 +702,7 @@ class Planner extends React.Component<IProps> {
                           selectedLecture={lectureIndex}
                           preventDragging={this.preventDragging}
                           onClickCourseDivision={this.handleClickCourseDivision}
+                          onClickFixRecommend={this.handleClickFixRecommend}
                         />
                       );
                     })}
@@ -725,6 +780,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
 
       onSetCardLectures: plannerActions.setCardLectures,
       onSetRecommendedCourse: plannerActions.setRecommendedCourse,
+      onSetToNormalCourse: plannerActions.setToNormalCourse,
 
       onRemoveAllFeedback: plannerActions.removeAllFeedback,
       onRemoveFeedback: plannerActions.removeFeedback,
@@ -749,6 +805,11 @@ interface ICourseCardProps {
     professor: string,
     division: string
   ) => () => void;
+  onClickFixRecommend: (
+    semesterId: string,
+    course: ICourseCard,
+    fix: boolean
+  ) => () => void;
 }
 
 const CourseCard: React.SFC<ICourseCardProps> = ({
@@ -758,6 +819,7 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
   selectedLecture,
   preventDragging,
   onClickCourseDivision,
+  onClickFixRecommend,
 }) => {
   let loadGrade = 'Load: N/A Grade: N/A';
   if (lectures && selectedLecture !== undefined) {
@@ -774,7 +836,10 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
       className={course.type === 'recommended' ? classes.recCard : classes.card}
     >
       {course.type === 'recommended' ? (
-        <div className={classes.recCardTop}>
+        <div
+          className={classes.recCardTop}
+          style={{ display: 'flex', justifyContent: 'space-between' }}
+        >
           <Chip
             label="RECOMMENDED"
             style={{
@@ -784,6 +849,14 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
               height: 18,
             }}
           />
+          <div style={{ display: 'flex' }}>
+            <div onClick={onClickFixRecommend(semesterId, course, true)}>
+              <Check />
+            </div>
+            <div onClick={onClickFixRecommend(semesterId, course, false)}>
+              <CloseIcon />
+            </div>
+          </div>
         </div>
       ) : (
         ''
@@ -810,7 +883,7 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
         {lectures &&
           lectures.map((lecture, index) => (
             <div
-              key={lecture.division}
+              key={lecture.professor + lecture.division}
               style={{
                 backgroundColor:
                   selectedLecture === index ? profColorS : profColorD,
