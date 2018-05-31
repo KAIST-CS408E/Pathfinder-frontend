@@ -355,11 +355,12 @@ class Detail extends React.Component<
     subtitle: string,
     lecture: ILectureKeys
   ) => {
-    const [basePath] = this.props.match.url.split('/courses/d/');
+    const { match } = this.props;
+    const [basePath] = match.url.split('/d/');
     const paramPath = `${lecture.year}/${lecture.term}/${courseNumber}/${
       lecture.division
     }?subtitle=${subtitle}`;
-    return `${basePath}/courses/d/${paramPath}`;
+    return `${basePath}/d/${paramPath}`;
   };
 
   public gotoAnotherDetail = (url: string) => {

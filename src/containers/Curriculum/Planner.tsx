@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
+import { push } from 'react-router-redux';
+
 import { bindActionCreators } from 'redux';
 
 import { Container, Draggable } from 'react-smooth-dnd';
@@ -74,6 +76,8 @@ interface IProps extends RouteComponentProps<{}> {
   onSetToNormalCourse: typeof plannerActions.setToNormalCourse;
 
   onSelectDivision: typeof plannerActions.selectDivision;
+
+  push: typeof push;
 }
 
 const profColorD = '#9E9E9E';
@@ -491,6 +495,7 @@ class Planner extends React.Component<IProps> {
     const fromIndex = boardData[semesterIndex].courses.findIndex(
       card => buildCourseKey(card) === courseKey
     );
+
     if (fix) {
       // TODO: DELETE type and takenFrom
       this.moveCard(semesterId, fromIndex, semesterId, fromIndex, course);
@@ -506,6 +511,20 @@ class Planner extends React.Component<IProps> {
       }
     }
     // console.log('123')
+  };
+
+  public gotoDetail = (path: string) => {
+    this.props.push(`/curriculum/d${path}`, { modalDetail: true });
+  };
+
+  public handleClickDetail = (
+    year: number,
+    term: string,
+    course: ICourseCard
+  ) => () => {
+    this.gotoDetail(
+      `/${year}/${term}/${course.courseNumber}/?subtitle=${course.subtitle}`
+    );
   };
 
   public renderPinnedCourse() {
@@ -550,6 +569,11 @@ class Planner extends React.Component<IProps> {
                 preventDragging={this.preventDragging}
                 onClickCourseDivision={this.handleClickCourseDivision}
                 onClickFixRecommend={this.handleClickFixRecommend}
+                onClickDetail={this.handleClickDetail(
+                  pinnedCourseLane.year,
+                  pinnedCourseLane.term,
+                  course
+                )}
               />
             );
           })}
@@ -710,6 +734,11 @@ class Planner extends React.Component<IProps> {
                           preventDragging={this.preventDragging}
                           onClickCourseDivision={this.handleClickCourseDivision}
                           onClickFixRecommend={this.handleClickFixRecommend}
+                          onClickDetail={this.handleClickDetail(
+                            semester.year,
+                            semester.term,
+                            course
+                          )}
                         />
                       );
                     })}
@@ -794,6 +823,8 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       onSetManyFeedbacks: plannerActions.setManyFeedbacks,
 
       onSelectDivision: plannerActions.selectDivision,
+
+      push,
     },
     dispatch
   );
@@ -817,6 +848,7 @@ interface ICourseCardProps {
     course: ICourseCard,
     fix: boolean
   ) => () => void;
+  onClickDetail: () => void;
 }
 
 const CourseCard: React.SFC<ICourseCardProps> = ({
@@ -827,6 +859,7 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
   preventDragging,
   onClickCourseDivision,
   onClickFixRecommend,
+  onClickDetail,
 }) => {
   let loadGrade = 'Load: N/A Grade: N/A';
   if (lectures && selectedLecture !== undefined) {
@@ -889,7 +922,7 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
             {course.myGrade ? course.myGrade : ''}
           </span>
         </div>
-        <div style={{ height: 20 }}>
+        <div onClick={onClickDetail} style={{ height: 20 }}>
           <MoreHoriz />
         </div>
       </header>
