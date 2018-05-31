@@ -368,6 +368,9 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
               const isNewLecture = newLecture
                 ? newLecture.division === n.division
                 : false;
+              if (n.division === 'E') {
+                console.log(newLecture, n);
+              }
               return (
                 <CustomTableRow
                   key={i}
@@ -390,7 +393,6 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
                       <span
                         style={{
                           borderRadius: 2,
-                          color: 'white',
                           fontSize: 12,
                           fontWeight: 500,
                           padding: '1px 3px',

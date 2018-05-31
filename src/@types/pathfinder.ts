@@ -185,6 +185,7 @@ export interface ICourseDetail {
   with: PeerCourse[];
   after: PeerCourse[];
   taken_lecture: ILectureDetail | null;
+  requisite: Array<[string, string, string, string, string]>
 }
 
 export interface ICourseKeys {

@@ -45,7 +45,7 @@ export const defaultValues: IFilterOptions = {
   },
   department: { cs: true },
   semester: 'Fall',
-  sortOrder: 'courseNumber',
+  sortOrder: 'relevance',
   year: '2018',
 };
 

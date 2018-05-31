@@ -390,6 +390,13 @@ class Detail extends React.Component<
     // this.props.onChangeCourse({ subtitle, number: courseNumber });
   };
 
+  public handlePeerCourseClickBuilder = (
+    courseNumber: string,
+    subtitle: string
+  ) => () => {
+    this.handlePeerCourseClick(courseNumber, subtitle);
+  };
+
   public handlePinClick = () => {
     if (!this.props.data) {
       return;
@@ -433,7 +440,7 @@ class Detail extends React.Component<
       return <>NO DATA</>;
     }
 
-    const course = data.course;
+    const { course, requisite } = data;
     const thisLecture = data.lectures.find(lecture =>
       isSameLecture(lecture, { division, term, year })
     );
@@ -538,47 +545,56 @@ class Detail extends React.Component<
             </div>
             {/* 가장 최근 학기에 강의를 개설한 교수님들 */}
             <div className={classes.profSelectContainer}>
-              <div className={classes.profSelDes}>
-                <Typography
-                  variant="caption"
-                  style={{
-                    position: 'absolute',
-                    textAlign: 'left',
-                    width: '24em',
-                  }}
-                >
-                  Lecturer of the {isUpcomingCourse ? 'upcoming' : 'latest'}
-                  &nbsp;semester ({latestSemester.year} {latestSemester.term})
-                </Typography>
-              </div>
-              <div className={classes.profSelect}>
-                {data.lectures
-                  .concat()
-                  .filter(
-                    lecture =>
-                      lecture.year === latestSemester.year &&
-                      lecture.term === latestSemester.term
-                  )
-                  .sort((a: ILectureDetail, b: ILectureDetail) =>
-                    d3Array.ascending(a.division, b.division)
-                  )
-                  .map((lecture: ILectureDetail) => (
-                    <Chip
-                      key={lecture.division}
-                      className={classNames({
-                        [customClass.card]: true,
-                        [customClass.selectedCard]: isSameLecture(
-                          lecture,
-                          thisLecture
-                        ),
-                      })}
-                      label={`${lecture.professor} ${
-                        lecture.division !== '' ? `(${lecture.division})` : ''
-                      }`}
-                      onClick={this.handleLectureCardClick(lecture)}
-                    />
-                  ))}
-              </div>
+              {!isUpcomingCourse ? null : (
+                <div style={{ minWidth: 290 }}>
+                  <div className={classes.profSelDes}>
+                    <Typography
+                      variant="caption"
+                      style={{
+                        position: 'absolute',
+                        textAlign: 'left',
+                        width: '24em',
+                      }}
+                    >
+                      Lecturer of the upcoming &nbsp;semester ({
+                        latestSemester.year
+                      }{' '}
+                      {latestSemester.term})
+                    </Typography>
+                  </div>
+                  <div className={classes.profSelect}>
+                    {data.lectures
+                      .concat()
+                      .filter(
+                        lecture =>
+                          lecture.year === latestSemester.year &&
+                          lecture.term === latestSemester.term
+                      )
+                      .sort((a: ILectureDetail, b: ILectureDetail) =>
+                        d3Array.ascending(a.division, b.division)
+                      )
+                      .map((lecture: ILectureDetail) => (
+                        <Chip
+                          key={lecture.division}
+                          className={classNames({
+                            [customClass.card]: true,
+                            [customClass.selectedCard]: isSameLecture(
+                              lecture,
+                              thisLecture
+                            ),
+                          })}
+                          label={`${lecture.professor} ${
+                            lecture.division !== ''
+                              ? `(${lecture.division})`
+                              : ''
+                          }`}
+                          onClick={this.handleLectureCardClick(lecture)}
+                        />
+                      ))}
+                  </div>
+                </div>
+              )}
+
               <div className={classes.profSelDes}>
                 <Typography
                   variant="caption"
@@ -591,7 +607,7 @@ class Detail extends React.Component<
                   Lecturer of the previous semester
                 </Typography>
               </div>
-              <div className={classes.profSelect}>
+              <div style={{ minWidth: 200 }} className={classes.profSelect}>
                 {data.lectures
                   .concat()
                   .filter(
@@ -681,17 +697,33 @@ class Detail extends React.Component<
               </div>
             </Typography>
             {/* prerequisite 가 존재하는 경우에 한해서만 보여주는 줄입니다. */}
-            <div className={classes.prereqContainer}>
-              <div style={{ marginBottom: 12 }}>
-                prerequisite as department policy
+            {requisite.length === 0 ? null : (
+              <div className={classes.prereqContainer}>
+                <div style={{ marginBottom: 12 }}>
+                  Prerequisite as department policy
+                </div>
+                {requisite.map(([_, courseNumber, name, subtitle]) => {
+                  return (
+                    <Button
+                      key={courseNumber + subtitle}
+                      onClick={this.handlePeerCourseClickBuilder(
+                        courseNumber,
+                        subtitle
+                      )}
+                      variant="outlined"
+                      style={{
+                        borderColor: '#000051',
+                        color: '#000051',
+                        marginRight: 6,
+                      }}
+                    >
+                      {name}
+                    </Button>
+                  );
+                })}
               </div>
-              <Button
-                variant="outlined"
-                style={{ color: '#000051', borderColor: '#000051' }}
-              >
-                prerequisite course name
-              </Button>
-            </div>
+            )}
+
             {/* sanky graph with related courses */}
             <CardContent
               className={customClass.graphCard}

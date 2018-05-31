@@ -460,9 +460,11 @@ class Planner extends React.Component<IProps> {
   };
 
   public handleClickSimulation = () => {
-    this.props.onRemoveAllFeedback();
     doSimulation()
-      .then(json => this.props.onSetManyFeedbacks(json))
+      .then(json => {
+        this.props.onRemoveAllFeedback();
+        setTimeout(() => this.props.onSetManyFeedbacks(json), 0);
+      })
       .catch(e => {
         console.error(e);
       });
@@ -486,7 +488,9 @@ class Planner extends React.Component<IProps> {
         semesterId,
         professor,
         division
-      );
+      ).then(() => {
+        this.handleClickSimulation();
+      });
     }
   };
 
@@ -624,7 +628,7 @@ class Planner extends React.Component<IProps> {
   };
 
   public render() {
-    const { boardData } = this.props;
+    const { boardData, currentSemester } = this.props;
 
     if (boardData === undefined) {
       return <>Loading</>;
@@ -716,7 +720,10 @@ class Planner extends React.Component<IProps> {
                 >
                   <header className={classes.laneHeader}>
                     <div className={classes.laneTitle}>
-                      {semester.id} ({semester.term} {semester.year})
+                      {semester.id} ({currentSemester + 1 === semester.semester
+                        ? ['Upcoming, ', <br key={1} />]
+                        : ''}
+                      {semester.term} {semester.year})
                     </div>
                     <div className={classes.laneLabel}>
                       {semester.label
