@@ -197,7 +197,7 @@ class Planner extends React.Component<IProps> {
       'side_pinnedList',
       this.pinnedCourseBoard(
         this.getExcludeList(
-          lodash.flatMap(this.props.boardData, semester => semester.courses)
+          lodash.flatMap(this.props.boardData.slice(1), semester => semester.courses)
         )
       ).courses
     );
