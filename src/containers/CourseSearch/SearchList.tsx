@@ -75,9 +75,9 @@ export default class SearchList extends React.Component<IProps> {
                 courseArr[1] === course.subtitle
             )}
             pinned={Boolean(pinnedList[courseKey])}
-            newCourse={newCourses[courseKey] !== undefined}
+            newCourse={newCourses[courseKey]}
             newLecture={newLectures[courseKey]}
-            recommended={relevantCourses[courseKey] !== undefined}
+            recommended={relevantCourses[courseKey]}
           />
         );
       });

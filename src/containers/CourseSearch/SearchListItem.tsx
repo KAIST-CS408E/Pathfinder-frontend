@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { ICourse, INewCourse, SpentTime } from 'pathfinder';
+import { ICourse, INewCourse, RelevantCourse, SpentTime } from 'pathfinder';
 import * as ReactTooltip from 'react-tooltip';
 
 import { convertSpentTime, convertSpentTimeToReadable } from '@src/utils';
@@ -189,10 +189,10 @@ interface ITableProps
   course: ICourse;
   clickHandlerBuilder: ClickHandlerBuilder;
   clickPinHandlerBuilder: ClickPinHandlerBuilder;
-  newCourse: boolean;
+  newCourse?: INewCourse;
   newLecture?: INewCourse;
   pinned: boolean;
-  recommended: boolean;
+  recommended?: RelevantCourse;
   taken?: boolean;
 }
 
@@ -226,6 +226,14 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
     );
   };
 
+  public renderRecommendTooltip = (count: string) => {
+    return (
+      <span>
+        <b>{count}</b> people took this course in your upcoming semester
+      </span>
+    );
+  };
+
   public render() {
     const {
       classes,
@@ -251,6 +259,11 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
           id="courseGrade"
           effect="solid"
           getContent={this.renderGradeTooltip}
+        />
+        <ReactTooltip
+          id="courseRecommend"
+          effect="solid"
+          getContent={this.renderRecommendTooltip}
         />
         <div className={classes.typo}>
           <Typography
@@ -288,6 +301,8 @@ class CustomizedTable extends React.PureComponent<ITableProps> {
             ) : null}
             {recommended ? (
               <Chip
+                data-for="courseRecommend"
+                data-tip={String(recommended.count)}
                 style={{
                   backgroundColor: 'transparent',
                   border: '1px solid',
