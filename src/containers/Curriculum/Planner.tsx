@@ -14,18 +14,26 @@ import {
   doRecommendation,
   doSimulation,
   getBoard,
+  getCardLectures,
   moveCourse,
 } from '@src/api';
 import { RootState } from '@src/redux';
 import { actions as plannerActions } from '@src/redux/planner';
-import { buildCourseKey, convertSpentTime, range } from '@src/utils';
+import {
+  buildCourseKey,
+  convertSpentTime,
+  getReadableSemester,
+  precisionRound,
+  range,
+} from '@src/utils';
 
 import {
   ICourseCard,
-  ICourseCardLecture,
   ICourseCardLectureTable,
+  ICourseKeys,
   IPinnedTable,
   ISemester,
+  ISimpleLecture,
 } from 'pathfinder';
 
 import styles from './Planner.style';
@@ -51,6 +59,7 @@ interface IProps extends RouteComponentProps<{}> {
   onSetManyCourseCards: typeof plannerActions.setManyCourseCards;
   onAddCourse: typeof plannerActions.addCourse;
   onRemoveCourse: typeof plannerActions.removeCourse;
+  onSetCardLectures: typeof plannerActions.setCardLectures;
   onSetManyFeedbacks: typeof plannerActions.setManyFeedbacks;
   onRemoveAllFeedback: typeof plannerActions.removeAllFeedback;
   onRemoveFeedback: typeof plannerActions.removeFeedback;
@@ -83,18 +92,51 @@ class Planner extends React.Component<IProps> {
     getBoard().then(json => {
       const { boardData, currentSemester } = json;
 
+      const everyCourse = lodash.flatMap(
+        boardData,
+        semester => semester.courses
+      );
+
+      getCardLectures(everyCourse).then(response =>
+        this.props.onSetCardLectures(response)
+      );
+
+      let lastYear = 0;
+      let lastTerm = 'Fall';
+      let lastSemester = 0;
       this.props.onInitBoard(
         [
-          ...this.additionalBoards(
-            lodash.flatMap(boardData, semester => semester.courses)
-          ),
+          ...this.additionalBoards(everyCourse),
           ...range(13)
             .slice(1)
             .map((n: number) => {
               const semesterId = String(n);
-              const basicData = { id: semesterId, semester: n };
+
               const remoteData = boardData[semesterId];
+              const readableSem = getReadableSemester(
+                lastYear,
+                lastTerm,
+                n - lastSemester
+              );
+
+              const basicData = {
+                id: semesterId,
+                semester: n,
+                ...readableSem,
+              };
+
               if (remoteData) {
+                if (n <= currentSemester) {
+                  lastYear = remoteData.year;
+                  lastTerm = remoteData.term;
+                  lastSemester = n;
+                }
+
+                if (!remoteData.term) {
+                  remoteData.term = readableSem.term;
+                  remoteData.year = readableSem.year;
+                }
+
                 return {
                   ...basicData,
                   courses: remoteData.courses.map((course: any) => ({
@@ -106,6 +148,8 @@ class Planner extends React.Component<IProps> {
                         : undefined,
                   })),
                   feedback: remoteData.feedback,
+                  term: remoteData.term,
+                  year: remoteData.year,
                 };
               }
               return { ...basicData, courses: [], feedback: [] };
@@ -173,6 +217,10 @@ class Planner extends React.Component<IProps> {
   public pinnedCourseBoard = (excludeList: { [key: string]: boolean }) => {
     const { pinnedList } = this.props;
 
+    getCardLectures(Object.values(pinnedList)).then(json =>
+      this.props.onSetCardLectures(json)
+    );
+
     const courses = Object.entries(pinnedList)
       .filter(([_, pin]) => !excludeList[buildCourseKey(pin)])
       .map(([key, pinnedCourse]): ICourseCard => ({
@@ -190,60 +238,24 @@ class Planner extends React.Component<IProps> {
 
       courses,
       feedback: [],
+      term: 'none',
+      year: 0,
     };
   };
 
-  public calcLoadSum(courses: ICourseCard[]) {
+  public calcRecentLectures = (course: ICourseKeys) => {
     const { cardLectureTable } = this.props;
-
-    return courses
-      .map(course => {
-        const courseKey = buildCourseKey(course);
-        if (
-          course.selectedDivision !== undefined &&
-          cardLectureTable[courseKey]
-        ) {
-          const selectedLecture = cardLectureTable[courseKey].lectures.find(
-            lecture => lecture.division === course.selectedDivision
-          );
-          if (!selectedLecture) {
-            return 0;
-          }
-          const load = selectedLecture.load;
-          return convertSpentTime(load !== undefined ? load : '3 to 5');
-        } else {
-          return 0;
-        }
-      })
-      .reduce((a, b) => a + b, 0);
-  }
-
-  public calcGradeAverage(courses: ICourseCard[]) {
-    const { cardLectureTable } = this.props;
-
-    return (
-      courses
-        .map(course => {
-          const courseKey = buildCourseKey(course);
-          if (
-            course.selectedDivision !== undefined &&
-            cardLectureTable[courseKey]
-          ) {
-            const selectedLecture = cardLectureTable[courseKey].lectures.find(
-              lecture => lecture.division === course.selectedDivision
-            );
-            if (!selectedLecture) {
-              return 0;
-            }
-            const grades = selectedLecture.grades;
-            return Number(grades);
-          } else {
-            return 0;
-          }
-        })
-        .reduce((a, b) => a + b, 0) / courses.length
-    );
-  }
+    const lectureHistory = cardLectureTable[buildCourseKey(course)];
+    const lectures =
+      lectureHistory &&
+      lodash.uniqBy(
+        lectureHistory.previousLectures
+          .filter(lecture => lecture.year !== 2018 || lecture.term !== 'Spring')
+          .concat(lectureHistory.lectures, lectureHistory.previousLectures),
+        lecture => lecture.professor
+      );
+    return lectures;
+  };
 
   public onCardDrop = (semesterId: string) => (dropResult: any) => {
     // const { onAddCourse, onRemoveCourse } = this.props;
@@ -263,7 +275,9 @@ class Planner extends React.Component<IProps> {
           console.error('hum..');
         }
         this.dropQueue.splice(dropEventIndex, 1);
-        this.moveCard(from, removedIndex, to, toIndex, payload);
+        if (!(from === to && from.startsWith('side'))) {
+          this.moveCard(from, removedIndex, to, toIndex, payload);
+        }
       } else {
         this.dropQueue.push({
           from,
@@ -283,7 +297,9 @@ class Planner extends React.Component<IProps> {
       if (dropEventIndex !== -1) {
         const { from, fromIndex } = this.dropQueue[dropEventIndex];
         this.dropQueue.splice(dropEventIndex, 1);
-        this.moveCard(from, fromIndex, to, addedIndex, payload);
+        if (!(from === to && from.startsWith('side'))) {
+          this.moveCard(from, fromIndex, to, addedIndex, payload);
+        }
       } else {
         this.dropQueue.push({
           from: 'none',
@@ -309,12 +325,14 @@ class Planner extends React.Component<IProps> {
     onAddCourse(to, toIndex, payload);
     // onRemoveFeedback(from);
     // onRemoveFeedback(to);
+
     (to.startsWith('side')
       ? deleteCourse(payload.courseNumber, payload.subtitle)
       : moveCourse(
           payload.courseNumber,
           payload.subtitle,
           to,
+          payload.selectedProfessor,
           payload.selectedDivision
         )
     ).then(json => {
@@ -385,46 +403,7 @@ class Planner extends React.Component<IProps> {
   };
 
   public handleClickRecommendation = () => {
-    doRecommendation().then(response => {
-      const { boardData, currentSemester } = this.props;
-      const nextSemester = String(currentSemester + 1);
-      const currentLane = boardData.find(
-        semester => semester.id === nextSemester
-      );
-      if (!currentLane) {
-        return;
-      }
-      // drop every cards
-      currentLane.courses.forEach(course => {
-        this.moveCard(nextSemester, 0, 'side_pinnedList', 0, course);
-      });
-
-      response.cf.slice(0, 3).forEach(recommend => {
-        let found = false;
-        boardData.forEach(semester => {
-          const index = semester.courses.findIndex(
-            course => buildCourseKey(course) === buildCourseKey(recommend)
-          );
-          if (index !== -1) {
-            found = true;
-            this.moveCard(semester.id, index, nextSemester, 0, {
-              ...semester.courses[index],
-              type: 'recommended' as 'recommended',
-            });
-          }
-        });
-        if (!found) {
-          const card = {
-            ...recommend,
-            id: buildCourseKey(recommend),
-            type: 'recommended' as 'recommended',
-          };
-          this.props.onAddCourse(nextSemester, 0, card);
-          this.moveCard(nextSemester, 0, nextSemester, 0, card);
-        }
-      });
-      setTimeout(() => this.updatePinnedList(), 0);
-    });
+    doRecommendation();
   };
 
   public handleClickSimulation = () => {
@@ -439,16 +418,27 @@ class Planner extends React.Component<IProps> {
   public handleClickCourseDivision = (
     semesterId: string,
     course: ICourseCard,
+    professor: string,
     division: string
   ) => () => {
-    this.props.onSelectDivision(semesterId, course.id, division);
+    const { currentSemester } = this.props;
+    if (Number(semesterId) <= currentSemester) {
+      return;
+    }
+    this.props.onSelectDivision(semesterId, course.id, professor, division);
     if (!semesterId.startsWith('side')) {
-      moveCourse(course.courseNumber, course.subtitle, semesterId, division);
+      moveCourse(
+        course.courseNumber,
+        course.subtitle,
+        semesterId,
+        professor,
+        division
+      );
     }
   };
 
   public renderPinnedCourse() {
-    const { boardData } = this.props;
+    const { boardData, cardLectureTable } = this.props;
 
     if (boardData === undefined || boardData.length === 0) {
       return <>Loading</>;
@@ -461,7 +451,7 @@ class Planner extends React.Component<IProps> {
           className={classes.laneHeader}
           style={{ backgroundColor: ourKaistBlue }}
         >
-          <div className={classes.laneTitle}>{pinnedCourseLane.id}</div>
+          <div className={classes.laneTitle}>Pinned Courses</div>
           <div className={classes.laneLabel}>
             {pinnedCourseLane.label
               ? pinnedCourseLane.label
@@ -482,6 +472,10 @@ class Planner extends React.Component<IProps> {
                 key={course.id}
                 semesterId={pinnedCourseLane.id}
                 course={course}
+                lectures={
+                  cardLectureTable[buildCourseKey(course)] &&
+                  cardLectureTable[buildCourseKey(course)].lectures
+                }
                 preventDragging={this.preventDragging}
                 onClickCourseDivision={this.handleClickCourseDivision}
               />
@@ -491,6 +485,39 @@ class Planner extends React.Component<IProps> {
       </div>
     );
   }
+
+  public mapLecture = (semester: ISemester) => {
+    const { currentSemester, cardLectureTable } = this.props;
+
+    return semester.courses.map(course => {
+      let lectures;
+      let lectureIndex;
+      if (semester.semester <= currentSemester) {
+        const courseKey = buildCourseKey(course);
+        const courseLectures = cardLectureTable[courseKey];
+        if (courseLectures) {
+          lectures = courseLectures.previousLectures.filter(
+            lecture =>
+              lecture.year === semester.year && lecture.term === semester.term
+          );
+          lectureIndex = lectures.findIndex(
+            lecture => lecture.division === course.selectedDivision
+          );
+        }
+      }
+
+      lectures = lectures || this.calcRecentLectures(course);
+      lectureIndex =
+        lectureIndex !== undefined
+          ? lectureIndex
+          : lectures &&
+            lectures.findIndex(
+              lecture => lecture.professor === course.selectedProfessor
+            );
+
+      return { lectures, lectureIndex };
+    });
+  };
 
   public render() {
     const { boardData } = this.props;
@@ -549,84 +576,118 @@ class Planner extends React.Component<IProps> {
         {/* the kanban board */}
         <div style={{ display: 'flex' }}>
           <div className={classes.boardContainer}>
-            {boardData.slice(1).map(semester => (
-              <div
-                key={semester.id}
-                className={classNames(
-                  classes.semesterBoard,
-                  `semesterBoard-_${semester.id}`
-                )}
-              >
-                <header className={classes.laneHeader}>
-                  <div className={classes.laneTitle}>{semester.id}</div>
-                  <div className={classes.laneLabel}>
-                    {semester.label
-                      ? semester.label
-                      : `Load: ${this.calcLoadSum(
-                          semester.courses
-                        )} Grade: ${this.calcGradeAverage(semester.courses)}`}
-                  </div>
-                </header>
-                <Container
+            {boardData.slice(1).map(semester => {
+              const courseLectureMap = this.mapLecture(semester);
+              const allLectures = courseLectureMap
+                .map(
+                  datum => datum.lectures && datum.lectures[datum.lectureIndex]
+                )
+                .filter(datum => datum);
+              const loadSum = allLectures
+                .map(
+                  lecture => (lecture.load ? convertSpentTime(lecture.load) : 0)
+                )
+                .reduce((a, b) => a + b, 0);
+              const allGrade = allLectures
+                .filter(lecture => lecture.grade)
+                .map(lecture => lecture.grade);
+              const gradeSum =
+                precisionRound(lodash.sum(allGrade) / allGrade.length, 2) ||
+                'N/A';
+
+              console.log(semester, courseLectureMap);
+              return (
+                <div
                   key={semester.id}
-                  groupName={`semesterBoard-_${semester.id}`}
-                  orientation="vertical"
-                  onDrop={this.onCardDrop(semester.id)}
-                  getChildPayload={this.getChildPayload(semester.id)}
-                  shouldAcceptDrop={this.preventOverlappedFromDrop(semester)}
+                  className={classNames(
+                    classes.semesterBoard,
+                    `semesterBoard-_${semester.id}`
+                  )}
                 >
-                  {semester.courses.map(course => {
-                    return (
-                      <CourseCard
-                        key={course.id}
-                        semesterId={semester.id}
-                        course={course}
-                        preventDragging={this.preventDragging}
-                        onClickCourseDivision={this.handleClickCourseDivision}
-                      />
-                    );
-                  })}
-                </Container>
-                <div className={classes.feedback}>
-                  {semester.feedback.map(feedback => {
-                    let reason = '';
-                    if (!feedback.ok) {
-                      if (feedback.type === 'time') {
-                        const errorCourses = Object.entries(feedback.reason)[0];
-                        const a = errorCourses[0];
-                        const b = errorCourses[1];
-                        const aC = semester.courses.find(
-                          course => course.courseNumber === a
-                        );
-                        const bC = semester.courses.find(
-                          course => course.courseNumber === b
-                        );
-                        if (aC && bC) {
-                          reason = `the class time of "${aC.name}" and "${
-                            bC.name
-                          }" overlap`;
+                  <header className={classes.laneHeader}>
+                    <div className={classes.laneTitle}>
+                      {semester.id} ({semester.term} {semester.year})
+                    </div>
+                    <div className={classes.laneLabel}>
+                      {semester.label
+                        ? semester.label
+                        : `Load: ${loadSum} Grade: ${gradeSum}`}
+                    </div>
+                  </header>
+                  <Container
+                    key={semester.id}
+                    groupName={`semesterBoard-_${semester.id}`}
+                    orientation="vertical"
+                    onDrop={this.onCardDrop(semester.id)}
+                    getChildPayload={this.getChildPayload(semester.id)}
+                    shouldAcceptDrop={this.preventOverlappedFromDrop(semester)}
+                  >
+                    {semester.courses.map((course, courseIndex) => {
+                      let lectures;
+                      let lectureIndex;
+                      if (courseLectureMap[courseIndex]) {
+                        const lectureMap = courseLectureMap[courseIndex];
+                        lectures = lectureMap.lectures;
+                        lectureIndex = lectureMap.lectureIndex;
+                      }
+                      return (
+                        <CourseCard
+                          key={course.id}
+                          semesterId={semester.id}
+                          course={course}
+                          lectures={lectures}
+                          selectedLecture={lectureIndex}
+                          preventDragging={this.preventDragging}
+                          onClickCourseDivision={this.handleClickCourseDivision}
+                        />
+                      );
+                    })}
+                  </Container>
+                  <div className={classes.feedback}>
+                    {semester.feedback.map(feedback => {
+                      let reason = '';
+                      if (!feedback.ok) {
+                        if (feedback.type === 'time') {
+                          const errorCourses = Object.entries(
+                            feedback.reason
+                          )[0];
+                          const a = errorCourses[0];
+                          const b = errorCourses[1];
+                          const aC = semester.courses.find(
+                            course => course.courseNumber === a
+                          );
+                          const bC = semester.courses.find(
+                            course => course.courseNumber === b
+                          );
+                          if (aC && bC) {
+                            reason = `the class time of "${aC.name}" and "${
+                              bC.name
+                            }" overlap`;
+                          }
                         }
                       }
-                    }
 
-                    return (
-                      <div
-                        key={feedback.type}
-                        style={{
-                          backgroundColor: feedback.ok ? passColor : warnColor,
-                        }}
-                      >
-                        <div className={classes.feedbackTitle}>
-                          {feedback.type}
-                          {feedback.ok ? ' balanced' : ' error'}
+                      return (
+                        <div
+                          key={feedback.type}
+                          style={{
+                            backgroundColor: feedback.ok
+                              ? passColor
+                              : warnColor,
+                          }}
+                        >
+                          <div className={classes.feedbackTitle}>
+                            {feedback.type}
+                            {feedback.ok ? ' balanced' : ' error'}
+                          </div>
+                          <div className={classes.feedbackDetail}>{reason}</div>
                         </div>
-                        <div className={classes.feedbackDetail}>{reason}</div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <div style={{ minWidth: '30vh' }} />
             {/* 여기가 핀해놓은 강의 리스트 있는 곳임 !!*/}
             {this.renderPinnedCourse()}
@@ -653,6 +714,8 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       onAddCourse: plannerActions.addCourse,
       onRemoveCourse: plannerActions.removeCourse,
 
+      onSetCardLectures: plannerActions.setCardLectures,
+
       onRemoveAllFeedback: plannerActions.removeAllFeedback,
       onRemoveFeedback: plannerActions.removeFeedback,
       onSetManyFeedbacks: plannerActions.setManyFeedbacks,
@@ -667,11 +730,13 @@ export default connect(mapStateToProps, mapDispatchToProps)(Planner);
 interface ICourseCardProps {
   semesterId: string;
   course: ICourseCard;
-  cardLecture?: ICourseCardLecture;
+  lectures?: ISimpleLecture[];
+  selectedLecture?: number;
   preventDragging: (e: React.MouseEvent<HTMLElement>) => void;
   onClickCourseDivision: (
     semesterId: string,
     course: ICourseCard,
+    professor: string,
     division: string
   ) => () => void;
 }
@@ -679,19 +744,17 @@ interface ICourseCardProps {
 const CourseCard: React.SFC<ICourseCardProps> = ({
   semesterId,
   course,
-  cardLecture,
+  lectures,
+  selectedLecture,
   preventDragging,
   onClickCourseDivision,
 }) => {
-  let loadGrade = 'Load: -_- Grade -_-';
-  const { selectedDivision } = course;
-  if (selectedDivision !== undefined && cardLecture) {
-    const selLecture = cardLecture.lectures.find(
-      lecture => lecture.division === selectedDivision
-    );
+  let loadGrade = 'Load: N/A Grade: N/A';
+  if (lectures && selectedLecture !== undefined) {
+    const selLecture = lectures[selectedLecture];
     if (selLecture) {
       loadGrade = `Load: ${selLecture.load ||
-        '-_-'} Grade: ${selLecture.grades || '-_-'}`;
+        'N/A'} Grade: ${selLecture.grade || 'N/A'}`;
     }
   }
 
@@ -734,21 +797,19 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
       </header>
       <div className={classes.cardMiddle}>{loadGrade}</div>
       <div className={classes.cardProfs}>
-        {cardLecture &&
-          cardLecture.lectures.map(lecture => (
+        {lectures &&
+          lectures.map((lecture, index) => (
             <div
               key={lecture.division}
               style={{
                 backgroundColor:
-                  course.selectedDivision !== undefined &&
-                  lecture.division === course.selectedDivision
-                    ? profColorS
-                    : profColorD,
+                  selectedLecture === index ? profColorS : profColorD,
                 color: 'white',
               }}
               onClick={onClickCourseDivision(
                 semesterId,
                 course,
+                lecture.professor,
                 lecture.division || ''
               )}
             >

@@ -45,12 +45,15 @@ export interface ICourseCardLecture {
   course: ICourseKeys;
   lectures: ISimpleLecture[];
   previousLectures: ISimpleLecture[];
-};
+}
 
 export interface ISemester {
   id: string;
   label?: string;
   semester: number;
+
+  year: number;
+  term: string;
 
   courses: ICourseCard[];
 
@@ -62,6 +65,7 @@ export interface ICourseCard {
   label?: string;
   description?: string;
 
+  takenFrom?: string; // where is this card from?? (ex. sidebar)
   type: 'TAKE' | 'pinned' | 'interested' | 'recommended' | 'none';
 
   name: string;
@@ -69,6 +73,7 @@ export interface ICourseCard {
   subtitle: string;
 
   selectedDivision?: string;
+  selectedProfessor?: string;
 
   myGrade?: string; // undefined if not taken
 
@@ -76,12 +81,12 @@ export interface ICourseCard {
 }
 
 export interface ISimpleLecture {
-  year: string;
+  year: number;
   term: string;
   professor: string;
   division: string;
   load?: SpentTime; // past load
-  grades?: number; // past grade
+  grade?: number; // past grade
 }
 
 export interface ISemesterFeedback {

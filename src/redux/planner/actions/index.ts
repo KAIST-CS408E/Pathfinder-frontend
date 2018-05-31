@@ -30,6 +30,12 @@ const actions = {
       resolve({ semesterId, courseIndex })
   ),
 
+  setRecommendedCourse: createAction(
+    'planner/setRecommendedCourse',
+    resolve => (semesterId: string, courses: ICourseCard[]) =>
+      resolve({ semesterId, courses })
+  ),
+
   setCardLectures: createAction(
     'planner/setCardLectures',
     resolve => (cardLectures: ICourseCardLecture[]) => resolve(cardLectures)
@@ -55,8 +61,12 @@ const actions = {
 
   selectDivision: createAction(
     'planner/selectDivision',
-    resolve => (semesterId: string, courseId: string, division: string) =>
-      resolve({ semesterId, courseId, division })
+    resolve => (
+      semesterId: string,
+      courseId: string,
+      professor: string,
+      division: string
+    ) => resolve({ semesterId, courseId, professor, division })
   ),
 };
 

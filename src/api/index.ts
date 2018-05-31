@@ -1,5 +1,11 @@
 import {
-  ICourseCardLecture, INewCourse, IPinnedCourse, IPinnedCourseAPI, ISemesterFeedback, RelevantCourse,
+  ICourseCardLecture,
+  ICourseKeys,
+  INewCourse,
+  IPinnedCourse,
+  IPinnedCourseAPI,
+  ISemesterFeedback,
+  RelevantCourse,
 } from 'pathfinder';
 
 import { API_URL } from '@src/constants/api';
@@ -44,13 +50,14 @@ export const moveCourse = (
   courseNumber: string,
   subtitle: string,
   boardId: string,
+  professor?: string,
   division?: string
 ) =>
   fetch(
     API_URL +
-      `/plan/${courseNumber}?subtitle=${subtitle}&to=${boardId}${
-        division !== undefined ? `&division=${division}` : ''
-      }`,
+      `/plan/${courseNumber}?subtitle=${subtitle}&to=${boardId}&professor=${
+        professor === undefined ? '' : professor
+      }${division !== undefined ? `&division=${division}` : '&division='}`,
     { method: 'POST' }
   ).then(r => r.json());
 
@@ -105,13 +112,19 @@ export const getStatistics = () =>
 
 export type RelevantResponse = RelevantCourse[];
 
-
 // type RelevantEntry = [string, string, string, string, number];
 
 export const getRelevant = () =>
   fetch(API_URL + '/relevance').then<RelevantResponse>(r => r.json());
 
-export type CardLecturesResponse = ICourseCardLecture[]
+export type CardLecturesResponse = ICourseCardLecture[];
 
-export const getCardLectures = () =>
-  fetch(API_URL + '/card/lectures').then<CardLecturesResponse>(r => r.json())
+export const getCardLectures = (courseKeys: ICourseKeys[]) =>
+  fetch(
+    API_URL +
+      `/lectures?courseNumbers=${courseKeys
+        .map(key => encodeURIComponent(key.courseNumber))
+        .join(',')}&subtitles=${courseKeys
+        .map(key => encodeURIComponent(key.subtitle))
+        .join(',')}`
+  ).then<CardLecturesResponse>(r => r.json());

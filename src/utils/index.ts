@@ -36,4 +36,20 @@ export const convertSpentTimeToReadable = (timeStr: SpentTime) => {
   }
 }
 
+export const getReadableSemester = (baseYear: number, baseTerm: string, semester: number) => {
+  let year = baseYear;
+  const termRest = baseTerm === 'Fall' ? 1 : 0;
+  const termAdd = (termRest + semester % 2);
+  year += Math.floor(semester / 2) + Math.floor(termAdd / 2)
+  return {
+    term: termAdd % 2 === 1 ? 'Fall' : 'Spring',
+    year,
+  }
+}
+
 export const range = (n: number) => [...Array(n)].map((_, i) => i);
+
+export function precisionRound(n: number, precision: number) {
+  const factor = Math.pow(10, precision);
+  return Math.round(n * factor) / factor;
+}

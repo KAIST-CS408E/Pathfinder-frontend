@@ -98,6 +98,45 @@ export default (state: State = initialState, action: Action): State => {
       );
     }
 
+    case getType(actions.setRecommendedCourse): {
+      const { semesterId, courses } = action.payload;
+
+      const origin = {};
+      courses.forEach(course => {
+        origin[buildCourseKey(course)] = null;
+      });
+
+      state.boardData.forEach(semester => {
+        semester.courses.forEach(course => {
+          const courseKey = buildCourseKey(course);
+          if (origin[courseKey] === null) {
+            origin[courseKey] = semester.id;
+          }
+        });
+      });
+
+      return iassign(state, (prevState: IState) => {
+        prevState.boardData = prevState.boardData.map(semester => {
+          return iassign(semester, prevSemester => {
+            prevSemester.courses = prevSemester.courses.filter(
+              course => !origin[buildCourseKey(course)]
+            );
+            if (semesterId === semester.id) {
+              prevSemester.courses = prevSemester.courses.concat(
+                courses.map(courseCard => ({
+                  ...courseCard,
+                  takenFrom: origin[buildCourseKey(courseCard)],
+                  type: 'recommended' as 'recommended',
+                }))
+              );
+            }
+            return prevSemester;
+          });
+        });
+        return prevState;
+      });
+    }
+
     case getType(actions.setManyFeedbacks): {
       const allFeedbacks = action.payload;
       let reduction = state;
@@ -145,7 +184,7 @@ export default (state: State = initialState, action: Action): State => {
       );
     }
     case getType(actions.selectDivision): {
-      const { semesterId, courseId, division } = action.payload;
+      const { semesterId, courseId, professor, division } = action.payload;
       const semesterIndex = state.boardData.findIndex(
         semester => semester.id === semesterId
       );
@@ -157,6 +196,7 @@ export default (state: State = initialState, action: Action): State => {
         prevState => prevState.boardData[semesterIndex].courses[courseIndex],
         course => {
           course.selectedDivision = division;
+          course.selectedProfessor = professor;
           return course;
         }
       );
