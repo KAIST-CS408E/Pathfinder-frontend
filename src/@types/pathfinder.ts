@@ -77,7 +77,7 @@ export interface ICourseCard {
 
   myGrade?: string; // undefined if not taken
 
-  special?: string; // Use for colored feedback on cards
+  special?: any; // Use for colored feedback on cards
 }
 
 export interface ISimpleLecture {

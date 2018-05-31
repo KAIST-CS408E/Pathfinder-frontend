@@ -49,6 +49,7 @@ import {
   PlayCircleOutline,
   ThumbUp,
 } from '@material-ui/icons';
+import * as ReactTooltip from 'react-tooltip';
 
 const { classes } = styles;
 
@@ -609,7 +610,6 @@ class Planner extends React.Component<IProps> {
             <br />* This system is helpful, but blind trust can be dangerous.
           </Typography>
         </div>
-
         <div className={classes.division}>{/* give division */}</div>
         <div style={{ textAlign: 'right', margin: '0vh 10vw 3vh 0vw' }}>
           <Chip
@@ -837,17 +837,31 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
     }
   }
 
+  let recommendReason = '';
+  if (course.special) {
+    recommendReason = `${course.special.averageSemester}|${
+      course.special.count
+    }`;
+  }
+
   return (
     <Draggable
       onClick={preventDragging}
       className={course.type === 'recommended' ? classes.recCard : classes.card}
     >
+      <ReactTooltip
+        id="courseCardRecommend"
+        effect="solid"
+        getContent={renderRecommendTooltip}
+      />
       {course.type === 'recommended' ? (
         <div
           className={classes.recCardTop}
           style={{ display: 'flex', justifyContent: 'space-between' }}
         >
           <Chip
+            data-tip={recommendReason}
+            data-for="courseCardRecommend"
             label="RECOMMENDED"
             style={{
               backgroundColor: recommendColor,
@@ -871,13 +885,7 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
       <header className={classes.cardHeader}>
         <div style={{ width: '100%' }}>
           {course.name}
-          <span
-            style={{
-              color: profColorS,
-              fontSize: 12,
-              marginLeft: 6,
-            }}
-          >
+          <span style={{ color: profColorS, fontSize: 12, marginLeft: 6 }}>
             {course.myGrade ? course.myGrade : ''}
           </span>
         </div>
@@ -908,5 +916,19 @@ const CourseCard: React.SFC<ICourseCardProps> = ({
           ))}
       </div>
     </Draggable>
+  );
+};
+
+const renderRecommendTooltip = (data: string) => {
+  if (!data) {
+    return <>nothing</>;
+  }
+  const dataSplit = data.split('|');
+  const averageSemester = dataSplit[0];
+  const count = dataSplit[1];
+  return (
+    <span>
+      <b>{count}</b> people took this course in the {averageSemester}th semester
+    </span>
   );
 };

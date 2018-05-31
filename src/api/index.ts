@@ -81,6 +81,8 @@ export interface IRecommendResponse {
       professor: string;
       division: string;
     }>;
+    averageSemester: number;
+    count: number;
   }>;
 }
 
@@ -95,6 +97,11 @@ export const doRecommendation = () =>
             ...recommend.course,
             id: buildCourseKey(recommend.course),
             type: 'recommended' as 'recommended',
+
+            special: {
+              averageSemester: recommend.averageSemester,
+              count: recommend.count,
+            },
           };
         }),
       };
