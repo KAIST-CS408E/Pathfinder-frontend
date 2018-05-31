@@ -827,8 +827,11 @@ class Detail extends React.Component<
                       </RcmSubHeader>
                     }
                   >
-                    {data.with.length > 0 ? (
-                      data.with.map(
+                    {data.with.filter(peerCourse => peerCourse[3] >= 5)
+                      .length > 0 ? (
+                      data.with
+                        .filter(peerCourse => peerCourse[3] >= 5)
+                        .map(
                         ([courseNumber, courseName, subtitle, percentage]) => (
                           <PeerCourseListItem
                             key={courseName}
@@ -879,8 +882,11 @@ class Detail extends React.Component<
                       </RcmSubHeader>
                     }
                   >
-                    {data.after.length > 0 ? (
-                      data.after.map(
+                    {data.after.filter(peerCourse => peerCourse[3] >= 5)
+                      .length > 0 ? (
+                      data.after
+                        .filter(peerCourse => peerCourse[3] >= 5)
+                        .map(
                         ([courseNumber, courseName, subtitle, percentage]) => (
                           <PeerCourseListItem
                             key={courseName}
