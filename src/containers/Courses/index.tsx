@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
-import Detail from '../CourseDetail/Detail';
+import Detail, { IProps as DetailProps } from '../CourseDetail/Detail';
 import ModalDetail from '../CourseDetail/ModalDetail';
 import Search, { RouteProps as SearchRouteProps } from '../CourseSearch/Search';
 
@@ -30,6 +30,10 @@ class Courses extends React.Component<IProps> {
     return <Search {...props} />;
   };
 
+  public renderModal = (props: DetailProps) => {
+    return <ModalDetail {...props} />;
+  };
+
   public render() {
     const { match, location } = this.props;
 
@@ -38,7 +42,7 @@ class Courses extends React.Component<IProps> {
       location.state &&
       location.state.modalDetail &&
       location !== this.previousLocation;
-    
+
     return (
       <div>
         <Switch location={isModal ? this.previousLocation : location}>
@@ -57,7 +61,7 @@ class Courses extends React.Component<IProps> {
           <Route
             location={location}
             path={`${match.url}/d/:year/:term/:courseNumber/:division?`}
-            component={ModalDetail}
+            render={this.renderModal}
           />
         ) : null}
       </div>
