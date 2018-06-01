@@ -51,6 +51,7 @@ import {
 } from 'pathfinder';
 
 import { ourKaistBlueD } from '@src/constants';
+import * as ReactTooltip from 'react-tooltip';
 
 const { classes } = styles;
 
@@ -427,6 +428,30 @@ class Detail extends React.Component<
     }
   };
 
+  public renderBeforeTooltip = (data: string) => {
+    return (
+      <span>
+        <b>{data}</b> of people took it before taking this course
+      </span>
+    );
+  };
+
+  public renderWithTooltip = (data: string) => {
+    return (
+      <span>
+        <b>{data}</b> of people took it in the same semester
+      </span>
+    );
+  };
+
+  public renderAfterTooltip = (data: string) => {
+    return (
+      <span>
+        <b>{data}</b> of people took it after taking this course
+      </span>
+    );
+  };
+
   public render() {
     const customClass = this.props.classes;
 
@@ -741,6 +766,19 @@ class Detail extends React.Component<
                     }
                   />
                 </div>
+                <ReactTooltip
+                  id="beforeTooltip"
+                  getContent={this.renderBeforeTooltip}
+                />
+                <ReactTooltip
+                  id="withTooltip"
+                  getContent={this.renderWithTooltip}
+                />
+                <ReactTooltip
+                  id="afterTooltip"
+                  getContent={this.renderAfterTooltip}
+                />
+
                 <Paper>
                   <List
                     component="nav"
@@ -771,6 +809,7 @@ class Detail extends React.Component<
                             percentage,
                           ]) => (
                             <PeerCourseListItem
+                              dataFor="beforeTooltip"
                               key={courseNumber}
                               className={customClass.listItems}
                               courseName={courseName}
@@ -827,24 +866,30 @@ class Detail extends React.Component<
                       </RcmSubHeader>
                     }
                   >
-                    {data.with.filter(peerCourse => peerCourse[3] >= 5)
-                      .length > 0 ? (
+                    {data.with.filter(peerCourse => peerCourse[3] >= 5).length >
+                    0 ? (
                       data.with
                         .filter(peerCourse => peerCourse[3] >= 5)
                         .map(
-                        ([courseNumber, courseName, subtitle, percentage]) => (
-                          <PeerCourseListItem
-                            key={courseName}
-                            className={customClass.listItems}
-                            courseName={courseName}
-                            courseNumber={courseNumber}
-                            icon="equalizer"
-                            onClick={this.handlePeerCourseClick}
-                            subtitle={subtitle}
-                            percentage={percentage}
-                          />
+                          ([
+                            courseNumber,
+                            courseName,
+                            subtitle,
+                            percentage,
+                          ]) => (
+                            <PeerCourseListItem
+                              dataFor="withTooltip"
+                              key={courseName}
+                              className={customClass.listItems}
+                              courseName={courseName}
+                              courseNumber={courseNumber}
+                              icon="equalizer"
+                              onClick={this.handlePeerCourseClick}
+                              subtitle={subtitle}
+                              percentage={percentage}
+                            />
+                          )
                         )
-                      )
                     ) : (
                       <NoData />
                     )}
@@ -887,19 +932,25 @@ class Detail extends React.Component<
                       data.after
                         .filter(peerCourse => peerCourse[3] >= 5)
                         .map(
-                        ([courseNumber, courseName, subtitle, percentage]) => (
-                          <PeerCourseListItem
-                            key={courseName}
-                            className={customClass.listItems}
-                            courseName={courseName}
-                            courseNumber={courseNumber}
-                            icon="equalizer"
-                            onClick={this.handlePeerCourseClick}
-                            subtitle={subtitle}
-                            percentage={percentage}
-                          />
+                          ([
+                            courseNumber,
+                            courseName,
+                            subtitle,
+                            percentage,
+                          ]) => (
+                            <PeerCourseListItem
+                              dataFor="afterTooltip"
+                              key={courseName}
+                              className={customClass.listItems}
+                              courseName={courseName}
+                              courseNumber={courseNumber}
+                              icon="equalizer"
+                              onClick={this.handlePeerCourseClick}
+                              subtitle={subtitle}
+                              percentage={percentage}
+                            />
+                          )
                         )
-                      )
                     ) : (
                       <NoData />
                     )}
