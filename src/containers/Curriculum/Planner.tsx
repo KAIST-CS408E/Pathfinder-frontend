@@ -1019,7 +1019,8 @@ const renderRecommendTooltip = (data: string) => {
   const count = dataSplit[1];
   return (
     <span>
-      <b>{count}</b> people took this course in the {averageSemester}th semester
+      <b>{count}</b> people who have taken the same courses in your past semester<br />
+      took this course in the {averageSemester}th semester
     </span>
   );
 };
